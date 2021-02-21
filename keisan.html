@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>keisan</title>
+<style type="text/css">
+<!--
+body {font-size: 360%; margin:40px;}
+input {font-size: 100%; padding: 0 0.5em;}
+td {text-align:center;}
+--> 
+</style>
+<script type="text/javascript"><!--
+emoji = "&#x1f349;";
+tashizan = true;
+function init() {
+    count = 0;
+    list_result = [];
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("message").innerHTML = "";
+    q();
+}
+function set() {
+    emoji = document.setting.emoji.value;
+    tashizan = document.setting.keisan_type[0].checked;
+    count = 0;
+    list_result = [];
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("message").innerHTML = "";
+    q();
+}
+function q() {
+    if (tashizan) {
+        x1 = Math.floor(Math.random() * 5) + 1;
+        x2 = Math.floor(Math.random() * 5) + 1;
+        ans = x1 + x2;
+        document.getElementById("question").innerHTML = x1 + " + " + x2 + " =？";
+    } else {
+        x2 = Math.floor(Math.random() * 5) + 1;
+        ans = Math.floor(Math.random() * 5) + 1;
+        x1 = x2 + ans;
+        document.getElementById("question").innerHTML = x1 + " - " + x2 + " =？";
+    }
+}
+function display_result() {
+    s = "<table style=\"border:2px solid black;font-size:80%;border-collapse:collapse;\"><tr>";
+    for(let i = 0; i < list_result.length; i++) {
+        s += "<th style=\"border:2px solid black;width:90px;\">" + (i + 1) + "</th>";
+    }
+    s += "</tr><tr>";
+    for(let i = 0; i < list_result.length; i++) {
+        if (list_result[i]) {
+            s += "<td style=\"border:2px solid black;\">" + emoji + "</td>";
+        } else {
+            s += "<td style=\"border:2px solid black;\">×</td>";
+        }
+    }
+    s += "</tr></table>";
+    document.getElementById("result").innerHTML = s;
+}
+function response(num) {
+    if (count == 10) {
+        return;
+    }
+    list_result.push(num == ans);
+    display_result();
+    count += 1;
+    if (count == 10) {
+        points = 0;
+        for(let i = 0; i < list_result.length; i++) {
+            if (list_result[i]) {
+                points += 1;
+            }
+        }
+        document.getElementById("message").innerHTML = points + "点でした";
+    } else {
+        q();
+    }
+}
+// --></script>
+</head>
+<body onload="init()">
+<table>
+<tr>
+<td style="width:400px;padding:20px;"><span id="question"></span>
+</td>
+<td>
+<form name="question">
+<input type="button" value="1" onClick="response(1)"> 
+<input type="button" value="2" onClick="response(2)"> 
+<input type="button" value="3" onClick="response(3)"><br>
+<input type="button" value="4" onClick="response(4)"> 
+<input type="button" value="5" onClick="response(5)"> 
+<input type="button" value="6" onClick="response(6)"><br>
+<input type="button" value="7" onClick="response(7)"> 
+<input type="button" value="8" onClick="response(8)"> 
+<input type="button" value="9" onClick="response(9)"><br>
+<center><input type="button" value="10" onClick="response(10)"></center>
+</form>
+</td>
+</tr>
+</table>
+<div style="height:130px;margin:30px 0;" id="result"></div>
+<div style="height:70px;margin:30px 0;" id="message"></div>
+<div style="font-size:14px;background:#f0f0f0;padding:10px;">
+<form name="setting">
+<input type="radio" name="keisan_type" value="足し算" checked="checked"> 足し算
+<input type="radio" name="keisan_type" value="引き算"> 引き算 &nbsp;
+正解の絵文字（ユニコード絵文字をコピペ可） <input type="text" size="5" name="emoji"> &nbsp;
+<input type="button" value="最初から" onclick="set()">
+</form>
+</div>
+</body>
+</html>
