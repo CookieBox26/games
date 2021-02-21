@@ -22,6 +22,9 @@ function init() {
 }
 function set() {
     emoji = document.setting.emoji.value;
+    if (emoji == "") {
+        emoji = "&#x1f349;";
+    }
     tashizan = document.setting.keisan_type[0].checked;
     count = 0;
     list_result = [];
@@ -82,9 +85,9 @@ function response(num) {
 <body onload="init()">
 <table>
 <tr>
-<td style="width:400px;padding:20px;"><span id="question"></span>
+<td nowrap style="width:400px;padding:20px;"><span id="question"></span>
 </td>
-<td>
+<td nowrap>
 <form name="question">
 <input type="button" value="1" onClick="response(1)"> 
 <input type="button" value="2" onClick="response(2)"> 
