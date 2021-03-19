@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>keisan2</title>
+<style type="text/css">
+<!--
+body {font-size: 360%; margin:40px;}
+input.num {font-size: 100%; width: 1.6em;}
+td {text-align:center;}
+--> 
+</style>
+<script type="text/javascript"><!--
+emoji = "&#x1f349;";
+tashizan = true;
+function init() {
+    count = 0;
+    list_result = [];
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("message").innerHTML = "";
+    q();
+}
+function set() {
+    emoji = document.setting.emoji.value;
+    if (emoji == "") {
+        emoji = "&#x1f349;";
+    }
+    tashizan = document.setting.keisan_type[0].checked;
+    count = 0;
+    list_result = [];
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("message").innerHTML = "";
+    q();
+}
+function q() {
+    if (tashizan) {
+        x1 = Math.floor(Math.random() * 10) + 1;
+        x2 = Math.floor(Math.random() * 10) + 1;
+        ans = x1 + x2;
+        document.getElementById("question").innerHTML = x1 + " + " + x2 + " =？";
+    } else {
+        x2 = Math.floor(Math.random() * 10) + 1;
+        ans = Math.floor(Math.random() * 10) + 1;
+        x1 = x2 + ans;
+        document.getElementById("question").innerHTML = x1 + " - " + x2 + " =？";
+    }
+}
+function display_result() {
+    s = "<table style=\"border:2px solid black;font-size:80%;border-collapse:collapse;\"><tr>";
+    for(let i = 0; i < list_result.length; i++) {
+        s += "<th style=\"border:2px solid black;width:90px;\">" + (i + 1) + "</th>";
+    }
+    s += "</tr><tr>";
+    for(let i = 0; i < list_result.length; i++) {
+        if (list_result[i]) {
+            s += "<td style=\"border:2px solid black;\">" + emoji + "</td>";
+        } else {
+            s += "<td style=\"border:2px solid black;\">×</td>";
+        }
+    }
+    s += "</tr></table>";
+    document.getElementById("result").innerHTML = s;
+}
+function response(num) {
+    if (count == 10) {
+        return;
+    }
+    list_result.push(num == ans);
+    display_result();
+    count += 1;
+    if (count == 10) {
+        points = 0;
+        for(let i = 0; i < list_result.length; i++) {
+            if (list_result[i]) {
+                points += 1;
+            }
+        }
+        document.getElementById("message").innerHTML = points + "点でした";
+    } else {
+        q();
+    }
+}
+// --></script>
+</head>
+<body onload="init()">
+<table>
+<tr>
+<td nowrap style="width:400px;padding:20px;"><span id="question"></span>
+</td>
+<td nowrap>
+<form name="question">
+<input type="button" class="num" value="1" onClick="response(1)"> 
+<input type="button" class="num" value="2" onClick="response(2)"> 
+<input type="button" class="num" value="3" onClick="response(3)">
+<input type="button" class="num" value="4" onClick="response(4)"> 
+<input type="button" class="num" value="5" onClick="response(5)"><br> 
+<input type="button" class="num" value="6" onClick="response(6)">
+<input type="button" class="num" value="7" onClick="response(7)"> 
+<input type="button" class="num" value="8" onClick="response(8)"> 
+<input type="button" class="num" value="9" onClick="response(9)">
+<input type="button" class="num" value="10" onClick="response(10)"><br>
+<input type="button" class="num" value="11" onClick="response(11)"> 
+<input type="button" class="num" value="12" onClick="response(12)"> 
+<input type="button" class="num" value="13" onClick="response(13)">
+<input type="button" class="num" value="14" onClick="response(14)"> 
+<input type="button" class="num" value="15" onClick="response(15)"><br> 
+<input type="button" class="num" value="16" onClick="response(16)">
+<input type="button" class="num" value="17" onClick="response(17)"> 
+<input type="button" class="num" value="18" onClick="response(18)"> 
+<input type="button" class="num" value="19" onClick="response(19)">
+<input type="button" class="num" value="20" onClick="response(20)">
+</form>
+</td>
+</tr>
+</table>
+<div style="height:130px;margin:30px 0;" id="result"></div>
+<div style="height:70px;margin:30px 0;" id="message"></div>
+<div style="font-size:14px;background:#f0f0f0;padding:10px;">
+<form name="setting">
+<input type="radio" name="keisan_type" value="足し算" checked="checked"> 足し算
+<input type="radio" name="keisan_type" value="引き算"> 引き算 &nbsp;
+正解の絵文字（ユニコード絵文字をコピペ可） <input type="text" size="5" name="emoji"> &nbsp;
+<input type="button" value="最初から" onclick="set()">
+</form>
+</div>
+</body>
+</html>
