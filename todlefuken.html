@@ -13,11 +13,6 @@ body {
     font-size: 12px;
     letter-spacing: 0.05em;
 }
-@media screen and (max-width: 480px) {
-    body {
-        width: 660px;
-    }
-}
 table {
     border-spacing: 10px;
 }
@@ -31,7 +26,7 @@ table.moji td {
     height: 57px;
 }
 table.moji td.note {
-    font-size: 12px;
+    font-size: 26px;
     border: 0;
     text-align: left;
     vertical-align: top;
@@ -61,7 +56,19 @@ label.helpbutton:before {
 .helpbutton:hover {
     cursor: pointer;
 }
-
+@media screen and (max-width: 480px) {
+table {
+    border-spacing: 6px;
+}
+table.moji td {
+    font-size: 22px;
+    width: 34px;
+    height: 34px;
+}
+table.moji td.note {
+    font-size: 16px;
+}
+}
 --> 
 </style>
 <script type="text/javascript"><!--
@@ -234,7 +241,7 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 </tr>
 <tr>
 <td colspan="4" class="note" style="height: 60px; padding-top: 7px;">
-<div style="font-size: 26px;" id="message"></div>
+<div id="message"></div>
 </td>
 </tr>
 </table>
