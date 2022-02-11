@@ -8,7 +8,7 @@
 body {
     color: #393939;
     font-family: sans-serif;
-    margin: 30px;
+    margin: 20px;
     min-width: 660px;
     font-size: 12px;
     letter-spacing: 0.05em;
@@ -47,7 +47,7 @@ div.helpcontent {
     width: 100%;
     font-size: 12px;
     display: none;
-    padding-top: 5px;
+    padding: 5px 0;
 }
 input.checkhelp {
     display: none;
@@ -64,20 +64,15 @@ label.helpbutton:before {
 }
 @media screen and (max-width: 480px) {
 body {
-    margin: 15px;
-    min-width: 345px;
-    width: 345px;
+    margin: 5px 15px;
+    min-width: 330px;
+    width: 330px;
     font-size: 12px;
     letter-spacing: 0.05em;
     -webkit-text-size-adjust: 100%;
 }
 div.helpbox {
-    margin-left: 0;
-}
-div.helpcontent {
-    font-size: 12px;
-    display: none;
-    padding-top: 5px;
+    margin-left: 4px;
 }
 table.moji {
     border-spacing: 4px;
@@ -87,12 +82,12 @@ table.disp {
     float: left;
 }
 table.moji td {
-    font-size: 18px;
-    width: 27px;
-    height: 27px;
+    font-size: 17px;
+    width: 26px;
+    height: 26px;
 }
 table.moji td.note {
-    font-size: 16px;
+    font-size: 12px;
 }
 }
 --> 
@@ -342,16 +337,16 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 <tr>
 <td id="わ" onClick="input('わ')">わ</td>
 <td class="kara"></td>
-<td id="を" onClick="input('を')">を</td>
 <td class="kara"></td>
-<td id="ん" onClick="input('ん')">ん</td>
+<td class="kara"></td>
+<td id="を" onClick="input('を')">を</td>
 </tr>
 <tr>
+<td id="ん" onClick="input('ん')">ん</td>
+<td class="kara"></td>
 <td id="っ" onClick="input('っ')">っ</td>
 <td class="kara"></td>
-<td class="kara"></td>
-<td class="kara"></td>
-<td class="kara"></td>
+<td id="ー" onClick="input('ー')">ー</td>
 </tr>
 <tr>
 <td id="ゃ" onClick="input('ゃ')">ゃ</td>
