@@ -26,17 +26,97 @@ table.moji td {
 --> 
 </style>
 <script type="text/javascript"><!--
-cursor = 1;
+cursor = 0;
+cursor_min = 0;
+cursor_max = 4;
+finished = false;
+const kens = [
+  'おきなわ',
+  'ふくおか', 'さが　　', 'ながさき', 'くまもと', 'おおいた', 'みやざき', 'かごしま',
+  'やまぐち', 'ひろしま', 'おかやま', 'とっとり', 'しまね　',
+  'かがわ　', 'とくしま', 'えひめ　', 'こうち　',
+  'みえ　　', 'しが　　', 'きょうと', 'おおさか', 'ひょうご', 'なら　　', 'わかやま',
+  'にいがた', 'とやま　', 'いしかわ', 'ふくい　', 'やまなし', 'ながの　', 'ぎふ　　', 'しずおか', 'あいち　',
+  'いばらき', 'とちぎ　', 'ぐんま　', 'さいたま', 'ちば　　', 'かながわ',
+  'あおもり', 'いわて　', 'みやぎ　', 'あきた　', 'やまがた', 'ふくしま'
+];
+index_answer = Math.floor(Math.random() * 45);
+answer = kens[index_answer];
 function del() {
-  if (cursor == 1) {
+  if (finished) {
+      return;
+  }
+  if (cursor == cursor_min) {
       return;
   }
   cursor -= 1;
   document.getElementById(cursor).innerHTML = '';
+  document.getElementById('message').innerHTML = '';
 }
 function input(moji) {
+  if (finished) {
+      return;
+  }
+  if (cursor == cursor_max) {
+      return;
+  }
   document.getElementById(cursor).innerHTML = moji;
+  document.getElementById('message').innerHTML = '';
   cursor += 1;
+}
+function check() {
+  memo = 0;
+  while (cursor % 4 != 0) {
+      input('　');
+      memo += 1;
+  }
+  pred = '';
+  for(let i = 0; i < 4; i++) {
+      pred += document.getElementById(cursor - 4 + i).innerHTML;
+  }
+  if (!kens.includes(pred)) {
+      document.getElementById('message').innerHTML = 'その県はないです。';
+      cursor -= memo;
+      return;
+  }
+  cursor_min = cursor;
+  cursor_max = cursor + 4;
+  for(let i = 0; i < 4; i++) {
+      p = pred.charAt(i);
+      if (p == answer.charAt(i)) {
+          document.getElementById(cursor - 4 + i).style.background = '#65ab31';
+          document.getElementById(cursor - 4 + i).style.color = 'white';
+          if (p != '　') {
+              document.getElementById(p).style.background = '#65ab31';
+              document.getElementById(p).style.color = 'white';
+          }
+      } else if (answer.indexOf(p) != -1) {
+          document.getElementById(cursor - 4 + i).style.background = '#fcc800';
+          document.getElementById(cursor - 4 + i).style.color = 'white';
+          if (p != '　') {
+              document.getElementById(p).style.background = '#fcc800';
+              document.getElementById(p).style.color = 'white';
+          }
+      } else {
+          document.getElementById(cursor - 4 + i).style.background = 'gray';
+          document.getElementById(cursor - 4 + i).style.color = 'white';
+          if (p != '　') {
+              document.getElementById(p).style.background = 'gray';
+              document.getElementById(p).style.color = 'white';
+          }
+      }
+  }
+  if (pred == answer) {
+      document.getElementById('message').innerHTML = '正解です！';
+      finished = true;
+      return;
+  }
+  if (cursor == 32) {
+      document.getElementById('message').innerHTML = '正解は' + answer + 'です。';
+      finished = true;
+      return;
+  }
+  document.getElementById('message').innerHTML = '違います。';
 }
 // -->
 </script>
@@ -49,34 +129,121 @@ function input(moji) {
 
 <table class="moji">
 <tr>
+<td id="0"></td>
 <td id="1"></td>
 <td id="2"></td>
 <td id="3"></td>
-<td id="4"></td>
 </tr>
 <tr>
+<td id="4"></td>
 <td id="5"></td>
 <td id="6"></td>
 <td id="7"></td>
-<td id="8"></td>
 </tr>
 <tr>
+<td id="8"></td>
 <td id="9"></td>
 <td id="10"></td>
 <td id="11"></td>
-<td id="12"></td>
 </tr>
 <tr>
+<td id="12"></td>
 <td id="13"></td>
 <td id="14"></td>
 <td id="15"></td>
-<td id="16"></td>
 </tr>
 <tr>
+<td id="16"></td>
 <td id="17"></td>
 <td id="18"></td>
 <td id="19"></td>
+</tr>
+<tr>
 <td id="20"></td>
+<td id="21"></td>
+<td id="22"></td>
+<td id="23"></td>
+</tr>
+<tr>
+<td id="24"></td>
+<td id="25"></td>
+<td id="26"></td>
+<td id="27"></td>
+</tr>
+<tr>
+<td id="28"></td>
+<td id="29"></td>
+<td id="30"></td>
+<td id="31"></td>
+</tr>
+</table>
+<div style="margin:10px;font-size:26px;letter-spacing:0.05em;" id="message"></div>
+</td>
+<td style="vertical-align: top;">
+
+<table class="moji">
+<tr>
+<td id="あ" onClick="input('あ')">あ</td>
+<td id="い" onClick="input('い')">い</td>
+<td id="う" onClick="input('う')">う</td>
+<td id="え" onClick="input('え')">え</td>
+<td id="お" onClick="input('お')">お</td>
+</tr>
+<tr>
+<td id="か" onClick="input('か')">か</td>
+<td id="き" onClick="input('き')">き</td>
+<td id="く" onClick="input('く')">く</td>
+<td id="け" onClick="input('け')">け</td>
+<td id="こ" onClick="input('こ')">こ</td>
+</tr>
+<tr>
+<td id="さ" onClick="input('さ')">さ</td>
+<td id="し" onClick="input('し')">し</td>
+<td id="す" onClick="input('す')">す</td>
+<td id="せ" onClick="input('せ')">せ</td>
+<td id="そ" onClick="input('そ')">そ</td>
+</tr>
+<tr>
+<td id="た" onClick="input('た')">た</td>
+<td id="ち" onClick="input('ち')">ち</td>
+<td id="つ" onClick="input('つ')">つ</td>
+<td id="て" onClick="input('て')">て</td>
+<td id="と" onClick="input('と')">と</td>
+</tr>
+<tr>
+<td id="な" onClick="input('な')">な</td>
+<td id="に" onClick="input('に')">に</td>
+<td id="ぬ" onClick="input('ぬ')">ぬ</td>
+<td id="ね" onClick="input('ね')">ね</td>
+<td id="の" onClick="input('の')">の</td>
+</tr>
+<tr>
+<td id="は" onClick="input('は')">は</td>
+<td id="ひ" onClick="input('ひ')">ひ</td>
+<td id="ふ" onClick="input('ふ')">ふ</td>
+<td id="へ" onClick="input('へ')">へ</td>
+<td id="ほ" onClick="input('ほ')">ほ</td>
+</tr>
+<tr>
+<td id="ま" onClick="input('ま')">ま</td>
+<td id="み" onClick="input('み')">み</td>
+<td id="む" onClick="input('む')">む</td>
+<td id="め" onClick="input('め')">め</td>
+<td id="も" onClick="input('も')">も</td>
+</tr>
+<tr>
+<td id="や" onClick="input('や')">や</td>
+<td></td>
+<td id="ゆ" onClick="input('ゆ')">ゆ</td>
+<td></td>
+<td id="よ" onClick="input('よ')">よ</td>
+</tr>
+<tr>
+<td id="ら" onClick="input('ら')">ら</td>
+<td id="り" onClick="input('り')">り</td>
+<td id="る" onClick="input('る')">る</td>
+<td id="れ" onClick="input('れ')">れ</td>
+<td id="ろ" onClick="input('ろ')">ろ</td>
 </tr>
 </table>
 
@@ -85,128 +252,62 @@ function input(moji) {
 
 <table class="moji">
 <tr>
-<td onClick="input('あ')">あ</td>
-<td onClick="input('い')">い</td>
-<td onClick="input('う')">う</td>
-<td onClick="input('え')">え</td>
-<td onClick="input('お')">お</td>
-</tr>
-<tr>
-<td onClick="input('か')">か</td>
-<td onClick="input('き')">き</td>
-<td onClick="input('く')">く</td>
-<td onClick="input('け')">け</td>
-<td onClick="input('こ')">こ</td>
-</tr>
-<tr>
-<td onClick="input('さ')">さ</td>
-<td onClick="input('し')">し</td>
-<td onClick="input('す')">す</td>
-<td onClick="input('せ')">せ</td>
-<td onClick="input('そ')">そ</td>
-</tr>
-<tr>
-<td onClick="input('た')">た</td>
-<td onClick="input('ち')">ち</td>
-<td onClick="input('つ')">つ</td>
-<td onClick="input('て')">て</td>
-<td onClick="input('と')">と</td>
-</tr>
-<tr>
-<td onClick="input('な')">な</td>
-<td onClick="input('に')">に</td>
-<td onClick="input('ぬ')">ぬ</td>
-<td onClick="input('ね')">ね</td>
-<td onClick="input('の')">の</td>
-</tr>
-<tr>
-<td onClick="input('は')">は</td>
-<td onClick="input('ひ')">ひ</td>
-<td onClick="input('ふ')">ふ</td>
-<td onClick="input('へ')">へ</td>
-<td onClick="input('ほ')">ほ</td>
-</tr>
-<tr>
-<td onClick="input('ま')">ま</td>
-<td onClick="input('み')">み</td>
-<td onClick="input('む')">む</td>
-<td onClick="input('め')">め</td>
-<td onClick="input('も')">も</td>
-</tr>
-<tr>
-<td onClick="input('や')">や</td>
+<td id="わ" onClick="input('わ')">わ</td>
 <td></td>
-<td onClick="input('ゆ')">ゆ</td>
+<td id="を" onClick="input('を')">を</td>
 <td></td>
-<td onClick="input('よ')">よ</td>
+<td id="ん" onClick="input('ん')">ん</td>
 </tr>
 <tr>
-<td onClick="input('ら')">ら</td>
-<td onClick="input('り')">り</td>
-<td onClick="input('る')">る</td>
-<td onClick="input('れ')">れ</td>
-<td onClick="input('ろ')">ろ</td>
-</tr>
-</table>
-
-</td>
-<td style="vertical-align: top;">
-
-<table class="moji">
-<tr>
-<td onClick="input('わ')">わ</td>
-<td></td>
-<td onClick="input('を')">を</td>
-<td></td>
-<td onClick="input('ん')">ん</td>
-</tr>
-<tr>
-<td onClick="input('っ')">っ</td>
+<td id="っ" onClick="input('っ')">っ</td>
 <td></td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td onClick="input('ゃ')">ゃ</td>
+<td id="ゃ" onClick="input('ゃ')">ゃ</td>
 <td></td>
-<td onClick="input('ゅ')">ゅ</td>
+<td id="ゅ" onClick="input('ゅ')">ゅ</td>
 <td></td>
-<td onClick="input('ょ')">ょ</td>
+<td id="ょ" onClick="input('ょ')">ょ</td>
 </tr>
 <tr>
-<td onClick="input('が')">が</td>
-<td onClick="input('ぎ')">ぎ</td>
-<td onClick="input('ぐ')">ぐ</td>
-<td onClick="input('げ')">げ</td>
-<td onClick="input('ご')">ご</td>
+<td id="が" onClick="input('が')">が</td>
+<td id="ぎ" onClick="input('ぎ')">ぎ</td>
+<td id="ぐ" onClick="input('ぐ')">ぐ</td>
+<td id="げ" onClick="input('げ')">げ</td>
+<td id="ご" onClick="input('ご')">ご</td>
 </tr>
 <tr>
-<td onClick="input('ざ')">ざ</td>
-<td onClick="input('じ')">じ</td>
-<td onClick="input('ず')">ず</td>
-<td onClick="input('ぜ')">ぜ</td>
-<td onClick="input('ぞ')">ぞ</td>
+<td id="ざ" onClick="input('ざ')">ざ</td>
+<td id="じ" onClick="input('じ')">じ</td>
+<td id="ず" onClick="input('ず')">ず</td>
+<td id="ぜ" onClick="input('ぜ')">ぜ</td>
+<td id="ぞ" onClick="input('ぞ')">ぞ</td>
 </tr>
 <tr>
-<td onClick="input('だ')">だ</td>
-<td onClick="input('ぢ')">ぢ</td>
-<td onClick="input('づ')">づ</td>
-<td onClick="input('で')">で</td>
-<td onClick="input('ど')">ど</td>
+<td id="だ" onClick="input('だ')">だ</td>
+<td id="ぢ" onClick="input('ぢ')">ぢ</td>
+<td id="づ" onClick="input('づ')">づ</td>
+<td id="で" onClick="input('で')">で</td>
+<td id="ど" onClick="input('ど')">ど</td>
 </tr>
 <tr>
-<td onClick="input('ば')">ば</td>
-<td onClick="input('び')">び</td>
-<td onClick="input('ぶ')">ぶ</td>
-<td onClick="input('べ')">べ</td>
-<td onClick="input('ぼ')">ぼ</td>
-</tr>
+<td id="ば" onClick="input('ば')">ば</td>
+<td id="び" onClick="input('び')">び</td>
+<td id="ぶ" onClick="input('ぶ')">ぶ</td>
+<td id="べ" onClick="input('べ')">べ</td>
+<td id="ぼ" onClick="input('ぼ')">ぼ</td>
 <tr>
 <td></td><td></td><td></td><td></td><td></td>
 </tr>
 <tr>
-<td onClick="del()">×</td><td></td><td></td><td></td><td>★</td>
+<td onClick="del()">←</td>
+<td></td>
+<td></td>
+<td></td>
+<td onClick="check()">！</td>
 </tr>
 </table>
 
