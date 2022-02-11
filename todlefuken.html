@@ -42,6 +42,7 @@ const kens = [
 ];
 index_answer = Math.floor(Math.random() * 45);
 answer = kens[index_answer];
+green = [];
 function del() {
   if (finished) {
       return;
@@ -84,6 +85,7 @@ function check() {
   for(let i = 0; i < 4; i++) {
       p = pred.charAt(i);
       if (p == answer.charAt(i)) {
+          green.push(p);
           document.getElementById(cursor - 4 + i).style.background = '#65ab31';
           document.getElementById(cursor - 4 + i).style.color = 'white';
           if (p != '　') {
@@ -94,8 +96,10 @@ function check() {
           document.getElementById(cursor - 4 + i).style.background = '#fcc800';
           document.getElementById(cursor - 4 + i).style.color = 'white';
           if (p != '　') {
-              document.getElementById(p).style.background = '#fcc800';
-              document.getElementById(p).style.color = 'white';
+              if (!green.includes(p)) {
+                  document.getElementById(p).style.background = '#fcc800';
+                  document.getElementById(p).style.color = 'white';
+              }
           }
       } else {
           document.getElementById(cursor - 4 + i).style.background = 'gray';
