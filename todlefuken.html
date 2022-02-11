@@ -5,24 +5,57 @@
 <title>とどるふけん</title>
 <style type="text/css"><!--
 body {
-  font-size: 100%;
-  margin: 30px;
-  width: 1200px;
+    color: #393939;
+    font-family: sans-serif;
+    margin: 30px;
+    min-width: 700px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
 }
-input {font-size: 100%; padding: 0 0.5em;}
 table {
-  border-spacing: 10px;
+    border-spacing: 10px;
 }
 table.moji td {
-  margin: 3px;
-  font-size: 36px;
-  font-weight: bold;
-  border: 1px solid #4d4d4d;
-  text-align:center;
-  vertical-align: bottom;
-  width: 57px;
-  height: 57px;
+    font-size: 36px;
+    font-weight: bold;
+    border: 1px solid #393939;
+    text-align:center;
+    vertical-align: bottom;
+    width: 57px;
+    height: 57px;
 }
+table.moji td.note {
+    font-size: 12px;
+    border: 0;
+    text-align: left;
+    vertical-align: top;
+    font-weight: normal;
+    letter-spacing: 0.05em;
+}
+table.input td:hover {
+    cursor: pointer;
+}
+table.input td.kara:hover {
+    cursor: default;
+}
+div.helpcontent {
+    display: none;
+    padding-top: 5px;
+}
+input.checkhelp {
+    display: none;
+}
+input.checkhelp:checked ~ div.helpcontent { 
+    display: block;
+}
+label.helpbutton:before {
+    content: "ヘルプを表示・非表示";
+    display: inline-block;
+}
+.helpbutton:hover {
+    cursor: pointer;
+}
+
 --> 
 </style>
 <script type="text/javascript"><!--
@@ -31,107 +64,120 @@ cursor_min = 0;
 cursor_max = 4;
 finished = false;
 const kens = [
-  'おきなわ',
-  'ふくおか', 'さが　　', 'ながさき', 'くまもと', 'おおいた', 'みやざき', 'かごしま',
-  'やまぐち', 'ひろしま', 'おかやま', 'とっとり', 'しまね　',
-  'かがわ　', 'とくしま', 'えひめ　', 'こうち　',
-  'みえ　　', 'しが　　', 'きょうと', 'おおさか', 'ひょうご', 'なら　　', 'わかやま',
-  'にいがた', 'とやま　', 'いしかわ', 'ふくい　', 'やまなし', 'ながの　', 'ぎふ　　', 'しずおか', 'あいち　',
-  'いばらき', 'とちぎ　', 'ぐんま　', 'さいたま', 'ちば　　', 'かながわ',
-  'あおもり', 'いわて　', 'みやぎ　', 'あきた　', 'やまがた', 'ふくしま'
+    'おきなわ',
+    'ふくおか', 'さが　　', 'ながさき', 'くまもと', 'おおいた',
+    'みやざき', 'かごしま',
+    'やまぐち', 'ひろしま', 'おかやま', 'とっとり', 'しまね　',
+    'かがわ　', 'とくしま', 'えひめ　', 'こうち　',
+    'みえ　　', 'しが　　', 'きょうと', 'おおさか', 'ひょうご',
+    'なら　　', 'わかやま',
+    'にいがた', 'とやま　', 'いしかわ', 'ふくい　', 'やまなし',
+    'ながの　', 'ぎふ　　', 'しずおか', 'あいち　',
+    'いばらき', 'とちぎ　', 'ぐんま　', 'さいたま', 'ちば　　',
+    'かながわ',
+    'あおもり', 'いわて　', 'みやぎ　', 'あきた　', 'やまがた',
+    'ふくしま'
 ];
 index_answer = Math.floor(Math.random() * 45);
 answer = kens[index_answer];
 green = [];
 function del() {
-  if (finished) {
-      return;
-  }
-  if (cursor == cursor_min) {
-      return;
-  }
-  cursor -= 1;
-  document.getElementById(cursor).innerHTML = '';
-  document.getElementById('message').innerHTML = '';
+    if (finished) {
+        return;
+    }
+    if (cursor == cursor_min) {
+        return;
+    }
+    cursor -= 1;
+    document.getElementById(cursor).innerHTML = '';
+    document.getElementById('message').innerHTML = '';
 }
 function input(moji) {
-  if (finished) {
-      return;
-  }
-  if (cursor == cursor_max) {
-      return;
-  }
-  document.getElementById(cursor).innerHTML = moji;
-  document.getElementById('message').innerHTML = '';
-  cursor += 1;
+    if (finished) {
+        return;
+    }
+    if (cursor == cursor_max) {
+        return;
+    }
+    document.getElementById(cursor).innerHTML = moji;
+    document.getElementById('message').innerHTML = '';
+    cursor += 1;
 }
 function check() {
-  memo = 0;
-  while (cursor % 4 != 0) {
-      input('　');
-      memo += 1;
-  }
-  pred = '';
-  for(let i = 0; i < 4; i++) {
-      pred += document.getElementById(cursor - 4 + i).innerHTML;
-  }
-  if (!kens.includes(pred)) {
-      document.getElementById('message').innerHTML = 'その県はないです。';
-      cursor -= memo;
-      return;
-  }
-  cursor_min = cursor;
-  cursor_max = cursor + 4;
-  for(let i = 0; i < 4; i++) {
-      p = pred.charAt(i);
-      if (p == answer.charAt(i)) {
-          green.push(p);
-          document.getElementById(cursor - 4 + i).style.background = '#65ab31';
-          document.getElementById(cursor - 4 + i).style.color = 'white';
-          if (p != '　') {
-              document.getElementById(p).style.background = '#65ab31';
-              document.getElementById(p).style.color = 'white';
-          }
-      } else if (answer.indexOf(p) != -1) {
-          document.getElementById(cursor - 4 + i).style.background = '#fcc800';
-          document.getElementById(cursor - 4 + i).style.color = 'white';
-          if (p != '　') {
-              if (!green.includes(p)) {
-                  document.getElementById(p).style.background = '#fcc800';
-                  document.getElementById(p).style.color = 'white';
-              }
-          }
-      } else {
-          document.getElementById(cursor - 4 + i).style.background = 'gray';
-          document.getElementById(cursor - 4 + i).style.color = 'white';
-          if (p != '　') {
-              document.getElementById(p).style.background = 'gray';
-              document.getElementById(p).style.color = 'white';
-          }
-      }
-  }
-  if (pred == answer) {
-      document.getElementById('message').innerHTML = '正解です！';
-      finished = true;
-      return;
-  }
-  if (cursor == 32) {
-      document.getElementById('message').innerHTML = '正解は' + answer + 'です。';
-      finished = true;
-      return;
-  }
-  document.getElementById('message').innerHTML = '違います。';
+    memo = 0;
+    while (cursor % 4 != 0) {
+        input('　');
+        memo += 1;
+    }
+    pred = '';
+    for(let i = 0; i < 4; i++) {
+        pred += document.getElementById(cursor - 4 + i).innerHTML;
+    }
+    if (!kens.includes(pred)) {
+        document.getElementById('message').innerHTML = 'その県はないです。';
+        cursor -= memo;
+        return;
+    }
+    cursor_min = cursor;
+    cursor_max = cursor + 4;
+    for(let i = 0; i < 4; i++) {
+        p = pred.charAt(i);
+        if (p == answer.charAt(i)) {
+            green.push(p);
+            document.getElementById(cursor - 4 + i).style.background = '#65ab31';
+            document.getElementById(cursor - 4 + i).style.color = 'white';
+            if (p != '　') {
+                document.getElementById(p).style.background = '#65ab31';
+                document.getElementById(p).style.color = 'white';
+            }
+        } else if (answer.indexOf(p) != -1) {
+            document.getElementById(cursor - 4 + i).style.background = '#fcc800';
+            document.getElementById(cursor - 4 + i).style.color = 'white';
+            if (p != '　') {
+                if (!green.includes(p)) {
+                    document.getElementById(p).style.background = '#fcc800';
+                    document.getElementById(p).style.color = 'white';
+                }
+            }
+        } else {
+            document.getElementById(cursor - 4 + i).style.background = 'gray';
+            document.getElementById(cursor - 4 + i).style.color = 'white';
+            if (p != '　') {
+                document.getElementById(p).style.background = 'gray';
+                document.getElementById(p).style.color = 'white';
+            }
+        }
+    }
+    if (pred == answer) {
+        document.getElementById('message').innerHTML = '正解です！';
+        finished = true;
+        return;
+    }
+    if (cursor == 32) {
+        document.getElementById('message').innerHTML = '正解は' + answer + 'です。';
+        finished = true;
+        return;
+    }
+    document.getElementById('message').innerHTML = '違います。';
 }
 // -->
 </script>
 </head>
 <body>
 
-<table>
-<tr>
-<td style="vertical-align: top;">
+<div class="note" style="margin-left: 10px;">
+<label class="helpbutton">
+<input type="checkbox" class="checkhelp">
+<div class="helpcontent">
+<a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> に着想を得た都道府県当てゲームです（<a href="https://github.com/CookieBox26/games/blob/main/todlefuken.html">ソース</a>）。ブラウザの JavaScript で動作しますので自己責任で遊んでください。<br/>
+北海道と東京を除く45府県のいずれかがランダムに正解になります。45府県以外の文字列は入力できません。<br/>
+何か問題がありましたらソースリポジトリの <a href="https://github.com/CookieBox26/games/issues">Issues</a> か <a href="https://twitter.com/CookieBox26">twitter.com/CookieBox26</a> までご連絡ください。<br/>
+This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>. Contact me: <a href="https://github.com/CookieBox26/games/issues">Issues</a> or <a href="https://twitter.com/CookieBox26">twitter.com/CookieBox26</a>
+</div>
+</label>
+</div>
 
-<table class="moji">
+<table class="moji" style="float: left;">
 <tr>
 <td id="0"></td>
 <td id="1"></td>
@@ -180,12 +226,14 @@ function check() {
 <td id="30"></td>
 <td id="31"></td>
 </tr>
-</table>
-<div style="margin:10px;font-size:26px;letter-spacing:0.05em;" id="message"></div>
+<tr>
+<td colspan="4" class="note" style="height: 60px; padding-top: 7px;">
+<div style="font-size: 26px;" id="message"></div>
 </td>
-<td style="vertical-align: top;">
+</tr>
+</table>
 
-<table class="moji">
+<table class="moji input" style="float: left;">
 <tr>
 <td id="あ" onClick="input('あ')">あ</td>
 <td id="い" onClick="input('い')">い</td>
@@ -237,9 +285,9 @@ function check() {
 </tr>
 <tr>
 <td id="や" onClick="input('や')">や</td>
-<td></td>
+<td class="kara"></td>
 <td id="ゆ" onClick="input('ゆ')">ゆ</td>
-<td></td>
+<td class="kara"></td>
 <td id="よ" onClick="input('よ')">よ</td>
 </tr>
 <tr>
@@ -251,29 +299,26 @@ function check() {
 </tr>
 </table>
 
-</td>
-<td style="vertical-align: top;">
-
-<table class="moji">
+<table class="moji input" style="float: left;">
 <tr>
 <td id="わ" onClick="input('わ')">わ</td>
-<td></td>
+<td class="kara"></td>
 <td id="を" onClick="input('を')">を</td>
-<td></td>
+<td class="kara"></td>
 <td id="ん" onClick="input('ん')">ん</td>
 </tr>
 <tr>
 <td id="っ" onClick="input('っ')">っ</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
+<td class="kara"></td>
+<td class="kara"></td>
+<td class="kara"></td>
+<td class="kara"></td>
 </tr>
 <tr>
 <td id="ゃ" onClick="input('ゃ')">ゃ</td>
-<td></td>
+<td class="kara"></td>
 <td id="ゅ" onClick="input('ゅ')">ゅ</td>
-<td></td>
+<td class="kara"></td>
 <td id="ょ" onClick="input('ょ')">ょ</td>
 </tr>
 <tr>
@@ -303,19 +348,20 @@ function check() {
 <td id="ぶ" onClick="input('ぶ')">ぶ</td>
 <td id="べ" onClick="input('べ')">べ</td>
 <td id="ぼ" onClick="input('ぼ')">ぼ</td>
+</tr>
 <tr>
-<td></td><td></td><td></td><td></td><td></td>
+<td id="ぱ" onClick="input('ぱ')">ぱ</td>
+<td id="ぴ" onClick="input('ぴ')">ぴ</td>
+<td id="ぷ" onClick="input('ぷ')">ぷ</td>
+<td id="ぺ" onClick="input('ぺ')">ぺ</td>
+<td id="ぽ" onClick="input('ぽ')">ぽ</td>
 </tr>
 <tr>
 <td onClick="del()">←</td>
-<td></td>
-<td></td>
-<td></td>
+<td class="kara"></td>
+<td class="kara"></td>
+<td class="kara"></td>
 <td onClick="check()">！</td>
-</tr>
-</table>
-
-</td>
 </tr>
 </table>
 
