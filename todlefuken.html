@@ -13,8 +13,9 @@ body {
     font-size: 12px;
     letter-spacing: 0.05em;
 }
-table {
+table.moji {
     border-spacing: 10px;
+    float: left;
 }
 table.moji td {
     font-size: 36px;
@@ -39,7 +40,11 @@ table.input td:hover {
 table.input td.kara:hover {
     cursor: default;
 }
+div.helpbox {
+    margin-left: 10px;
+}
 div.helpcontent {
+    width: 100%;
     font-size: 12px;
     display: none;
     padding-top: 5px;
@@ -60,23 +65,31 @@ label.helpbutton:before {
 @media screen and (max-width: 480px) {
 body {
     margin: 15px;
-    width: 300px;
+    min-width: 345px;
+    width: 345px;
     font-size: 12px;
     letter-spacing: 0.05em;
     -webkit-text-size-adjust: 100%;
+}
+div.helpbox {
+    margin-left: 0;
 }
 div.helpcontent {
     font-size: 12px;
     display: none;
     padding-top: 5px;
 }
-table {
-    border-spacing: 5px;
+table.moji {
+    border-spacing: 4px;
+    float: none;
+}
+table.disp {
+    float: left;
 }
 table.moji td {
-    font-size: 20px;
-    width: 28px;
-    height: 28px;
+    font-size: 18px;
+    width: 27px;
+    height: 27px;
 }
 table.moji td.note {
     font-size: 16px;
@@ -191,7 +204,7 @@ function check() {
 </head>
 <body>
 
-<div class="note" style="margin-left: 10px;">
+<div class="helpbox">
 <label class="helpbutton">
 <input type="checkbox" class="checkhelp">
 <div class="helpcontent">
@@ -203,7 +216,7 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 </label>
 </div>
 
-<table class="moji" style="float: left;">
+<table class="moji disp">
 <tr>
 <td id="0"></td>
 <td id="1"></td>
@@ -259,7 +272,7 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 </tr>
 </table>
 
-<table class="moji input" style="float: left;">
+<table class="moji input">
 <tr>
 <td id="あ" onClick="input('あ')">あ</td>
 <td id="い" onClick="input('い')">い</td>
@@ -325,7 +338,7 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 </tr>
 </table>
 
-<table class="moji input" style="float: left;">
+<table class="moji input">
 <tr>
 <td id="わ" onClick="input('わ')">わ</td>
 <td class="kara"></td>
