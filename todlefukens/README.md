@@ -5,6 +5,6 @@
 These games are inspired by [Wordle](https://www.nytimes.com/games/wordle/index.html). 
 Contact me: Issues or [twitter.com/CookieBox26](https://twitter.com/CookieBox26)
 
-- [都道府県](https://cookiebox26.github.io/games/todlefkens/todlefuken.html)
-- [国](https://cookiebox26.github.io/games/todlefkens/worldle.html)
-- [元素](https://cookiebox26.github.io/games/todlefkens/vanderwardle.html)
+- [都道府県](https://cookiebox26.github.io/games/todlefukens/todlefuken.html)
+- [国](https://cookiebox26.github.io/games/todlefukens/worldle.html)
+- [元素](https://cookiebox26.github.io/games/todlefukens/vanderwardle.html)
