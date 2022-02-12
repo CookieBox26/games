@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>わーるどる</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css"><!--
+--> 
+</style>
+<script type="text/javascript"><!--
+wordlen = 5;  // 単語長
+round = 8;  // 最大試行回数
+const data = [  // 正解候補データ ( ＝ 入力可能データ)
+    'どいつ　　', 'ふらんす　', 'いたりあ　', 'おらんだ　', 'べるぎー　',
+    'でんまーく', 'すぺいん　', 'ぽるとがる', 'ぎりしゃ　', 'ちぇこ　　',
+    'はんがりー', 'ぽーらんど', 'すろばきあ', 'えすとにあ', 'すろべにあ',
+    'らとびあ　', 'りとあにあ', 'にほん　　', 'いぎりす　', 'あめりか　',
+    'かなだ　　', 'めきしこ　', 'すいす　　', 'のるうぇー', 'とるこ　　',
+    'かんこく　', 'ちり　　　', 'いすらえる', 'ころんびあ', 'こすたりか'
+];
+warningmessage = 'その国は未対応です。';  // 不正解時メッセージ
+gamedesc1 = '国名当てゲーム';
+gamedesc2 = '2022年2月現在の OECD 加盟国のうち、かな表記が5文字以内の ';
+gamedesc2 += String(data.length) + ' ヶ国のいずれかがランダムに正解になります。';
+gamedesc2 += '認識する表記はこのページのソースを確認してください。'
+index_answer = Math.floor(Math.random() * data.length);  
+answer = data[index_answer];
+cursor = 0;
+cursor_min = 0;
+cursor_max = wordlen;
+finished = false;
+green = [];
+// -->
+</script>
+<script src="./common.js"></script>
+</head>
+<body onload="init()">
+
+<div class="helpbox">
+<label class="helpbutton">
+<input type="checkbox" class="checkhelp">
+<div class="helpcontent" id="help"></div>
+</label>
+</div>
+
+<table class="moji disp" id="maindisp"></table>
+<table class="moji input" id="keybord1"></table>
+<table class="moji input" id="keybord2"></table>
+
+</body>
+</html>

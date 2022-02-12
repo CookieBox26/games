@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>とどるふけん</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css"><!--
+--> 
+</style>
+<script type="text/javascript"><!--
+wordlen = 4;  // 単語長
+round = 8;  // 最大試行回数
+const data = [  // 正解候補データ ( ＝ 入力可能データ)
+    'おきなわ',
+    'ふくおか', 'さが　　', 'ながさき', 'くまもと', 'おおいた',
+    'みやざき', 'かごしま',
+    'やまぐち', 'ひろしま', 'おかやま', 'とっとり', 'しまね　',
+    'かがわ　', 'とくしま', 'えひめ　', 'こうち　',
+    'みえ　　', 'しが　　', 'きょうと', 'おおさか', 'ひょうご',
+    'なら　　', 'わかやま',
+    'にいがた', 'とやま　', 'いしかわ', 'ふくい　', 'やまなし',
+    'ながの　', 'ぎふ　　', 'しずおか', 'あいち　',
+    'いばらき', 'とちぎ　', 'ぐんま　', 'さいたま', 'ちば　　',
+    'かながわ',
+    'あおもり', 'いわて　', 'みやぎ　', 'あきた　', 'やまがた',
+    'ふくしま'
+];
+warningmessage = 'その県はないです。';  // 不正解時メッセージ
+gamedesc1 = '都道府県当てゲーム';
+gamedesc2 = '北海道と東京を除く45府県のいずれかがランダムに正解になります。';
+index_answer = Math.floor(Math.random() * data.length);
+answer = data[index_answer];
+cursor = 0;
+cursor_min = 0;
+cursor_max = wordlen;
+finished = false;
+green = [];
+// -->
+</script>
+<script src="./common.js"></script>
+</head>
+<body onload="init()">
+
+<div class="helpbox">
+<label class="helpbutton">
+<input type="checkbox" class="checkhelp">
+<div class="helpcontent" id="help"></div>
+</label>
+</div>
+
+<table class="moji disp" id="maindisp"></table>
+<table class="moji input" id="keybord1"></table>
+<table class="moji input" id="keybord2"></table>
+
+</body>
+</html>

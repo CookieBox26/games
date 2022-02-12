@@ -1,0 +1,102 @@
+body {
+    color: #393939;
+    font-family: sans-serif;
+    margin: 20px;
+    min-width: 660px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+}
+table.moji {
+    border-spacing: 9px;
+    float: left;
+}
+table.moji td {
+    font-size: 36px;
+    font-weight: bold;
+    border: 2px solid #393939;
+    text-align:center;
+    vertical-align: bottom;
+    width: 57px;
+    height: 57px;
+}
+table.moji td.note {
+    font-size: 24px;
+    border: 0;
+    text-align: left;
+    vertical-align: top;
+    font-weight: normal;
+    letter-spacing: 0.05em;
+    height: 60px;
+    padding-top: 7px;
+}
+table.input td:hover {
+    cursor: pointer;
+}
+table.input td.kara {
+    border: 0;
+}
+table.input td.kara:hover {
+    cursor: default;
+}
+div.helpbox {
+    margin-left: 9px;
+}
+div.helpcontent {
+    width: 100%;
+    font-size: 12px;
+    display: none;
+    padding: 3px 0;
+}
+input.checkhelp {
+    display: none;
+}
+input.checkhelp:checked ~ div.helpcontent { 
+    display: block;
+}
+label.helpbutton:before {
+    content: "ヘルプを表示・非表示";
+    display: inline-block;
+}
+.helpbutton:hover {
+    cursor: pointer;
+}
+@media screen and (max-width: 480px) {
+body {
+    margin: 5px 15px;
+    min-width: 330px;
+    width: 330px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    -webkit-text-size-adjust: 100%;
+}
+div.helpbox {
+    margin-left: 4px;
+}
+div.helpcontent {
+    font-size: 10px;
+    padding: 3px 0;
+    width: 300px;
+}
+table.moji {
+    border-spacing: 4px;
+    float: none;
+}
+table.disp {
+    float: left;
+}
+table.moji td {
+    padding: 0;
+    border: 1px solid #393939;
+    font-size: 17px;
+    width: 27px;
+    min-width: 27px;
+    max-width: 27px;
+    height: 27px;
+    min-height: 27px;
+    max-height: 27px;
+    vertical-align: middle;
+}
+table.moji td.note {
+    font-size: 12px;
+}
+}
