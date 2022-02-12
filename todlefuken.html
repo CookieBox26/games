@@ -14,13 +14,13 @@ body {
     letter-spacing: 0.05em;
 }
 table.moji {
-    border-spacing: 10px;
+    border-spacing: 9px;
     float: left;
 }
 table.moji td {
     font-size: 36px;
     font-weight: bold;
-    border: 1px solid #393939;
+    border: 2px solid #393939;
     text-align:center;
     vertical-align: bottom;
     width: 57px;
@@ -37,17 +37,20 @@ table.moji td.note {
 table.input td:hover {
     cursor: pointer;
 }
+table.input td.kara {
+    border: 0;
+}
 table.input td.kara:hover {
     cursor: default;
 }
 div.helpbox {
-    margin-left: 10px;
+    margin-left: 9px;
 }
 div.helpcontent {
     width: 100%;
     font-size: 12px;
     display: none;
-    padding: 5px 0;
+    padding: 3px 0;
 }
 input.checkhelp {
     display: none;
@@ -65,14 +68,18 @@ label.helpbutton:before {
 @media screen and (max-width: 480px) {
 body {
     margin: 5px 15px;
-    min-width: 330px;
-    width: 330px;
-    font-size: 12px;
+    min-width: 300px;
+    width: 300px;
+    font-size: 10px;
     letter-spacing: 0.05em;
     -webkit-text-size-adjust: 100%;
 }
 div.helpbox {
     margin-left: 4px;
+}
+div.helpcontent {
+    font-size: 10px;
+    padding: 3px 0;
 }
 table.moji {
     border-spacing: 4px;
@@ -82,12 +89,14 @@ table.disp {
     float: left;
 }
 table.moji td {
+    border: 1px solid #393939;
     font-size: 17px;
     width: 26px;
     height: 26px;
+    vertical-align: center;
 }
 table.moji td.note {
-    font-size: 12px;
+    font-size: 13px;
 }
 }
 --> 
@@ -337,23 +346,16 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 <tr>
 <td id="わ" onClick="input('わ')">わ</td>
 <td class="kara"></td>
-<td class="kara"></td>
-<td class="kara"></td>
 <td id="を" onClick="input('を')">を</td>
-</tr>
-<tr>
+<td class="kara"></td>
 <td id="ん" onClick="input('ん')">ん</td>
-<td class="kara"></td>
-<td id="っ" onClick="input('っ')">っ</td>
-<td class="kara"></td>
-<td id="ー" onClick="input('ー')">ー</td>
 </tr>
 <tr>
+<td id="っ" onClick="input('っ')">っ</td>
 <td id="ゃ" onClick="input('ゃ')">ゃ</td>
-<td class="kara"></td>
 <td id="ゅ" onClick="input('ゅ')">ゅ</td>
-<td class="kara"></td>
 <td id="ょ" onClick="input('ょ')">ょ</td>
+<td id="ー" onClick="input('ー')">ー</td>
 </tr>
 <tr>
 <td id="が" onClick="input('が')">が</td>
@@ -391,7 +393,14 @@ This is a game inspired by <a href="https://www.nytimes.com/games/wordle/index.h
 <td id="ぽ" onClick="input('ぽ')">ぽ</td>
 </tr>
 <tr>
-<td onClick="del()">←</td>
+<td id="ぁ" onClick="input('ぁ')">ぁ</td>
+<td id="ぃ" onClick="input('ぃ')">ぃ</td>
+<td id="ぅ" onClick="input('ぅ')">ぅ</td>
+<td id="ぇ" onClick="input('ぇ')">ぇ</td>
+<td id="ぉ" onClick="input('ぉ')">ぉ</td>
+</tr>
+<tr>
+<td onClick="del()">×</td>
 <td class="kara"></td>
 <td class="kara"></td>
 <td class="kara"></td>
