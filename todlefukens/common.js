@@ -82,6 +82,9 @@ function init() {
     helpmessage += 'This is a game inspired by ' + wordlelink + '. Contact me: ';
     helpmessage += issuelink + ' or ' + twitterlink
     document.getElementById('help').innerHTML = helpmessage;
+    if (window.matchMedia && window.matchMedia('(max-device-width: 480px)').matches) {
+        document.getElementById('help').style.width = String((5 + wordlen)* 33) + 'px';
+    }
 }
 
 function del() {
