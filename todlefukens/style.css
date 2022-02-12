@@ -62,9 +62,9 @@ label.helpbutton:before {
 }
 @media screen and (max-width: 480px) {
 body {
-    margin: 5px 10px;
-    min-width: 390px;
-    width: 390px;
+    margin: 5px;
+    min-width: 480px;
+    width: 480px;
     font-size: 10px;
     letter-spacing: 0.05em;
     -webkit-text-size-adjust: 100%;
