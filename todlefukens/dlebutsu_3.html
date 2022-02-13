@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>どるぶつ３</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+<style type="text/css"><!--
+--> 
+</style>
+<script type="text/javascript"><!--
+wordlen = 3;  // 単語長
+round = 5;  // 最大試行回数
+const data = [  // 正解候補データ ( ＝ 入力可能データ)
+    'ＢＡＴ', 'ＣＡＴ', 'ＣＯＷ', 'ＤＯＧ', 'ＦＯＸ',
+    'ＯＸ　', 'ＰＩＧ', 'ＲＡＴ'
+];
+warningmessage = 'その動物はいないです。';
+gamedesc1 = '単語当てゲーム';
+gamedesc2 = '動物を表すアルファベット3文字以内の英単語 ';
+gamedesc2 += String(data.length) + ' 個のいずれかがランダムに正解になります。';
+gamedesc2 += '認識する単語はこのページのソースを確認してください。';
+index_answer = Math.floor(Math.random() * data.length);  
+answer = data[index_answer];
+cursor = 0;
+cursor_min = 0;
+cursor_max = wordlen;
+finished = false;
+green = [];
+// -->
+</script>
+<script src="./common.js"></script>
+</head>
+<body onload="init()">
+
+<div class="helpbox">
+<label class="helpbutton">
+<input type="checkbox" class="checkhelp">
+<div class="helpcontent" id="help"></div>
+</label>
+</div>
+
+<table class="moji disp" id="maindisp"></table>
+<table class="moji input" id="keybord1"></table>
+<table class="moji input" id="keybord2"></table>
+
+</body>
+</html>
