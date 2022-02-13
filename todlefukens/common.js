@@ -94,7 +94,9 @@ function init(en = false) {
     document.getElementById('maindisp').appendChild(tbody);
 
     /* キーボードの生成 */
+    keybordlen = 5;
     if (en) {
+        keybordlen = 3;
         createKeybordEn();
     } else {
         createKeybord();
@@ -113,8 +115,9 @@ function init(en = false) {
     helpmessage += 'This is a game inspired by ' + wordlelink + '. Contact me: ';
     helpmessage += issuelink + ' or ' + twitterlink
     document.getElementById('help').innerHTML = helpmessage;
+
     if (window.matchMedia && window.matchMedia('(max-device-width: 480px)').matches) {
-        document.getElementById('help').style.width = String((5 + wordlen)* 33) + 'px';
+        document.getElementById('help').style.width = String((keybordlen + wordlen)* 33) + 'px';
     }
 }
 
