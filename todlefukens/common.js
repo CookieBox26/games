@@ -1,7 +1,7 @@
 /* キーボードの行の生成 */
 function createKeybordRow(s) {
     row = document.createElement('tr');
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < s.length; i++) {
         c = s.charAt(i);
         td = document.createElement('td');
         if (c == '　') {
@@ -22,29 +22,8 @@ function createKeybordRow(s) {
     return row;
 }
 
-function init() {
-    /* 回答欄の生成 */
-    tbody = document.createElement('tbody');
-    for(let j = 0; j < round; j++) {
-        row = document.createElement('tr');
-        for(let i = 0; i < wordlen; i++) {
-            td = document.createElement('td');
-            td.id = wordlen * j + i;
-            row.appendChild(td);
-        }
-        tbody.appendChild(row);
-    }
-    row = document.createElement('tr');
-    td = document.createElement('td');
-    td.colSpan = wordlen;
-    td.className = 'note';
-    div = document.createElement('div');
-    div.id = 'message';
-    td.appendChild(div);
-    row.appendChild(td);
-    tbody.appendChild(row);
-    document.getElementById('maindisp').appendChild(tbody);
-
+/* キーボードの生成 */
+function createKeybord() {
     /* キーボード1の生成 */
     keybord1array = [
         'あいうえお', 'かきくけこ', 'さしすせそ', 'たちつてと', 'なにぬねの',
@@ -68,6 +47,58 @@ function init() {
         tbody.appendChild(row);
     }
     document.getElementById('keybord2').appendChild(tbody);
+}
+
+/* キーボードの生成(en) */
+function createKeybordEn() {
+    /* キーボード1の生成 */
+    keybord1array = ['ＡＢＣ', 'ＤＥＦ', 'ＧＨＩ', 'ＪＫＬ', 'ＭＮＯ'];
+    tbody = document.createElement('tbody');
+    for(let j = 0; j < 5; j++) {
+        row = createKeybordRow(keybord1array[j]);
+        tbody.appendChild(row);
+    }
+    document.getElementById('keybord1').appendChild(tbody);
+
+    /* キーボード2の生成 */
+    keybord2array = ['ＰＱＲ', 'ＳＴＵ', 'ＶＷＸ', 'ＹＺ　', '←　！'];
+    tbody = document.createElement('tbody');
+    for(let j = 0; j < 5; j++) {
+        row = createKeybordRow(keybord2array[j]);
+        tbody.appendChild(row);
+    }
+    document.getElementById('keybord2').appendChild(tbody);
+}
+
+function init(en = false) {
+    /* 回答欄の生成 */
+    tbody = document.createElement('tbody');
+    for(let j = 0; j < round; j++) {
+        row = document.createElement('tr');
+        for(let i = 0; i < wordlen; i++) {
+            td = document.createElement('td');
+            td.id = wordlen * j + i;
+            row.appendChild(td);
+        }
+        tbody.appendChild(row);
+    }
+    row = document.createElement('tr');
+    td = document.createElement('td');
+    td.colSpan = wordlen;
+    td.className = 'note';
+    div = document.createElement('div');
+    div.id = 'message';
+    td.appendChild(div);
+    row.appendChild(td);
+    tbody.appendChild(row);
+    document.getElementById('maindisp').appendChild(tbody);
+
+    /* キーボードの生成 */
+    if (en) {
+        createKeybordEn();
+    } else {
+        createKeybord();
+    }
 
     /* ヘルプの記述 */
     wordlelink = '<a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>';
