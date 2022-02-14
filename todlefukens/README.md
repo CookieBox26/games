@@ -1,11 +1,10 @@
-### ’PŒê“–‚ÄƒQ[ƒ€
-[Wordle](https://www.nytimes.com/games/wordle/index.html) ‚É’…‘z‚ğ“¾‚½’PŒê“–‚ÄƒQ[ƒ€‚Å‚·B  
-ƒuƒ‰ƒEƒU‚Ì JavaScript ‚Å“®ì‚µ‚Ü‚·‚Ì‚Å©ŒÈÓ”C‚Å—V‚ñ‚Å‚­‚¾‚³‚¢B  
-‰½‚©‚ ‚è‚Ü‚µ‚½‚ç‚±‚ÌƒŠƒ|ƒWƒgƒŠ‚Ì Issues ‚© [twitter.com/CookieBox26](https://twitter.com/CookieBox26) ‚Ü‚Å‚²˜A—‚­‚¾‚³‚¢B  
+### å˜èªå½“ã¦ã‚²ãƒ¼ãƒ 
+[Wordle](https://www.nytimes.com/games/wordle/index.html) ã«ç€æƒ³ã‚’å¾—ãŸå˜èªå½“ã¦ã‚²ãƒ¼ãƒ ã§ã™ã€‚  
+ãƒ–ãƒ©ã‚¦ã‚¶ã® JavaScript ã§å‹•ä½œã—ã¾ã™ã®ã§è‡ªå·±è²¬ä»»ã§éŠã‚“ã§ãã ã•ã„ã€‚  
+ä½•ã‹ã‚ã‚Šã¾ã—ãŸã‚‰ã“ã®ãƒªãƒã‚¸ãƒˆãƒªã® Issues ã‹ [twitter.com/CookieBox26](https://twitter.com/CookieBox26) ã¾ã§ã”é€£çµ¡ãã ã•ã„ã€‚  
 These games are inspired by [Wordle](https://www.nytimes.com/games/wordle/index.html). 
 Contact me: Issues or [twitter.com/CookieBox26](https://twitter.com/CookieBox26)
 
-- [“s“¹•{Œ§](https://cookiebox26.github.io/games/todlefukens/todlefuken.html)
-- [‘](https://cookiebox26.github.io/games/todlefukens/worldle.html)
-- [Œ³‘f](https://cookiebox26.github.io/games/todlefukens/vanderwardle.html)
-- [ƒAƒ‹ƒtƒ@ƒxƒbƒg3•¶šˆÈ“à‚Ì“®•¨](https://cookiebox26.github.io/games/todlefukens/dlebutsu3.html)
+- [éƒ½é“åºœçœŒ](https://cookiebox26.github.io/games/todlefukens/todlefuken.html)
+- [å›½](https://cookiebox26.github.io/games/todlefukens/worldle.html)
+- [å…ƒç´ ](https://cookiebox26.github.io/games/todlefukens/vanderwardle.html)
