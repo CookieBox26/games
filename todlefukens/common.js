@@ -1,7 +1,7 @@
 /* キーボードの行の生成 */
-function createKeybordRow(s, n) {
+function createKeybordRow(s) {
     row = document.createElement('tr');
-    for(let i = 0; i < n; i++) {
+    for(let i = 0; i < 5; i++) {
         c = s.charAt(i);
         td = document.createElement('td');
         if (c == '　') {
@@ -49,28 +49,7 @@ function createKeybord() {
     document.getElementById('keybord2').appendChild(tbody);
 }
 
-/* キーボードの生成(en) */
-function createKeybordEn() {
-    /* キーボード1の生成 */
-    keybord1array = ['ＡＢＣ', 'ＤＥＦ', 'ＧＨＩ', 'ＪＫＬ', 'ＭＮＯ'];
-    tbody = document.createElement('tbody');
-    for(let j = 0; j < 5; j++) {
-        row = createKeybordRow(keybord1array[j], 3);
-        tbody.appendChild(row);
-    }
-    document.getElementById('keybord1').appendChild(tbody);
-
-    /* キーボード2の生成 */
-    keybord2array = ['ＰＱＲ', 'ＳＴＵ', 'ＶＷＸ', 'ＹＺ　', '←　！'];
-    tbody = document.createElement('tbody');
-    for(let j = 0; j < 5; j++) {
-        row = createKeybordRow(keybord2array[j], 3);
-        tbody.appendChild(row);
-    }
-    document.getElementById('keybord2').appendChild(tbody);
-}
-
-function init(en = false) {
+function init() {
     /* 回答欄の生成 */
     tbody = document.createElement('tbody');
     for(let j = 0; j < round; j++) {
@@ -94,13 +73,7 @@ function init(en = false) {
     document.getElementById('maindisp').appendChild(tbody);
 
     /* キーボードの生成 */
-    keybordlen = 5;
-    if (en) {
-        keybordlen = 3;
-        createKeybordEn();
-    } else {
-        createKeybord();
-    }
+    createKeybord();
 
     /* ヘルプの記述 */
     wordlelink = '<a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a>';
@@ -117,7 +90,7 @@ function init(en = false) {
     document.getElementById('help').innerHTML = helpmessage;
 
     if (window.matchMedia && window.matchMedia('(max-device-width: 480px)').matches) {
-        document.getElementById('help').style.width = String((keybordlen + wordlen)* 33) + 'px';
+        document.getElementById('help').style.width = String((5 + wordlen)* 33) + 'px';
     }
 }
 
