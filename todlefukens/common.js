@@ -187,7 +187,7 @@ function tweet(log) {
     if (document.title != 'ふぁんでるわーどる') {
         return '';
     }
-    if (false) {
+    if (true) {
         tw = '<div style="margin-top: 10px;">';
         tw += '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw"';
         tw += ' class="twitter-share-button" data-size="large" style="margin:10px 0;"';
