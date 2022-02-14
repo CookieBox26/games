@@ -113,7 +113,7 @@ function init(en = false) {
     helpmessage += '何か問題がありましたらコードリポジトリの ' + issuelink + ' か ';
     helpmessage += twitterlink + ' までご連絡ください。<br/>';
     helpmessage += 'This is a game inspired by ' + wordlelink + '. Contact me: ';
-    helpmessage += issuelink + ' or ' + twitterlink
+    helpmessage += issuelink + ' or ' + twitterlink;
     document.getElementById('help').innerHTML = helpmessage;
 
     if (window.matchMedia && window.matchMedia('(max-device-width: 480px)').matches) {
@@ -162,43 +162,64 @@ function check() {
     }
     cursor_min = cursor;
     cursor_max = cursor + wordlen;
+    log += '\n';
     for(let i = 0; i < wordlen; i++) {
         p = pred.charAt(i);
         if (p == answer.charAt(i)) {
             green.push(p);
             document.getElementById(cursor - wordlen + i).style.background = '#65ab31';
-            document.getElementById(cursor - wordlen + i).style.color = 'white';
             if (p != '　') {
                 document.getElementById(p).style.background = '#65ab31';
-                document.getElementById(p).style.color = 'white';
             }
+            log += '&#x1f7e9;';
         } else if (answer.indexOf(p) != -1) {
             document.getElementById(cursor - wordlen + i).style.background = '#fcc800';
-            document.getElementById(cursor - wordlen + i).style.color = 'white';
             if (p != '　') {
                 if (!green.includes(p)) {
                     document.getElementById(p).style.background = '#fcc800';
-                    document.getElementById(p).style.color = 'white';
                 }
             }
+            log += '&#x1f7e8;';
         } else {
             document.getElementById(cursor - wordlen + i).style.background = 'gray';
             document.getElementById(cursor - wordlen + i).style.color = 'white';
             if (p != '　') {
                 document.getElementById(p).style.background = 'gray';
-                document.getElementById(p).style.color = 'white';
             }
+            log += '&#x2b1b;';
+        }
+        document.getElementById(cursor - wordlen + i).style.color = 'white';
+        if (p != '　') {
+            document.getElementById(p).style.color = 'white';
         }
     }
     if (pred == answer) {
         document.getElementById('message').innerHTML = '正解です！';
+        document.getElementById('message').innerHTML += tweet(log);
+        twttr.widgets.load();
         finished = true;
         return;
     }
     if (cursor == wordlen * round) {
         document.getElementById('message').innerHTML = '正解は' + answer + 'です。';
+        document.getElementById('message').innerHTML += tweet(log);
+        twttr.widgets.load();
         finished = true;
         return;
     }
     document.getElementById('message').innerHTML = '違います。';
+}
+
+function tweet(log) {
+    if (document.title != 'ふぁんでるわーどる') {
+        return '';
+    }
+    tw = '<div style="margin-top: 10px;">';
+    tw += '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw"';
+    tw += ' class="twitter-share-button" data-size="large" style="margin:10px 0;"';
+    tw += ' data-text="' + document.title + log + '\n"';
+    tw += ' data-url="https://cookiebox26.github.io/games/todlefukens/vanderwardle.html"';
+    tw += ' data-lang="ja"';
+    tw += ' data-show-count="false">Tweet</a></div>';
+    return tw;
 }
