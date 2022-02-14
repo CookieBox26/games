@@ -168,15 +168,15 @@ function check() {
     }
     if (pred == answer) {
         document.getElementById('message').innerHTML = '正解です！';
-        document.getElementById('message').innerHTML += tweet(log);
-        twttr.widgets.load();
+        // document.getElementById('message').innerHTML += tweet(log);
+        // twttr.widgets.load();
         finished = true;
         return;
     }
     if (cursor == wordlen * round) {
         document.getElementById('message').innerHTML = '正解は' + answer + 'です。';
-        document.getElementById('message').innerHTML += tweet(log);
-        twttr.widgets.load();
+        // document.getElementById('message').innerHTML += tweet(log);
+        // twttr.widgets.load();
         finished = true;
         return;
     }
