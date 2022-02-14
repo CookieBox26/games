@@ -1,7 +1,8 @@
 /* キーボードの行の生成 */
 function createKeybordRow(s) {
     row = document.createElement('tr');
-    for(let i = 0; i < s.length; i++) {
+    n = s.length;
+    for(let i = 0; i < n; i++) {
         c = s.charAt(i);
         td = document.createElement('td');
         if (c == '　') {
