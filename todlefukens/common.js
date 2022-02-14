@@ -1,7 +1,6 @@
 /* キーボードの行の生成 */
-function createKeybordRow(s) {
+function createKeybordRow(s, n) {
     row = document.createElement('tr');
-    n = s.length;
     for(let i = 0; i < n; i++) {
         c = s.charAt(i);
         td = document.createElement('td');
@@ -32,7 +31,7 @@ function createKeybord() {
     ];
     tbody = document.createElement('tbody');
     for(let j = 0; j < 9; j++) {
-        row = createKeybordRow(keybord1array[j]);
+        row = createKeybordRow(keybord1array[j], 5);
         tbody.appendChild(row);
     }
     document.getElementById('keybord1').appendChild(tbody);
@@ -44,7 +43,7 @@ function createKeybord() {
     ];
     tbody = document.createElement('tbody');
     for(let j = 0; j < 9; j++) {
-        row = createKeybordRow(keybord2array[j]);
+        row = createKeybordRow(keybord2array[j], 5);
         tbody.appendChild(row);
     }
     document.getElementById('keybord2').appendChild(tbody);
@@ -56,7 +55,7 @@ function createKeybordEn() {
     keybord1array = ['ＡＢＣ', 'ＤＥＦ', 'ＧＨＩ', 'ＪＫＬ', 'ＭＮＯ'];
     tbody = document.createElement('tbody');
     for(let j = 0; j < 5; j++) {
-        row = createKeybordRow(keybord1array[j]);
+        row = createKeybordRow(keybord1array[j], 3);
         tbody.appendChild(row);
     }
     document.getElementById('keybord1').appendChild(tbody);
@@ -65,7 +64,7 @@ function createKeybordEn() {
     keybord2array = ['ＰＱＲ', 'ＳＴＵ', 'ＶＷＸ', 'ＹＺ　', '←　！'];
     tbody = document.createElement('tbody');
     for(let j = 0; j < 5; j++) {
-        row = createKeybordRow(keybord2array[j]);
+        row = createKeybordRow(keybord2array[j], 3);
         tbody.appendChild(row);
     }
     document.getElementById('keybord2').appendChild(tbody);
