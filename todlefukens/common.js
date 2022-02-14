@@ -187,12 +187,21 @@ function tweet(log) {
     if (document.title != 'ふぁんでるわーどる') {
         return '';
     }
-    tw = '<div style="margin-top: 10px;">';
-    tw += '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw"';
-    tw += ' class="twitter-share-button" data-size="large" style="margin:10px 0;"';
-    tw += ' data-text="' + document.title + log + '\n"';
-    tw += ' data-url="https://cookiebox26.github.io/games/todlefukens/vanderwardle.html"';
-    tw += ' data-lang="ja"';
-    tw += ' data-show-count="false">Tweet</a></div>';
-    return tw;
+    if (false) {
+        tw = '<div style="margin-top: 10px;">';
+        tw += '<a href="https://twitter.com/share?ref_src=twsrc%5Etfw"';
+        tw += ' class="twitter-share-button" data-size="large" style="margin:10px 0;"';
+        tw += ' data-text="' + document.title + log + '\n"';
+        tw += ' data-url="https://cookiebox26.github.io/games/todlefukens/vanderwardle.html"';
+        tw += ' data-lang="ja"';
+        tw += ' data-show-count="false">Tweet</a></div>';
+        return tw;
+    } else {
+        url = 'https://twitter.com/intent/tweet?text='
+        url += document.title + log + '\n';
+        url += 'https://cookiebox26.github.io/games/todlefukens/vanderwardle.html'
+        tw = '<div style="margin-top: 10px;">';
+        tw += '<a href="' + encodeURI(url) + '">Tweet</a></div>';
+        return tw;
+    }
 }
