@@ -11,16 +11,18 @@ body {
     font-size: 120%;
     letter-spacing: 0.05em;
     // background: #f0f0f0;
+    font-weight: bold;
 }
 input {
     font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
+    font-weight: bold;
     margin: 0.05em;
     text-align: center;
     background: transparent;
     border: 1px solid #000000;
+    font-size: 130%;
 }
 input.num {
-    font-size: 130%;
     // border-radius: 50%;
     width: 58px;
     height: 58px;
@@ -35,6 +37,7 @@ input.next {
 
 div.helpbox {
     margin-left: 10px;
+    font-weight: normal;
 }
 div.helpcontent {
     font-size: 12px;
@@ -55,6 +58,14 @@ label.helpbutton:before {
 }
 .helpbutton:hover {
     cursor: pointer;
+}
+@media screen and (max-width: 480px) {
+body {
+    margin: 5px;
+    min-width: 480px;
+    width: 480px;
+    -webkit-text-size-adjust: 100%;
+}
 }
 -->
 </style>
@@ -208,8 +219,8 @@ function desc() {
 </label>
 </div>
 
-<div style="width: 300px; margin: 10px; float: left;">
-つぎのかん字の<b>ふとい</b>ところはなんばんめにかきますか。<br/>
+<div style="width: 320px; margin: 10px; float: left;">
+つぎの かん字の <b>ふとい</b> ところは なんばんめに かきますか。<br/>
 <center style="margin: 0.5em 0 0.8em;">
 <div id="number"></div>
 <img style="margin-top: 0.3em;" id="kanji" width="120" src=""/>
