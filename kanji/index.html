@@ -2,37 +2,34 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>kanji</title>
 <style type="text/css">
 <!--
 body {
-    // width: 300px;
     font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
-    font-size: 120%;
-    letter-spacing: 0.05em;
-    // background: #f0f0f0;
+    font-size: 20px;
+    letter-spacing: 1px;
     font-weight: bold;
 }
 input {
     font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
     font-weight: bold;
-    margin: 0.05em;
+    margin: 1px;
     text-align: center;
     background: transparent;
     border: 1px solid #000000;
-    font-size: 130%;
+    font-size: 24px;
 }
 input.num {
     // border-radius: 50%;
     width: 58px;
     height: 58px;
-    padding: 0 0.2em;
+    // padding: 0 0.2em;
 }
 input.next {
-    font-size: 120%;
-    letter-spacing: 0.08em;
-    // border-radius: 10px;
     padding: 0.3em 0.6em;
+    font-size: 22px;
 }
 
 div.helpbox {
@@ -61,7 +58,6 @@ label.helpbutton:before {
 }
 @media screen and (max-width: 480px) {
 body {
-    margin: 5px;
     min-width: 480px;
     width: 480px;
     -webkit-text-size-adjust: 100%;
@@ -142,7 +138,7 @@ function prepare() {
     ansKaku = ansKakus[iQ];
     const kanjiElem = document.getElementById('kanji');
     kanjiElem.src = "img/" + qKanji + "_" + String(ansKaku) + ".PNG";
-    document.getElementById('number').innerHTML = "<b>第" + String(iQ + 1) + "問</b>";
+    document.getElementById('number').innerHTML = "<b>第 " + String(iQ + 1) + " 問</b>";
 }
 function response(num) {
     if (kaitous.length == iQ + 1) {
@@ -150,7 +146,6 @@ function response(num) {
     }
     kaitous.push(num);
     document.getElementById('btn' + String(ansKaku)).style.background = '#a7d28d';
-    document.getElementById('btn' + String(ansKaku)).style.textAlign = 'center';
     var s;
     if (num == ansKaku) {
         s = String(num) + " で正解です。";
@@ -159,7 +154,6 @@ function response(num) {
         s = String(num) + " ではないです。";
         s += "<br/>正解は " + String(ansKaku) + " でした。";
         document.getElementById('btn' + String(num)).style.background = '#e3adc1';
-        document.getElementById('btn' + String(num)).style.textAlign = 'center';
     }
     if (iQ + 1 == nQ) {
         var s2 = "<b>これでおわりです。</b>";
