@@ -26,6 +26,12 @@ input.num {
     width: 58px;
     height: 58px;
 }
+input.numGreen {
+    background: #a7d28d;
+}
+input.numPink {
+    background: #e3adc1;
+}
 input.next {
     padding: 0.3em 0.6em;
     font-size: 22px;
@@ -57,8 +63,8 @@ label.helpbutton:before {
 }
 @media screen and (max-width: 480px) {
 body {
-    min-width: 480px;
-    width: 480px;
+    min-width: 340px;
+    width: 340px;
     -webkit-text-size-adjust: 100%;
 }
 }
@@ -144,9 +150,7 @@ function response(num) {
         return;  // 回答済み
     }
     kaitous.push(num);
-    document.getElementById('btn' + String(ansKaku)).style.background = '#a7d28d';
-    document.getElementById('btn' + String(ansKaku)).style.textAlign = 'center';
-    document.getElementById('btn' + String(ansKaku)).style.padding = '0 4px';
+    document.getElementById('btn' + String(ansKaku)).classList.add("numGreen");
     var s;
     if (num == ansKaku) {
         s = String(num) + " で正解です。";
@@ -154,9 +158,7 @@ function response(num) {
     } else {
         s = String(num) + " ではないです。";
         s += "<br/>正解は " + String(ansKaku) + " でした。";
-        document.getElementById('btn' + String(num)).style.background = '#e3adc1';
-        document.getElementById('btn' + String(num)).style.textAlign = 'center';
-        document.getElementById('btn' + String(num)).style.padding = '0 4px';
+        document.getElementById('btn' + String(num)).classList.add("numPink");
     }
     if (iQ + 1 == nQ) {
         var s2 = "<b>これでおわりです。</b>";
@@ -174,7 +176,8 @@ function next() {
     document.getElementById('result').innerHTML = "";
     document.getElementById('next').style.display = 'none';
     for (let i = 0; i < 12; i++) {
-        document.getElementById('btn' + String(i + 1)).style.background = 'transparent';
+        document.getElementById('btn' + String(i + 1)).classList.remove("numGreen");
+        document.getElementById('btn' + String(i + 1)).classList.remove("numPink");
     }
 }
 function desc() {
