@@ -1,0 +1,245 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>kanji</title>
+<style type="text/css">
+<!--
+body {
+    // width: 300px;
+    font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
+    font-size: 120%;
+    letter-spacing: 0.05em;
+    // background: #f0f0f0;
+}
+input {
+    font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
+    margin: 0.05em;
+    text-align: center;
+    background: transparent;
+    border: 1px solid #000000;
+}
+input.num {
+    font-size: 130%;
+    // border-radius: 50%;
+    width: 58px;
+    height: 58px;
+    padding: 0 0.2em;
+}
+input.next {
+    font-size: 120%;
+    letter-spacing: 0.08em;
+    // border-radius: 10px;
+    padding: 0.3em 0.6em;
+}
+
+div.helpbox {
+    margin-left: 10px;
+}
+div.helpcontent {
+    font-size: 12px;
+    display: none;
+}
+input.checkhelp {
+    display: none;
+}
+input.checkhelp:checked ~ div.helpcontent { 
+    display: block;
+}
+label.helpbutton {
+    font-size: 12px;
+}
+label.helpbutton:before {
+    content: "ヘルプを表示・非表示";
+    display: inline-block;
+}
+.helpbutton:hover {
+    cursor: pointer;
+}
+-->
+</style>
+<script type="text/javascript"><!--
+const kanjiData = {
+    E4BA94: [1, 2, 3, 4],
+    E4BC91: [1, 2, 3, 4, 5, 6],
+    E58588: [1, 2, 3, 4, 5, 6],
+    E5908D: [1, 2, 3, 4, 5, 6],
+    E5A4A9: [1, 2, 3, 4],
+    E5A5B3: [1, 2, 3],
+    E5ADA6: [1, 2, 3, 4, 5, 6, 7, 8],
+    E5B9B4: [4, 5, 6],
+    E69D91: [1, 2, 3, 4, 5, 6, 7],
+    E6A3AE: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    E6ADA3: [1, 2, 3, 4, 5],
+    E6B097: [2, 3, 4, 5, 6],
+    E6B0B4: [1, 2, 3, 4],
+    E781AB: [1, 2, 3, 4],
+    E78E8B: [1, 2, 3, 4],
+    E794B7: [4, 6, 7],
+    E794BA: [1, 2, 3, 4, 5, 6, 7],
+    E79FB3: [1, 2, 3, 4, 5],
+    E7A9BA: [1, 2, 3, 4, 5, 6, 7, 8],
+    E7B3B8: [1, 2, 3, 4, 5, 6],
+    E899AB: [1, 2, 3, 4, 5, 6],
+    E8B5A4: [1, 2, 3, 4, 5, 6, 7],
+    E8B6B3: [1, 2, 3, 4, 5, 6, 7],
+    E8BB8A: [1, 2, 3, 4, 5, 6, 7],
+    E98791: [4, 5, 7, 8],
+    E99BA8: [2, 3, 4, 5, 6, 7, 8],
+    E99D92: [1, 2, 3, 4, 5, 6, 7, 8],
+};
+const nQ = 10;
+var qKanjis = [];
+var ansKakus = [];
+var kaitous = [];
+var iQ = 0;
+var ansKaku = 0;
+var seikaiNum = 0;
+
+function init() {
+    var kanjis = Object.keys(kanjiData);
+    for (let i = 0; i < nQ; i++) {
+        // i 番目に出題する漢字の決定
+        let indexKanji = Math.floor(Math.random() * kanjis.length);
+        let qKanji = kanjis[indexKanji];
+        // i 番目に出題する画の決定
+        let kakus = kanjiData[qKanji];
+        if (kakus[0] == 1) {
+            // 一画目は簡単(要出典)なので一定の確率で抜く
+            let r = Math.floor(Math.random() * 3);
+            if (r == 0) {
+                kakus.splice(0, 1);
+            }
+        }
+        let indexKaku = Math.floor(Math.random() * kakus.length);
+        let ansKaku = kakus[indexKaku];
+        qKanjis.push(qKanji);
+        ansKakus.push(ansKaku);
+        kanjis.splice(indexKanji, 1);
+    }
+    seikaiNum = 0;
+    prepare();
+
+    var issuelink = '<a href="https://github.com/CookieBox26/games/issues">Issues</a>';
+    var twitterlink = '<a href="https://twitter.com/CookieBox26">twitter.com/CookieBox26</a>';
+    var helpmessage = '1年生で習う漢字の書き順を当てるゲームです。何か問題がありましたらご連絡ください。';
+    helpmessage += 'Contact me: ' + issuelink + ' or ' + twitterlink;
+    document.getElementById('help').innerHTML = helpmessage;
+}
+function prepare() {
+    let qKanji = qKanjis[iQ];
+    ansKaku = ansKakus[iQ];
+    const kanjiElem = document.getElementById('kanji');
+    kanjiElem.src = "img/" + qKanji + "_" + String(ansKaku) + ".PNG";
+    document.getElementById('number').innerHTML = "<b>第" + String(iQ + 1) + "問</b>";
+}
+function response(num) {
+    if (kaitous.length == iQ + 1) {
+        return;  // 回答済み
+    }
+    kaitous.push(num);
+    document.getElementById('btn' + String(ansKaku)).style.background = '#a7d28d';
+    var s;
+    if (num == ansKaku) {
+        s = String(num) + " で正解です。";
+        seikaiNum += 1;
+    } else {
+        s = String(num) + " ではないです。";
+        s += "<br/>正解は " + String(ansKaku) + " でした。";
+        document.getElementById('btn' + String(num)).style.background = '#e3adc1';
+    }
+    if (iQ + 1 == nQ) {
+        var s2 = "<b>これでおわりです。</b>";
+        s2 += "<br/><b>" + String(nQ) + " 問中 " + String(seikaiNum) + " 問正解でした。</b>";
+        document.getElementById('desc0').innerHTML = s2;
+        desc();
+    } else {
+        document.getElementById('next').style.display = 'block';
+    }
+    document.getElementById('result').innerHTML = s;
+}
+function next() {
+    iQ += 1;
+    prepare();
+    document.getElementById('result').innerHTML = "";
+    document.getElementById('next').style.display = 'none';
+    for (let i = 0; i < 12; i++) {
+        document.getElementById('btn' + String(i + 1)).style.background = 'transparent';
+    }
+}
+function desc() {
+    const descDiv = document.getElementById('desc');
+    const descDiv2 = document.getElementById('desc2');
+    for (let i = 0; i < nQ; i++) {
+        var newImg = document.createElement("img");
+        newImg.src = 'img/' + qKanjis[i] + '_' + String(ansKakus[i]) + '.PNG';
+        newImg.setAttribute("width", "70");
+        newImg.setAttribute("style", "margin: 0.5em; vertical-align: middle;");
+        var newSpan = document.createElement("span");
+        newSpan.innerHTML = "回答：" + String(kaitous[i]);
+        newSpan.innerHTML += " → 正解：" + String(ansKakus[i]);
+        var newDiv = document.createElement("div");
+        var sty = "margin-bottom: 0.5em; text-align: left;";
+        if (kaitous[i] == ansKakus[i]) {
+            sty += "background: #a7d28d;";
+        } else {
+            sty += "background: #e3adc1;";
+        }
+        newDiv.setAttribute("style", sty);
+        newDiv.appendChild(newImg);
+        newDiv.appendChild(newSpan);
+        if (i < 5) {
+            descDiv.appendChild(newDiv);
+        } else {
+            descDiv2.appendChild(newDiv);
+        }
+    }
+}
+// --></script>
+</head>
+<body onload="init()">
+
+<div class="helpbox">
+<label class="helpbutton">
+<input type="checkbox" class="checkhelp">
+<div class="helpcontent" id="help"></div>
+</label>
+</div>
+
+<div style="width: 300px; margin: 10px; float: left;">
+つぎのかん字の<b>ふとい</b>ところはなんばんめにかきますか。<br/>
+<center style="margin: 0.5em 0 0.8em;">
+<div id="number"></div>
+<img style="margin-top: 0.3em;" id="kanji" width="120" src=""/>
+</center>
+<center style="margin-bottom: 0.5em;">
+<input type="button" class="num" value="1" id="btn1" onClick="response(1)">
+<input type="button" class="num" value="2" id="btn2" onClick="response(2)">
+<input type="button" class="num" value="3" id="btn3" onClick="response(3)">
+<input type="button" class="num" value="4" id="btn4" onClick="response(4)">
+</center>
+<center style="margin-bottom: 0.5em;">
+<input type="button" class="num" value="5" id="btn5" onClick="response(5)">
+<input type="button" class="num" value="6" id="btn6" onClick="response(6)">
+<input type="button" class="num" value="7" id="btn7" onClick="response(7)">
+<input type="button" class="num" value="8" id="btn8" onClick="response(8)">
+</center>
+<center style="margin-bottom: 1.0em;">
+<input type="button" class="num" value="9" id="btn9" onClick="response(9)">
+<input type="button" class="num" value="10" id="btn10" onClick="response(10)">
+<input type="button" class="num" value="11" id="btn11" onClick="response(11)">
+<input type="button" class="num" value="12" id="btn12" onClick="response(12)">
+</center>
+<div style="margin-bottom: 0.5em;" id="result"></div>
+<center>
+<div style="display: none;" id="next">
+<input type="button" class="next" value="つぎのもんだいへ" onClick="next()">
+</center>
+</div>
+<div style="margin: 10px; float: left;">
+<div id="desc0"></div>
+<div style="width: 320px; margin: 10px; float: left;" id="desc"></div>
+<div style="width: 320px; margin: 10px; float: left;" id="desc2"></div>
+</div>
+</body>
+</html>
