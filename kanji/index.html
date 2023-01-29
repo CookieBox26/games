@@ -145,6 +145,8 @@ function response(num) {
     }
     kaitous.push(num);
     document.getElementById('btn' + String(ansKaku)).style.background = '#a7d28d';
+    document.getElementById('btn' + String(ansKaku)).style.textAlign = 'center';
+    document.getElementById('btn' + String(ansKaku)).style.padding = '0 4px';
     var s;
     if (num == ansKaku) {
         s = String(num) + " で正解です。";
@@ -153,6 +155,8 @@ function response(num) {
         s = String(num) + " ではないです。";
         s += "<br/>正解は " + String(ansKaku) + " でした。";
         document.getElementById('btn' + String(num)).style.background = '#e3adc1';
+        document.getElementById('btn' + String(num)).style.textAlign = 'center';
+        document.getElementById('btn' + String(num)).style.padding = '0 4px';
     }
     if (iQ + 1 == nQ) {
         var s2 = "<b>これでおわりです。</b>";
