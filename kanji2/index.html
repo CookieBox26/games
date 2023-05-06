@@ -1,0 +1,254 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kanji2</title>
+<style type="text/css">
+<!--
+body {
+    font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    font-weight: bold;
+    color: #000;
+}
+input {
+    -webkit-appearance: none;
+    appearance: none;
+    border: 2px solid #000;
+    border-radius: 0px;
+    color: #000;
+    font-family: "游ゴシック", "ヒラギノ角ゴ ProN", sans-serif;
+    font-weight: bold;
+    margin: 1px;
+    text-align: center;
+    background: transparent;
+    font-size: 24px;
+    letter-spacing: 1px;
+    padding: 0 4px;
+}
+input.num {
+    width: 58px;
+    height: 58px;
+}
+.numGreen {
+    background: #a7d28d;
+}
+.numPink {
+    background: #e3adc1;
+}
+input.next {
+    padding: 6px 9px;
+    font-size: 22px;
+}
+
+div.helpbox {
+    margin-left: 10px;
+    font-weight: normal;
+}
+div.helpcontent {
+    font-size: 12px;
+    display: none;
+}
+input.checkhelp {
+    display: none;
+}
+input.checkhelp:checked ~ div.helpcontent { 
+    display: block;
+}
+label.helpbutton {
+    font-size: 12px;
+}
+label.helpbutton:before {
+    content: "ヘルプを表示・非表示";
+    display: inline-block;
+}
+.helpbutton:hover {
+    cursor: pointer;
+}
+@media screen and (max-width: 480px) {
+body {
+    min-width: 350px;
+    width: 350px;
+    -webkit-text-size-adjust: 100%;
+}
+}
+-->
+</style>
+<script type="text/javascript"><!--
+const kanjiData = {
+    E69C9D: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    E698BC: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    E5A49C: [1, 2, 3, 4, 5, 6, 7, 8],
+    E4BB8A: [1, 2, 3, 4],
+    E69982: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+};
+const nQ = 1;
+var qKanjis = [];
+var ansKakus = [];
+var kaitous = [];
+var iQ = 0;
+var ansKaku = 0;
+var seikaiNum = 0;
+
+function init() {
+    var kanjis = Object.keys(kanjiData);
+    for (let i = 0; i < nQ; i++) {
+        // i 番目に出題する漢字の決定
+        let indexKanji = Math.floor(Math.random() * kanjis.length);
+        let qKanji = kanjis[indexKanji];
+        // i 番目に出題する画の決定
+        let kakus = kanjiData[qKanji];
+        if (kakus[0] == 1) {
+            // 一画目は簡単(要出典)なので一定の確率で抜く
+            let r = Math.floor(Math.random() * 3);
+            if (r == 0) {
+                kakus.splice(0, 1);
+            }
+        }
+        let indexKaku = Math.floor(Math.random() * kakus.length);
+        let ansKaku = kakus[indexKaku];
+        qKanjis.push(qKanji);
+        ansKakus.push(ansKaku);
+        kanjis.splice(indexKanji, 1);
+    }
+    seikaiNum = 0;
+    prepare();
+
+    var issuelink = '<a href="https://github.com/CookieBox26/games/issues">Issues</a>';
+    var twitterlink = '<a href="https://twitter.com/CookieBox26">twitter.com/CookieBox26</a>';
+    var helpmessage = '2年生で習う漢字の書き順を当てるゲームです。何か問題がありましたらご連絡ください。';
+    helpmessage += 'Contact me: ' + issuelink + ' or ' + twitterlink;
+    document.getElementById('help').innerHTML = helpmessage;
+}
+function prepare() {
+    let qKanji = qKanjis[iQ];
+    ansKaku = ansKakus[iQ];
+    const kanjiElem = document.getElementById('kanji');
+    kanjiElem.src = "img/" + qKanji + "_" + String(ansKaku) + ".PNG";
+    document.getElementById('number').innerHTML = "<b>第 " + String(iQ + 1) + " 問</b>";
+}
+function response(num) {
+    if (kaitous.length == iQ + 1) {
+        return;  // 回答済み
+    }
+    kaitous.push(num);
+    document.getElementById('btn' + String(ansKaku)).classList.add("numGreen");
+    var s;
+    if (num == ansKaku) {
+        s = String(num) + " で正解です。";
+        seikaiNum += 1;
+    } else {
+        s = String(num) + " ではないです。";
+        s += "<br/>正解は " + String(ansKaku) + " でした。";
+        document.getElementById('btn' + String(num)).classList.add("numPink");
+    }
+    if (iQ + 1 == nQ) {
+        var s2 = "<b>これでおわりです。</b>";
+        s2 += "<br/><b>" + String(nQ) + " 問中 " + String(seikaiNum) + " 問正解でした。</b>";
+        document.getElementById('desc0').innerHTML = s2;
+        desc();
+    } else {
+        document.getElementById('next').style.display = 'block';
+    }
+    document.getElementById('result').innerHTML = s;
+}
+function next() {
+    iQ += 1;
+    prepare();
+    document.getElementById('result').innerHTML = "";
+    document.getElementById('next').style.display = 'none';
+    for (let i = 0; i < 12; i++) {
+        document.getElementById('btn' + String(i + 1)).classList.remove("numGreen");
+        document.getElementById('btn' + String(i + 1)).classList.remove("numPink");
+    }
+}
+function desc() {
+    const descDiv = document.getElementById('desc');
+    const descDiv2 = document.getElementById('desc2');
+    for (let i = 0; i < nQ; i++) {
+        var newImg = document.createElement("img");
+        newImg.src = 'img/' + qKanjis[i] + '_' + String(ansKakus[i]) + '.PNG';
+        newImg.setAttribute("width", "70");
+        newImg.setAttribute("style", "margin: 0.5em; vertical-align: middle;");
+        var newSpan = document.createElement("span");
+        newSpan.innerHTML = "回答：" + String(kaitous[i]);
+        newSpan.innerHTML += " → 正解：" + String(ansKakus[i]);
+        var newDiv = document.createElement("div");
+        var sty = "margin-bottom: 0.5em; text-align: left;";
+        if (kaitous[i] == ansKakus[i]) {
+            sty += "background: #a7d28d;";
+        } else {
+            sty += "background: #e3adc1;";
+        }
+        newDiv.setAttribute("style", sty);
+        newDiv.appendChild(newImg);
+        newDiv.appendChild(newSpan);
+        if (i < 5) {
+            descDiv.appendChild(newDiv);
+        } else {
+            descDiv2.appendChild(newDiv);
+        }
+    }
+}
+// --></script>
+</head>
+<body onload="init()">
+
+<div class="helpbox">
+<label class="helpbutton">
+<input type="checkbox" class="checkhelp">
+<div class="helpcontent" id="help"></div>
+</label>
+</div>
+
+<div style="width: 340px; margin: 10px; float: left;">
+つぎのかん字の<b>ふとい</b>ところはなんばんめにかきますか。<br/>
+<center style="margin: 0.5em 0 0.8em;">
+<div id="number"></div>
+<img style="margin-top: 0.3em;" id="kanji" width="120" src=""/>
+</center>
+<center style="margin-bottom: 0.5em;">
+<input type="button" class="num" value="1" id="btn1" onClick="response(1)">
+<input type="button" class="num" value="2" id="btn2" onClick="response(2)">
+<input type="button" class="num" value="3" id="btn3" onClick="response(3)">
+<input type="button" class="num" value="4" id="btn4" onClick="response(4)">
+<input type="button" class="num" value="5" id="btn5" onClick="response(5)">
+</center>
+<center style="margin-bottom: 0.5em;">
+<input type="button" class="num" value="6" id="btn6" onClick="response(6)">
+<input type="button" class="num" value="7" id="btn7" onClick="response(7)">
+<input type="button" class="num" value="8" id="btn8" onClick="response(8)">
+<input type="button" class="num" value="9" id="btn9" onClick="response(9)">
+<input type="button" class="num" value="10" id="btn10" onClick="response(10)">
+</center>
+<center style="margin-bottom: 0.5em;">
+<input type="button" class="num" value="11" id="btn11" onClick="response(11)">
+<input type="button" class="num" value="12" id="btn12" onClick="response(12)">
+<input type="button" class="num" value="13" id="btn13" onClick="response(13)">
+<input type="button" class="num" value="14" id="btn14" onClick="response(14)">
+<input type="button" class="num" value="15" id="btn15" onClick="response(15)">
+</center>
+<center style="margin-bottom: 1.0em;">
+<input type="button" class="num" value="16" id="btn16" onClick="response(16)">
+<input type="button" class="num" value="17" id="btn17" onClick="response(17)">
+<input type="button" class="num" value="18" id="btn18" onClick="response(18)">
+<input type="button" class="num" value="19" id="btn19" onClick="response(19)">
+<input type="button" class="num" value="20" id="btn20" onClick="response(20)">
+</center>
+<div style="margin-bottom: 0.5em;" id="result"></div>
+<center>
+<div style="display: none;" id="next">
+<input type="button" class="next" value="つぎのもんだいへ" onClick="next()">
+</center>
+</div>
+<div style="margin: 10px; float: left;">
+<div id="desc0"></div>
+<div style="width: 320px; margin: 10px; float: left;" id="desc"></div>
+<div style="width: 320px; margin: 10px; float: left;" id="desc2"></div>
+</div>
+</body>
+</html>
+
+
