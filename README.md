@@ -1,6 +1,7 @@
 # games
 
-JavaScript によるブラウザゲーム集です。現在全てクイズゲームです。
+https://cookiebox26.github.io/games/  
+JavaScript によるブラウザゲーム集です。現在全てクイズゲームです。  
 
 | リンク | 説明 |
 | ---- | ---- |
@@ -12,3 +13,5 @@ JavaScript によるブラウザゲーム集です。現在全てクイズゲー
 | [わーるどる](todlefukens/worldle.html) | 回答を繰り返して正解の国を当てるゲームです。|
 | [ふぁんでるわーどる](todlefukens/vanderwardle.html) | 回答を繰り返して正解の元素を当てるゲームです。|
 
+スクリプトは MIT ライセンスです。  
+同梱している画像は私が描いたもので CC-BY ライセンスとします。
