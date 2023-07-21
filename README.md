@@ -1,6 +1,6 @@
 # games
 
-https://cookiebox26.github.io/games/  
+[https://cookiebox26.github.io/games/](https://cookiebox26.github.io/games/)  
 JavaScript によるブラウザゲーム集です。現在全てクイズゲームです。  
 
 | リンク | 説明 |
