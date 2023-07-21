@@ -1,0 +1,228 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>flags</title>
+<style type="text/css"><!--
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&family=Varela+Round&display=swap');
+* {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+body {
+  width: 626px;
+  max-width: 700px;
+  background: #409ecc;
+  font-size: 24px;
+}
+img {
+  max-width: 170px;
+  max-height: 120px;
+  margin-top: 20px;
+}
+table {
+  margin: 3px;
+}
+td {
+  border: 1px solid #409ecc;
+  background: #d0d0d0;
+  padding: 0 3px;
+  width: 30px; height: 30px;
+  text-align: center;
+  cursor: pointer;
+}
+td.long {
+  width: auto;
+  font-size: 20px;
+  border: 5px solid #409ecc;
+  padding: 1px 9px;
+}
+-->
+</style>
+<script type="text/javascript"><!--
+var cursor = 0;
+var questions = [
+  {"path": "640px-Flag_of_Afghanistan_(2013–2021).svg.png", "ja": "アフガニスタン", "ja+": "・イスラム共和国"},
+  {"path": "640px-Flag_of_Cyprus.svg.png", "ja": "キプロス", "ja+": "共和国"},
+  {"path": "640px-Flag_of_Singapore.svg.webp", "ja": "シンガポール", "ja+": "共和国"},
+  {"path": "640px-Flag_of_Indonesia.svg.png", "ja": "インドネシア", "ja+": "共和国"},
+  {"path": "640px-Flag_of_India.svg.png", "ja": "インド", "ja+": ""},
+];
+var nQ = questions.length;
+var iQ = 0;
+var answerLength = 0;
+var keyboardCreated = false;
+function createKey(c) {
+  let ih;
+  if (c == '　') {
+    ih = "<td style=\"background: transparent;\">　</td>";
+  } else {
+    ih = "<td onClick=\"press('" + c + "')\">" + c + "</td>";
+  }
+  return ih;
+}
+function createKeys(s) {
+  let tr = document.createElement("tr");
+  for (let i = 0; i < s.length; i++) {
+    tr.innerHTML += createKey(s[i]);
+  }
+  return tr;
+}
+function createKeyboard(iKeyboard, arr) {
+  let elm = document.getElementById("keyboard" + String(iKeyboard));
+  for (let i = 0; i < arr.length; i++) {
+    elm.append(createKeys(arr[i]));
+  }
+}
+function createQuestion() {
+  let elm = document.getElementById("flag");
+  elm.setAttribute("src", "img/" + questions[iQ]["path"]);
+  let tr = document.createElement("tr");
+  tr.id = "answerboxTr";
+  let s = questions[iQ]["ja"];
+  answerLength = s.length;
+  for (let i = 0; i < answerLength; i++) {
+    let ih = "<td id=\"answerboxTd" + String(i) + "\"";
+    ih += " style=\"background: #ffffff;\"";
+    ih += " meta=\"" + s[i] + "\">　</td>";
+    tr.innerHTML += ih;
+  }
+  s = questions[iQ]["ja+"];
+  plusLength = s.length;
+  for (let i = 0; i < plusLength; i++) {
+    let ih = "<td style=\"background: #d0d0d0;\">" + s[i] + "</td>";
+    tr.innerHTML += ih;
+  }
+  elm = document.getElementById("answerbox");
+  let trOld = document.getElementById("answerboxTr");
+  if (trOld !== null) {
+    elm.removeChild(trOld);
+  }
+  elm.append(tr);
+  cursor = 0;
+  let btn = document.getElementById("submitbtn");
+  btn.innerHTML = "回答する";
+}
+function init() {
+  if (!keyboardCreated) {
+    createKeyboard(1, ["アイウエオ", "カキクケコ", "サシスセソ", "タチツテト", "ナニヌネノ", "ハヒフヘホ"]);
+    createKeyboard(2, ["マミムメモ", "ヤ　ユ　ヨ", "ラリルレロ", "ワ　ヲ　ン", "ッャュョー", "ァィゥェォ"]);
+    createKeyboard(3, ["ガギグゲゴ", "ザジズゼゾ", "ダヂヅデド", "バビブベボ", "パピプペポ"]);
+    keyboardCreated = true;
+  }
+  iQ = 0;
+  createQuestion();
+  let msg = document.getElementById("message");
+  msg.innerHTML = "";
+}
+function press(c) {
+  if (cursor == answerLength) {
+    return;
+  }
+  let elm = document.getElementById("answerboxTd" + String(cursor));
+  elm.innerHTML = c;
+  cursor += 1;
+}
+function backsp() {
+  let btn = document.getElementById("submitbtn");
+  if (btn.innerHTML == "もう一度最初から" || btn.innerHTML == "次の問題") {
+    return;
+  }
+  cursor -= 1;
+  let elm = document.getElementById("answerboxTd" + String(cursor));
+  elm.innerHTML = '　';
+}
+function submit() {
+  let btn = document.getElementById("submitbtn");
+  let msg = document.getElementById("message");
+  if (btn.innerHTML == "もう一度最初から") {
+    init();
+    return;
+  }
+  if (btn.innerHTML == "やり直す" || btn.innerHTML == "次の問題") {
+    if (btn.innerHTML == "次の問題") {
+      iQ += 1;
+    }
+    createQuestion();
+    return;
+  }
+  let nErr = 0;
+  for (let i = 0; i < answerLength; i++) {
+    let elm = document.getElementById("answerboxTd" + String(i));
+    if (elm.innerHTML == elm.getAttribute("meta")) {
+      elm.style.background = "#b2e58f";
+    } else {
+      elm.style.background = "#febbb4";
+      nErr += 1;
+    }
+  }
+  if (nErr == 0) {
+    msg.innerHTML += "o";
+    if (iQ + 1 == nQ) {
+      finalize();
+      return;
+    }
+    btn.innerHTML = "次の問題";
+  } else {
+    btn.innerHTML = "やり直す";
+  }
+}
+function giveup() {
+  let btn = document.getElementById("submitbtn");
+  if (btn.innerHTML == "もう一度最初から" || btn.innerHTML == "次の問題") {
+    return;
+  }
+  let msg = document.getElementById("message");
+  msg.innerHTML += "x";
+  for (let i = 0; i < answerLength; i++) {
+    let elm = document.getElementById("answerboxTd" + String(i));
+    elm.innerHTML = elm.getAttribute("meta");
+    elm.style.background = "#f7e678";
+  }
+  if (iQ + 1 == nQ) {
+    finalize();
+    return;
+  }
+  btn.innerHTML = "次の問題";
+}
+function finalize() {
+  let btn = document.getElementById("submitbtn");
+  let msg = document.getElementById("message");
+  let s = msg.innerHTML;
+  let a = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] == 'o') {
+      a += 1;
+    }
+  }
+  let msgPlus = "<div style=\"background: #f7e678; padding: 0 5px;\">";
+  msgPlus += String(s.length) + " 問中 " + String(a) + " 問正解でした。</div>"
+  msg.innerHTML += msgPlus;
+  btn.innerHTML = "もう一度最初から";
+}
+// --></script>
+</head>
+<body onload="init()">
+<div id="caution" style="font-size: 10px; line-height: 1.1">
+国旗画像は Wikipedia のパブリック・ドメイン画像を使用しています。<br/>
+国旗・国名は2017年6月時点の外務省ホームページに基づいており最新の情報と異なることがあります。<br/>
+何かありましたら <a href="https://github.com/CookieBox26/games/issues">Issues</a> までご連絡ください。
+</div>
+<center>
+<div id="message" style="font-size: 14px; height: 25px;  line-height: 1.2;"></div>
+<img id="flag"/>
+<table id="answerbox"></table>
+<table><tr>
+<td onClick="backsp()" class="long">一字消す</td>
+<td onClick="submit()" class="long" id="submitbtn">回答する</td>
+<td onClick="giveup()" class="long">お手上げ</td>
+</tr></table>
+</center>
+
+<table id="keyboard1" style="float: left;"></table>
+<table id="keyboard2" style="float: left;"></table>
+<table id="keyboard3" style="float: left;"></table>
+<div style="clear: both;"></div>
+
+</body>
+</html>
