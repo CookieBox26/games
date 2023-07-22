@@ -16,8 +16,10 @@ body {
   font-size: 24px;
 }
 img {
-  max-width: 170px;
+  height: auto;
+  width: auto;
   max-height: 120px;
+  max-width: 200px;
   margin-top: 20px;
 }
 table {
@@ -41,17 +43,37 @@ td.long {
 </style>
 <script type="text/javascript"><!--
 var cursor = 0;
-var questions = [
+var questionsMaster = [
   {"path": "640px-Flag_of_Afghanistan_(2013–2021).svg.png", "ja": "アフガニスタン", "ja+": "・イスラム共和国"},
-  {"path": "640px-Flag_of_Cyprus.svg.png", "ja": "キプロス", "ja+": "共和国"},
-  {"path": "640px-Flag_of_Singapore.svg.webp", "ja": "シンガポール", "ja+": "共和国"},
-  {"path": "640px-Flag_of_Indonesia.svg.png", "ja": "インドネシア", "ja+": "共和国"},
+  {"path": "640px-Flag_of_the_United_Arab_Emirates.svg.png", "ja": "アラブ", "ja+": "首長国連邦"},
+  {"path": "640px-Flag_of_Yemen.svg.png", "ja": "イエメン", "ja+": "共和国"},
+  {"path": "640px-Flag_of_Israel.svg.png", "ja": "イスラエル", "ja+": "国"},
+  {"path": "640px-Flag_of_Iraq.svg.png", "ja": "イラク", "ja+": "共和国"},
+  {"path": "Flag_of_Iran.svg", "ja": "イラン", "ja+": "・イスラム共和国"},
   {"path": "640px-Flag_of_India.svg.png", "ja": "インド", "ja+": ""},
+  {"path": "640px-Flag_of_Indonesia.svg.png", "ja": "インドネシア", "ja+": "共和国"},
+  {"path": "640px-Flag_of_Oman.svg.png", "ja": "オマーン", "ja+": "国"},
+  {"path": "640px-Flag_of_Qatar.svg.png", "ja": "カタール", "ja+": "国"},
+  {"path": "640px-Flag_of_Cambodia.svg.png", "ja": "カンボジア", "ja+": "王国"},
+  {"path": "640px-Flag_of_Cyprus.svg.png", "ja": "キプロス", "ja+": "共和国"},
+  //{"path": "", "ja": "", "ja+": ""},
+  {"path": "640px-Flag_of_Singapore.svg.webp", "ja": "シンガポール", "ja+": "共和国"},
+
 ];
-var nQ = questions.length;
+var questions = [];
+var nQ = 5;
 var iQ = 0;
 var answerLength = 0;
 var keyboardCreated = false;
+function arrayShuffle(array) {
+  for(let i = (array.length - 1); 0 < i; i--){
+    let r = Math.floor(Math.random() * (i + 1));
+    let tmp = array[i];
+    array[i] = array[r];
+    array[r] = tmp;
+  }
+  return array;
+}
 function createKey(c) {
   let ih;
   if (c == '　') {
@@ -109,6 +131,10 @@ function init() {
     createKeyboard(2, ["マミムメモ", "ヤ　ユ　ヨ", "ラリルレロ", "ワ　ヲ　ン", "ッャュョー", "ァィゥェォ"]);
     createKeyboard(3, ["ガギグゲゴ", "ザジズゼゾ", "ダヂヅデド", "バビブベボ", "パピプペポ"]);
     keyboardCreated = true;
+  }
+  arrayShuffle(questionsMaster);
+  for (let i = 0; i < nQ; i++) {
+    questions.push(questionsMaster[i]);
   }
   iQ = 0;
   createQuestion();
@@ -210,7 +236,7 @@ function finalize() {
 </div>
 <center>
 <div id="message" style="font-size: 14px; height: 25px;  line-height: 1.2;"></div>
-<img id="flag"/>
+<div style="height: 150px; display: table-cell; vertical-align: middle;"><img id="flag"/></div>
 <table id="answerbox"></table>
 <table><tr>
 <td onClick="backsp()" class="long">一字消す</td>
