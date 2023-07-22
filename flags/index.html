@@ -10,8 +10,8 @@
   font-family: 'M PLUS Rounded 1c', sans-serif;
 }
 body {
-  width: 626px;
-  max-width: 700px;
+  width: 619px;
+  max-width: 619px;
   background: #409ecc;
   font-size: 24px;
 }
@@ -23,7 +23,7 @@ img {
   margin-top: 20px;
 }
 table {
-  margin: 3px;
+  margin: 3px 4px;
 }
 td {
   border: 1px solid #409ecc;
@@ -58,7 +58,9 @@ var questionsMaster = [
   {"path": "640px-Flag_of_Cyprus.svg.png", "ja": "キプロス", "ja+": "共和国"},
   //{"path": "", "ja": "", "ja+": ""},
   {"path": "640px-Flag_of_Singapore.svg.webp", "ja": "シンガポール", "ja+": "共和国"},
-
+  //
+  {"path": "640px-Flag_of_Jamaica.svg.png", "ja": "ジャマイカ", "ja+": ""},
+  {"path": "640px-Flag_of_Saint_Kitts_and_Nevis.svg.png", "ja": "セントクリストファー・ネービス", "ja+": ""},
 ];
 var questions = [];
 var nQ = 5;
@@ -129,10 +131,11 @@ function init() {
   if (!keyboardCreated) {
     createKeyboard(1, ["アイウエオ", "カキクケコ", "サシスセソ", "タチツテト", "ナニヌネノ", "ハヒフヘホ"]);
     createKeyboard(2, ["マミムメモ", "ヤ　ユ　ヨ", "ラリルレロ", "ワ　ヲ　ン", "ッャュョー", "ァィゥェォ"]);
-    createKeyboard(3, ["ガギグゲゴ", "ザジズゼゾ", "ダヂヅデド", "バビブベボ", "パピプペポ"]);
+    createKeyboard(3, ["ガギグゲゴ", "ザジズゼゾ", "ダヂヅデド", "バビブベボ", "パピプペポ", "・　　　　"]);
     keyboardCreated = true;
   }
   arrayShuffle(questionsMaster);
+  questions.length = 0;
   for (let i = 0; i < nQ; i++) {
     questions.push(questionsMaster[i]);
   }
@@ -151,6 +154,9 @@ function press(c) {
 }
 function backsp() {
   let btn = document.getElementById("submitbtn");
+  if (btn.innerHTML == "やり直す") {
+    return;
+  }
   if (btn.innerHTML == "もう一度最初から" || btn.innerHTML == "次の問題") {
     return;
   }
