@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>flags</title>
+<title>fish</title>
 <style type="text/css"><!--
 @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500&family=Varela+Round&display=swap');
 * {
@@ -21,6 +21,9 @@ img {
   max-height: 120px;
   max-width: 200px;
   margin-top: 20px;
+}
+div#fish {
+  font-size: 84px;
 }
 table {
   margin: 3px 4px;
@@ -44,26 +47,39 @@ td.long {
 <script type="text/javascript"><!--
 var cursor = 0;
 var questionsMaster = [
-  {"path": "640px-Flag_of_Afghanistan_(2013–2021).svg.png", "ja": "アフガニスタン", "ja+": "・イスラム共和国"},
-  {"path": "640px-Flag_of_the_United_Arab_Emirates.svg.png", "ja": "アラブ", "ja+": "首長国連邦"},
-  {"path": "640px-Flag_of_Yemen.svg.png", "ja": "イエメン", "ja+": "共和国"},
-  {"path": "640px-Flag_of_Israel.svg.png", "ja": "イスラエル", "ja+": "国"},
-  {"path": "640px-Flag_of_Iraq.svg.png", "ja": "イラク", "ja+": "共和国"},
-  {"path": "Flag_of_Iran.svg", "ja": "イラン", "ja+": "・イスラム共和国"},
-  {"path": "640px-Flag_of_India.svg.png", "ja": "インド", "ja+": ""},
-  {"path": "640px-Flag_of_Indonesia.svg.png", "ja": "インドネシア", "ja+": "共和国"},
-  {"path": "640px-Flag_of_Oman.svg.png", "ja": "オマーン", "ja+": "国"},
-  {"path": "640px-Flag_of_Qatar.svg.png", "ja": "カタール", "ja+": "国"},
-  {"path": "640px-Flag_of_Cambodia.svg.png", "ja": "カンボジア", "ja+": "王国"},
-  {"path": "640px-Flag_of_Cyprus.svg.png", "ja": "キプロス", "ja+": "共和国"},
-  //{"path": "", "ja": "", "ja+": ""},
-  {"path": "640px-Flag_of_Singapore.svg.webp", "ja": "シンガポール", "ja+": "共和国"},
-  //
-  {"path": "640px-Flag_of_Jamaica.svg.png", "ja": "ジャマイカ", "ja+": ""},
-  {"path": "640px-Flag_of_Saint_Kitts_and_Nevis.svg.png", "ja": "セントクリストファー・ネービス", "ja+": ""},
+  {"path": "鰺", "ja": "アジ", "ja+": ""},
+  {"path": "鮎", "ja": "アユ", "ja+": ""},
+  {"path": "鮑", "ja": "アワビ", "ja+": ""},
+  {"path": "鰯", "ja": "イワシ", "ja+": ""},
+  {"path": "鰻", "ja": "ウナギ", "ja+": ""},
+  {"path": "鰹", "ja": "カツオ", "ja+": ""},
+  {"path": "鰈", "ja": "カレイ", "ja+": ""},
+  {"path": "鱚", "ja": "キス", "ja+": ""},
+  {"path": "鯨", "ja": "クジラ", "ja+": ""},
+  {"path": "鯉", "ja": "コイ", "ja+": ""},
+  {"path": "鮗", "ja": "コノシロ", "ja+": ""},
+  {"path": "鮭", "ja": "サケ", "ja+": ""},
+  {"path": "鯖", "ja": "サバ", "ja+": ""},
+  {"path": "鮫", "ja": "サメ", "ja+": ""},
+  {"path": "鰆", "ja": "サワラ", "ja+": ""},
+  {"path": "鱸", "ja": "スズキ", "ja+": ""},
+  {"path": "鯛", "ja": "タイ", "ja+": ""},
+  {"path": "鱈", "ja": "タラ", "ja+": ""},
+  {"path": "鰌", "ja": "ドジョウ", "ja+": ""},
+  {"path": "鯰", "ja": "ナマズ", "ja+": ""},
+  {"path": "鰊", "ja": "ニシン", "ja+": ""},
+  {"path": "鰰", "ja": "ハタハタ", "ja+": ""},
+  {"path": "鱧", "ja": "ハモ", "ja+": ""},
+  {"path": "鮃", "ja": "ヒラメ", "ja+": ""},
+  {"path": "鮒", "ja": "フナ", "ja+": ""},
+  {"path": "鰤", "ja": "ブリ", "ja+": ""},
+  {"path": "鯔", "ja": "ボラ", "ja+": ""},
+  {"path": "鮪", "ja": "マグロ", "ja+": ""},
+  {"path": "鱒", "ja": "マス", "ja+": ""},
+  {"path": "鰙", "ja": "ワカサギ", "ja+": ""},
 ];
 var questions = [];
-var nQ = 5;
+var nQ = 10;
 var iQ = 0;
 var answerLength = 0;
 var keyboardCreated = false;
@@ -99,8 +115,8 @@ function createKeyboard(iKeyboard, arr) {
   }
 }
 function createQuestion() {
-  let elm = document.getElementById("flag");
-  elm.setAttribute("src", "img/" + questions[iQ]["path"]);
+  let elm = document.getElementById("fish");
+  elm.innerHTML = questions[iQ]["path"];
   let tr = document.createElement("tr");
   tr.id = "answerboxTr";
   let s = questions[iQ]["ja"];
@@ -236,13 +252,11 @@ function finalize() {
 </head>
 <body onload="init()">
 <div id="caution" style="font-size: 10px; line-height: 1.1">
-国旗画像は Wikipedia のパブリック・ドメイン画像を使用しています。<br/>
-国旗・国名は2017年6月時点の外務省ホームページ上の情報に基づいており最新の情報と異なることがあります。<br/>
 何かありましたら <a href="https://github.com/CookieBox26/games/issues">Issues</a> までご連絡ください。
 </div>
 <center>
 <div id="message" style="font-size: 14px; height: 25px;  line-height: 1.2;"></div>
-<div style="height: 150px; display: table-cell; vertical-align: middle;"><img id="flag"/></div>
+<div style="height: 150px; display: table-cell; vertical-align: middle;"><div id="fish"/></div>
 <table id="answerbox"></table>
 <table><tr>
 <td onClick="backsp()" class="long">一字消す</td>
