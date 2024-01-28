@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,noarchive,nofollow,noimageindex">
+<title>送り仮名クイズ</title>
+<style type="text/css">
+<!--
+body {
+  margin: 15px;
+  font-size: 125%;
+  letter-spacing: 0.05em;
+}
+span.q {
+  color: #0081c2;
+  font-weight: bold;
+}
+div.ng span.q {
+  color: #ef4026;
+}
+div.ok span.q {
+  color: #409a04;
+}
+div.flex {
+  display: flex;
+  margin: 0 0 1.0em 0;
+  gap: 0.5em;
+}
+div#q>div {
+  border: 2px solid #000000;
+  padding: 0.2em 0.4em;
+}
+div#q>div:hover {
+  background-color: lemonchiffon;
+}
+-->
+</style>
+<script type="text/javascript"><!--
+const questions = [
+  [
+    '冬は水道の水が(冷い)。',
+    '*冬は水道の水が(冷たい)。',
+    '冬は水道の水が(冷めたい)。',
+  ],
+  [
+    'ご飯が(冷る)。',
+    '*ご飯が(冷える)。',
+  ],
+  [
+    '焼き上がったケーキを(冷す)。',
+    '*焼き上がったケーキを(冷やす)。',
+  ],
+  [
+    'お茶を(冷す)。',
+    '*お茶を(冷ます)。',
+  ],
+  [
+    '*お風呂のお湯が(熱い)。',
+    'お風呂のお湯が(熱つい)。',
+  ],
+  [
+    '紙飛行機を(飛す)。',
+    '*紙飛行機を(飛ばす)。',
+  ],
+  [
+    '強い風が木の葉を(散す)。',
+    '*強い風が木の葉を(散らす)。',
+  ],
+  [
+    '弟が部屋を(散す)。',
+    '弟が部屋を(散かす)。',
+    '*弟が部屋を(散らかす)。',
+  ],
+  [
+    '*読書はゆたかな心を(養う)。',
+    '読書はゆたかな心を(養なう)。',
+    '読書はゆたかな心を(養しなう)。',
+  ],
+  [
+    'シャワーを(浴る)。',
+    '*シャワーを(浴びる)。',
+  ],
+];
+let qOrder = Array.from({ length: questions.length }, (_, i) => i);
+let cursor = 0;
+let answer = -1;
+let accept = false;
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+function setQuestion() {
+  let qId = qOrder[cursor];
+  let divQ = document.querySelector("#q");
+  let qContent = '';
+  let nS = 1;
+  for (let s of questions[qId]) {
+    let sMod = s.replace('(', '<span class="q">');
+    sMod = sMod.replace(')', '</span>');
+    if (sMod[0] == '*') {
+      answer = nS;
+      sMod = sMod.slice(1);
+    }
+    let snS = String(nS);
+    qContent += '<div id="s' + snS + '" onClick="submit(' + snS + ')">' + sMod + '</div>';
+    nS += 1;
+  }
+  divQ.innerHTML = qContent;
+  document.querySelector("#m").innerHTML = '<div>正しい送り仮名をクリックしてください。</div>';
+  accept = true;
+}
+function init() {
+  shuffleArray(qOrder);
+  setQuestion();
+}
+function submit(sId) {
+  if (!accept) {
+    return;
+  }
+  accept = false;
+  let msg = '';
+  let sign = '🐛';
+  if (sId == answer) {
+    msg += '正解です。';
+    sign = '🍉';
+  } else {
+    msg += '間違いです。';    
+  }
+  msg += '続けるにはここをクリックしてください。';
+  document.querySelector("#m").innerHTML = '<div>' + msg + '</div>';
+  document.querySelector("#m").onclick = function(){ next(); };
+  let divA = document.querySelector('#s' + String(answer));
+  let divR = document.querySelector('#r');
+  let clz = (sign == '🐛') ? 'ng' : 'ok';
+  divR.innerHTML = '<div class="' + clz + '">' + sign + divA.innerHTML + '</div>' + divR.innerHTML;
+}
+function next() {
+  document.querySelector("#m").onclick = null;
+  cursor += 1;
+  if (cursor == questions.length || cursor == 10) {
+    accept = false;
+    document.querySelector("#m").innerHTML = '<div>これで終わりです。お疲れさまでした。</div>';
+  } else {
+    setQuestion();
+  }
+}
+// --></script>
+</head>
+<body onload="init()">
+<div id="c">
+<div style="margin: 0.5em 0;" id="m"></div>
+<div class="flex" style="flex-flow: column wrap;" id="q"></div>
+<div style="margin: 0.5em 0;" id="r"></div>
+</div>
+</body>
+</html>
