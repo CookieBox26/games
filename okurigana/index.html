@@ -9,12 +9,13 @@
 <!--
 body {
   margin: 15px;
-  font-size: 125%;
+  font-size: 140%;
   letter-spacing: 0.05em;
+  font-family: "UD デジタル 教科書体 N-R", "BIZ UDゴシック Regular", "Hiragino Kaku Gothic ProN", "ascii";
 }
 span.q {
   color: #0081c2;
-  font-weight: bold;
+  // font-weight: bold;
 }
 div.ng span.q {
   color: #ef4026;
@@ -44,22 +45,9 @@ div#q>div.case:hover {
 </style>
 <script type="text/javascript"><!--
 const questions = [
-  [
-    '冬は水道の水が(ツメタイ)。',
-    '冬は水道の水が(冷い)。',
-    '*冬は水道の水が(冷たい)。',
-    '冬は水道の水が(冷めたい)。',
-  ],
-  [
-    'ご飯が(ヒエル)。',
-    'ご飯が(冷る)。',
-    '*ご飯が(冷える)。',
-  ],
-  [
-    '焼き上がったケーキを(ヒヤス)。',
-    '焼き上がったケーキを(冷す)。',
-    '*焼き上がったケーキを(冷やす)。',
-  ],
+  ['冬は水道の水が冷たい。', '冷たい', 'ツメタイ'],
+  ['ご飯が冷える。', '冷える', 'ヒエル'],
+  ['焼き上がったケーキを冷やす。', '冷やす', 'ヒヤス'],
   [
     'お茶を(サマス)。',
     'お茶を(冷す)。',
@@ -229,11 +217,26 @@ const questions = [
     '犬を散歩に(連て)行く。',
     '*犬を散歩に(連れて)行く。',
   ],
-  [
-    '小説の(ツヅキ)が読みたい。',
-    '*小説の(続き)が読みたい。',
-    '小説の(続づき)が読みたい。',
-  ],
+  ['小説の続きが読みたい。', '続き', 'ツヅキ'],
+  ['コップに水を満たす。', '満たす', 'ミタス'],
+  ['残り物には福がある。', '残り', 'ノコリ'],
+  ['かつてその町は漁業で栄えた。', '栄えた', 'サカエタ'],
+  ['わかった人は手を挙げてください。', '挙げて', 'アゲテ'],
+  ['松の木の枝が折れてしまった。', '折れて', 'オレテ'],
+  ['スープに塩を加える。', '加える', 'クワエル'],
+  ['転入生がクラスに加わる。', '加わる', 'クワワル'],
+  ['ラップでおにぎりを包む。', '包む', 'ツツム'],
+  ['その家は緑に囲まれている。', '囲まれて', 'カコマレテ'],
+  ['考えを改める。', '改める', 'アラタメル'],
+  ['年が改まる。', '改まる', 'アラタマル'],
+  ['めがねを変える。', '変える', 'カエル'],
+  ['気が変わる。', '変わる', 'カワル'],
+  ['おにぎりの具について言い争う。', '争う', 'アラソウ'],
+  ['サッカーの試合に敗れる。', '敗れる', 'ヤブレル'],
+  ['駅で友達と別れる。', '別れる', 'ワカレル'],
+  ['救助隊が逃げ遅れた人を救う。', '救う', 'スクウ'],
+  ['家族の無事を喜ぶ。', '喜ぶ', 'ヨロコブ'],
+  ['楽しい話に思わず笑う。', '笑う', 'ワラウ'],
 ];
 let qOrder = Array.from({ length: questions.length }, (_, i) => i);
 let cursor = 0;
@@ -245,12 +248,16 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
-function setQuestion() {
-  let qId = qOrder[cursor];
-  let divQ = document.querySelector("#q");
+function kanaToHira(str) {
+  return str.replace(/[\u30a1-\u30f6]/g, function(match) {
+    var chr = match.charCodeAt(0) - 0x60;
+    return String.fromCharCode(chr);
+  });
+}
+function getQuestionOld(question) {
   let qContent = '';
   let nS = 0;
-  for (let s of questions[qId]) {
+  for (let s of question) {
     let sMod = s.replace('(', '<span class="q">');
     sMod = sMod.replace(')', '</span>');
     if (nS == 0) {
@@ -266,7 +273,33 @@ function setQuestion() {
     qContent += '<div id="s' + snS + '" onClick="submit(' + snS + ')">' + sMod + '</div>';
     nS += 1;
   }
-  divQ.innerHTML = qContent;
+  return qContent;
+}
+function getQuestion(question) {
+  if (question[0].includes('(')) {
+      return getQuestionOld(question);
+  }
+  let s = '<span class="q">' + question[2] + '</span>';
+  let qContent = '<div class="case">' + question[0].replace(question[1], s) + '</div>';
+  s = kanaToHira(question[2]);
+  let n = s.length;
+  for (let nS = n - 1; nS > 0; nS--){
+    let ss = s.slice(0, nS);
+    ss = s.replace(ss, question[1].slice(0, 1));
+    if (ss == question[1]) {
+      answer = nS;
+    }
+    ss = '<span class="q">' + ss + '</span>';
+    ss = question[0].replace(question[1], ss);
+    let snS = String(nS);
+    qContent += '<div id="s' + snS + '" onClick="submit(' + snS + ')">' + ss + '</div>';
+  }
+  return qContent;
+}
+function setQuestion() {
+  let question = questions[qOrder[cursor]];
+  let divQ = document.querySelector("#q");
+  divQ.innerHTML = getQuestion(question);
   document.querySelector("#m").innerHTML = '<div>正しい送り仮名をクリックしてください。</div>';
   accept = true;
 }
