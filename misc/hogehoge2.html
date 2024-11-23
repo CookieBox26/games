@@ -87,128 +87,88 @@ div.item > div {
 </div>
 
 <script type="text/javascript"><!--
-const items = [...document.querySelectorAll(".item")]; // アイテムのリストを取得
-let activeElement = null; // タッチ中の要素を追跡
-let touchOffsetX = 0; // タッチのXオフセット
-let touchOffsetY = 0; // タッチのYオフセット
+const items = [...document.querySelectorAll(".item")]; // ドラッグ可能なアイテム
+let activeElement = null; // 現在ドラッグ中のアイテム
+let initialPosition = null; // ドラッグ開始時のアイテム位置
 
-// ドラッグ開始イベント
+// ドラッグ開始イベント（PC用）
 const handleDragStart = (e) => {
+  activeElement = e.target;
+  initialPosition = { left: activeElement.offsetLeft, top: activeElement.offsetTop };
   e.target.classList.add("dragging");
-  e.dataTransfer.effectAllowed = "move"; // ドロップ効果の設定
-  const { id } = e.target; // 転送するデータの設定
+  e.dataTransfer.effectAllowed = "move";
+  const { id } = e.target;
   e.dataTransfer.setData("application/json", JSON.stringify({ id }));
 };
 
+// ドラッグ開始イベント（スマホ用）
 const handleTouchStart = (e) => {
+  if (!e.target.classList.contains("item")) return;
   const touch = e.touches[0];
   activeElement = e.target;
+  initialPosition = { left: activeElement.offsetLeft, top: activeElement.offsetTop };
   activeElement.classList.add("dragging");
-
-  // タッチ位置と要素位置の差を記録
-  const rect = activeElement.getBoundingClientRect();
-  touchOffsetX = touch.clientX - rect.left;
-  touchOffsetY = touch.clientY - rect.top;
 };
 
-// ドラッグ終了イベント
-const handleDragEnd = (e) => e.target.classList.remove("dragging");
+// ドラッグ中イベント（スマホ用）
+const handleTouchMove = (e) => {
+  if (!activeElement) return;
+  e.preventDefault(); // スクロールを防止
+};
 
-const handleTouchEnd = (e) => {
+// ドラッグ終了イベント（PC用）
+const handleDragEnd = (e) => {
   if (!activeElement) return;
   activeElement.classList.remove("dragging");
   activeElement = null;
 };
 
-// ドラッグ中のイベント
-const handleTouchMove = (e) => {
+// ドラッグ終了イベント（スマホ用）
+const handleTouchEnd = (e) => {
   if (!activeElement) return;
-  const touch = e.touches[0];
-
-  // 要素をタッチ位置に追従
-  activeElement.style.position = "absolute";
-  activeElement.style.left = `${touch.clientX - touchOffsetX}px`;
-  activeElement.style.top = `${touch.clientY - touchOffsetY}px`;
-
-  e.preventDefault(); // スクロールを防止
-};
-
-// ドロップ処理
-const handleDrop = (e) => {
-  e.preventDefault();
-  e.target.classList.remove("over");
-
-  if (![...e.target.classList].includes("bench") && e.target.childElementCount > 0) {
-    return;
-  }
-  const { id } = JSON.parse(e.dataTransfer.getData("application/json"));
-  e.target.appendChild(document.getElementById(id));
-};
-
-const handleTouchDrop = (e) => {
-  if (!activeElement) return;
-
-  // ドロップ先を判定
-  const touch = e.changedTouches[0];
-  const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
-
-  if (
-    dropTarget &&
-    dropTarget.classList.contains("box") &&
-    (!dropTarget.classList.contains("bench") || dropTarget.childElementCount === 0)
-  ) {
-    dropTarget.appendChild(activeElement);
-  }
-
-  // リセット
-  activeElement.style.position = "";
-  activeElement.style.left = "";
-  activeElement.style.top = "";
+  handleDropAction(activeElement); // ドロップ処理を実行
+  activeElement.classList.remove("dragging");
   activeElement = null;
 };
 
-// 要素が重なった際のイベント
-const handleDragEnter = (e) => {
-  if (![...e.target.classList].includes("bench") && e.target.childElementCount > 0) {
-    return;
+// ドロップ処理
+const handleDropAction = (item) => {
+  const dropTarget = document.elementFromPoint(item.getBoundingClientRect().left, item.getBoundingClientRect().top);
+
+  if (dropTarget && dropTarget.classList.contains("box")) {
+    dropTarget.appendChild(item); // ドロップ先にアイテムを移動
+    item.style.position = "relative"; // 元のスタイルに戻す
+    item.style.left = "0px";
+    item.style.top = "0px";
+  } else {
+    // ドロップ失敗時は元の位置に戻す
+    item.style.position = "relative";
+    item.style.left = `${initialPosition.left}px`;
+    item.style.top = `${initialPosition.top}px`;
   }
-  e.target.classList.add("over");
 };
 
-// 要素が離れた際のイベント
-const handleDragLeave = (e) => e.target.classList.remove("over");
-
-// 要素が重なっている最中のイベント
+// ドラッグ重複禁止処理
 const handleDragOver = (e) => {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = "move";
+  e.preventDefault(); // ドラッグ時のデフォルト動作を抑止
 };
 
-// アイテムにイベントを登録
+// ドラッグ・タッチ用イベント登録
 for (const item of items) {
   // PC用ドラッグ＆ドロップ
   item.addEventListener("dragstart", handleDragStart, false);
   item.addEventListener("dragend", handleDragEnd, false);
 
-  // スマホ用タッチ操作
+  // スマホ用タッチ
   item.addEventListener("touchstart", handleTouchStart, false);
   item.addEventListener("touchmove", handleTouchMove, false);
   item.addEventListener("touchend", handleTouchEnd, false);
 }
 
-// ドロップ先のリストを取得
-const boxes = [...document.querySelectorAll(".box")];
-
 // ドロップ先にイベントを登録
+const boxes = [...document.querySelectorAll(".box")];
 for (const box of boxes) {
-  // PC用ドラッグ＆ドロップ
-  box.addEventListener("dragenter", handleDragEnter, false);
-  box.addEventListener("dragleave", handleDragLeave, false);
   box.addEventListener("dragover", handleDragOver, false);
-  box.addEventListener("drop", handleDrop, false);
-
-  // スマホ用タッチ操作
-  box.addEventListener("touchend", handleTouchDrop, false);
 }
 // --></script>
 </body>
