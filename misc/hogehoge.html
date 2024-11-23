@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hogehoge</title>
+<style type="text/css">
+body {
+  color: #303030;
+  font-family: 'Verdana', 'BIZ UDGothic', sans-serif;
+  line-height: 1.3;
+  background: #fff;
+  letter-spacing: 0.02em;
+  margin: 10px;
+}
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+div.container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+div.container > div {
+  display: flex;
+  flex-direction: column;
+}
+div.desc {
+  padding: 1px;
+  width: 120px;
+  height: 160px;
+}
+div.box {
+  background: #e9e9e9;
+  width: 130px;
+  height: 170px;
+  padding: 15px;
+}
+div.item {
+  background: linear-gradient(skyblue, 70%, pink);
+  width: 100px;
+  height: 140px;
+  border: 6px solid darkgray;
+  border-radius: 6px;
+}
+div.item > div {
+  background: #ffffff;
+  margin: 10px;
+  text-align: center;
+  font-size: x-large;
+  padding: 5px;
+}
+.dragging {
+  opacity: 0.5;
+}
+.over {
+  background-color: rgba(255, 255, 0, 0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<div>
+<div class="desc">物事を実際より大げさに表現すること。</div>
+<div class="box box1"></div>
+</div>
+<div>
+<div class="desc">全く、全然。「■■わからない」のように、否定的な表現とともに用いる。</div>
+<div class="box box2"></div>
+</div>
+<div>
+<div class="desc">顔かたちが整っていて美しいこと。</div>
+<div class="box box3"></div>
+</div>
+<div>
+<div class="desc">「■■をあらわす」の形で用い、隠していたことが現れること。</div>
+<div class="box box4"></div>
+</div>
+</div>
+<br/>
+<div class="box box5 bench" style="display: flex; gap: 10px; width: 100%;">
+<div class="item" draggable="true" id="item1"><div>馬脚</div></div>
+<div class="item" draggable="true" id="item2"><div>端麗</div></div>
+<div class="item" draggable="true" id="item3"><div>誇張</div></div>
+<div class="item" draggable="true" id="item4"><div>皆目</div></div>
+</div>
+
+<script type="text/javascript"><!--
+const items = [...document.querySelectorAll(".item")];  // アイテムのリストを取得
+
+// ドラッグ開始イベントを定義
+const handleDragStart = (e) => {
+  e.target.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";  // ドロップ効果の設定
+  const { id } = e.target;  // 転送するデータの設定
+  e.dataTransfer.setData("application/json", JSON.stringify({ id }));
+};
+
+// ドラッグ終了イベントを定義
+const handleDragEnd = (e) => e.target.classList.remove("dragging");
+
+// アイテムにイベントを登録
+for (const item of items) {
+  item.addEventListener("dragstart", handleDragStart, false);
+  item.addEventListener("dragend", handleDragEnd, false);
+}
+
+// 要素が重なった際のイベントを定義
+const handleDragEnter = (e) => {
+  if (![...e.target.classList].includes("bench") && (e.target.childElementCount > 0)) {
+    return;
+  }
+  if ([...e.target.classList].includes("item")) { return; }  // 子要素へのドラッグを制限
+  e.target.classList.add("over");
+};
+
+// 要素が離れた際のイベントを定義
+const handleDragLeave = (e) => e.target.classList.remove("over");
+
+// 要素が重なっている最中のイベントを定義
+const handleDragOver = (e) => {
+  e.preventDefault();  // 要素が重なった際のブラウザ既定の処理を変更
+  // 子要素へのドラッグを制限
+  if ([...e.target.classList].includes("item")) {
+    // ドラッグ不可のドロップ効果を設定
+    e.dataTransfer.dropEffect = "none";
+    return;
+  }
+  e.dataTransfer.dropEffect = "move";  // ドロップ効果の設定
+};
+
+// 要素がドロップされた際のイベントを定義
+const handleDrop = (e) => {
+  e.preventDefault();  // 要素がドロップされた際のブラウザ既定の処理を変更
+  e.target.classList.remove("over");
+  if (![...e.target.classList].includes("bench") && (e.target.childElementCount > 0)) {
+    return;
+  }
+  if (e.dataTransfer.files.length > 0) { return; }  // ファイルドロップを制限
+  const { id } = JSON.parse(e.dataTransfer.getData("application/json"));  // 転送データ取得
+  e.target.appendChild(document.getElementById(id));  // ドロップ先に要素を追加
+};
+
+// ドロップ先のリストを取得
+const boxes = [...document.querySelectorAll(".box")];
+
+// ドロップ先にイベントを登録
+for (const box of boxes) {
+  box.addEventListener("dragenter", handleDragEnter, false);
+  box.addEventListener("dragleave", handleDragLeave, false);
+  box.addEventListener("dragover", handleDragOver, false);
+  box.addEventListener("drop", handleDrop, false);
+}
+// --></script>
+</body>
+</html>
