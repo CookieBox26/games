@@ -5,36 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>hogehoge</title>
 <style type="text/css">
-body {
-  color: #303030;
-  font-family: 'Verdana', 'BIZ UDGothic', sans-serif;
-  line-height: 1.3;
-  background: #fff;
-  letter-spacing: 0.02em;
-  margin: 10px;
-}
 *, *:before, *:after {
   box-sizing: border-box;
 }
+body {
+  color: #242424;
+  font-family: 'Verdana', 'BIZ UDGothic', sans-serif;
+  background: azure;
+  margin: 10px;
+}
 div.container {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
 }
-div.container > div {
-  display: flex;
-  flex-direction: column;
-}
-div.desc {
-  padding: 1px;
-  width: 120px;
-  height: 160px;
-}
 div.box {
-  background: #e9e9e9;
+  background: gainsboro;
   width: 130px;
   height: 170px;
   padding: 15px;
+  position: relative;
+}
+div.over {
+  background: gold;
 }
 div.item {
   background: linear-gradient(skyblue, 70%, pink);
@@ -42,6 +36,20 @@ div.item {
   height: 140px;
   border: 6px solid darkgray;
   border-radius: 6px;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+}
+.dragging {
+  opacity: 0.4;
+}
+.drag-preview {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.5;
+  display: none;
+  transform: translate(-50%, -50%);
 }
 div.item > div {
   background: #ffffff;
@@ -50,107 +58,145 @@ div.item > div {
   font-size: x-large;
   padding: 5px;
 }
-.dragging {
-  opacity: 0.5;
-}
-.over {
-  background-color: rgba(255, 255, 0, 0.3);
-}
 </style>
 </head>
 <body>
 
 <div class="container">
-<div>
-<div class="desc">物事を実際より大げさに表現すること。</div>
-<div class="box box1"></div>
-</div>
-<div>
-<div class="desc">全く、全然。「■■わからない」のように、否定的な表現とともに用いる。</div>
-<div class="box box2"></div>
-</div>
-<div>
-<div class="desc">顔かたちが整っていて美しいこと。</div>
-<div class="box box3"></div>
-</div>
-<div>
-<div class="desc">「■■をあらわす」の形で用い、隠していたことが現れること。</div>
-<div class="box box4"></div>
-</div>
-</div>
-<br/>
-<div class="box box5 bench" style="display: flex; gap: 10px; width: 100%;">
+
+<div class="box box1">
 <div class="item" draggable="true" id="item1"><div>馬脚</div></div>
+</div>
+
+<div class="box box2">
 <div class="item" draggable="true" id="item2"><div>端麗</div></div>
-<div class="item" draggable="true" id="item3"><div>誇張</div></div>
-<div class="item" draggable="true" id="item4"><div>皆目</div></div>
+</div>
+
+<div class="box box3">
+顔かたちが整っていて美しいこと。
+</div>
+
+<div class="box box4">
+「■■をあらわす」の形で用い、隠していたことが現れること。
+</div>
+
 </div>
 
 <script type="text/javascript"><!--
-const items = [...document.querySelectorAll(".item")];  // アイテムのリストを取得
-
-// ドラッグ開始イベントを定義
+// ----- パソコンでのドラッグドロップ用 -----
 const handleDragStart = (e) => {
+  // アイテムをドラッグ開始したときのイベント
   e.target.classList.add("dragging");
   e.dataTransfer.effectAllowed = "move";  // ドロップ効果の設定
   const { id } = e.target;  // 転送するデータの設定
   e.dataTransfer.setData("application/json", JSON.stringify({ id }));
 };
-
-// ドラッグ終了イベントを定義
-const handleDragEnd = (e) => e.target.classList.remove("dragging");
-
-// アイテムにイベントを登録
-for (const item of items) {
+const handleDragEnd = (e) => {
+  // アイテムをドラッグ終了したときのイベント
+  e.target.classList.remove("dragging");
+};
+// アイテムたちにイベントを登録
+document.querySelectorAll(".item").forEach(item => {
   item.addEventListener("dragstart", handleDragStart, false);
   item.addEventListener("dragend", handleDragEnd, false);
-}
+});
 
-// 要素が重なった際のイベントを定義
 const handleDragEnter = (e) => {
-  if (![...e.target.classList].includes("bench") && (e.target.childElementCount > 0)) {
+  // ボックス上空にアイテムが重なってきたときのイベント
+  if ((![...e.target.classList].includes("bench") && (e.target.childElementCount > 0))
+      || [...e.target.classList].includes("item")) {
     return;
   }
-  if ([...e.target.classList].includes("item")) { return; }  // 子要素へのドラッグを制限
   e.target.classList.add("over");
 };
-
-// 要素が離れた際のイベントを定義
-const handleDragLeave = (e) => e.target.classList.remove("over");
-
-// 要素が重なっている最中のイベントを定義
-const handleDragOver = (e) => {
-  e.preventDefault();  // 要素が重なった際のブラウザ既定の処理を変更
-  // 子要素へのドラッグを制限
-  if ([...e.target.classList].includes("item")) {
-    // ドラッグ不可のドロップ効果を設定
-    e.dataTransfer.dropEffect = "none";
-    return;
-  }
-  e.dataTransfer.dropEffect = "move";  // ドロップ効果の設定
-};
-
-// 要素がドロップされた際のイベントを定義
-const handleDrop = (e) => {
-  e.preventDefault();  // 要素がドロップされた際のブラウザ既定の処理を変更
+const handleDragLeave = (e) => {
+  // ボックス上空からアイテムが去っていったときのイベント
   e.target.classList.remove("over");
-  if (![...e.target.classList].includes("bench") && (e.target.childElementCount > 0)) {
+};
+const handleDragOver = (e) => {
+  // ボックス上空にアイテムがいるときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  e.dataTransfer.dropEffect = [...e.target.classList].includes("item") ? "none" : "move";
+};
+// ボックス上空でアイテムが手放されたときのイベント (パソコン)
+const handleDrop = (e) => {
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  e.target.classList.remove("over");
+  if ((![...e.target.classList].includes("bench")
+      && (e.target.childElementCount > 0))
+      || e.dataTransfer.files.length > 0) {
     return;
   }
-  if (e.dataTransfer.files.length > 0) { return; }  // ファイルドロップを制限
-  const { id } = JSON.parse(e.dataTransfer.getData("application/json"));  // 転送データ取得
-  e.target.appendChild(document.getElementById(id));  // ドロップ先に要素を追加
+  // ドロップ先に要素を追加
+  const { id } = JSON.parse(e.dataTransfer.getData("application/json"));
+  e.target.appendChild(document.getElementById(id));
 };
-
-// ドロップ先のリストを取得
-const boxes = [...document.querySelectorAll(".box")];
-
-// ドロップ先にイベントを登録
-for (const box of boxes) {
+// ボックスたちにイベントを登録
+document.querySelectorAll(".box").forEach(box => {
   box.addEventListener("dragenter", handleDragEnter, false);
   box.addEventListener("dragleave", handleDragLeave, false);
   box.addEventListener("dragover", handleDragOver, false);
   box.addEventListener("drop", handleDrop, false);
+});
+
+// ----- スマートフォンでのドラッグドロップ用 -----
+let draggedItem = null; // ドラッグ中のアイテム
+let dragPreview = null; // 指に追従させるアイテム
+const handleTouchStart = (e) => {
+  // 画面にタッチしたときのイベント
+  const target = e.target;
+  if (!target.classList.contains("item")) return;
+  draggedItem = target;
+  draggedItem.classList.add("dragging");
+  // 指に追従させるアイテムを作成
+  dragPreview = draggedItem.cloneNode(true);
+  dragPreview.classList.add("drag-preview");
+  document.body.appendChild(dragPreview);
+};
+const handleTouchMove = (e) => {
+  // 画面にタッチしている指を動かしたときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  const touch = e.touches[0];  // 最初のタッチポイント
+  if (dragPreview) {  // 指に追従させるアイテムを指に追従させる
+    dragPreview.style.left = `${touch.clientX}px`;
+    dragPreview.style.top = `${touch.clientY}px`;
+    dragPreview.style.display = "block";
+  }
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if ((element && element.classList.contains("box"))
+      && !((![...element.classList].includes("bench") && (element.childElementCount > 0))
+           || [...element.classList].includes("item"))) {
+    // 有効なボックスが検出された場合
+    element.classList.add("over");
+  }
+};
+const handleTouchEnd = (e) => {
+  // 画面にタッチしている指を放したときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  const touch = e.changedTouches[0];  // タッチ終了位置
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if ((element && element.classList.contains("box"))
+      && !((![...element.classList].includes("bench") && (element.childElementCount > 0))
+           || [...element.classList].includes("item"))) {
+    // 有効なドロップ先であった場合
+    element.appendChild(draggedItem);
+  }
+  // リセット
+  if (dragPreview) {
+    dragPreview.remove();
+    dragPreview = null;
+  }
+  draggedItem.classList.remove("dragging");
+  document.querySelectorAll(".box").forEach(box => {
+    box.classList.remove("over");
+  });
+  draggedItem = null;
+};
+if ("ontouchstart" in window) {
+  // スマートフォンであったら画面にイベントを登録
+  document.addEventListener("touchstart", handleTouchStart, { passive: false });
+  document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  document.addEventListener("touchend", handleTouchEnd, false);
 }
 // --></script>
 </body>
