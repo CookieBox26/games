@@ -9,12 +9,11 @@
   box-sizing: border-box;
 }
 body {
-  color: #242424;
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
   line-height: 1.2;
-  background: azure;
-  margin: 10px;
+  background: linear-gradient(10deg, #1c6d39 70%, #0f4823);
   width: 360px;
+  height: 100vh;
 }
 div.container {
   display: flex;
@@ -23,33 +22,45 @@ div.container {
   justify-content: center;
 }
 div.box {
-  background: gainsboro;
   width: 120px;
   height: 150px;
   padding: 10px;
   position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
 }
 div.over {
-  background: gold;
+  background: rgba(255, 255, 255, 0.3);
 }
 div.item {
-  background: linear-gradient(skyblue, 70%, pink);
   width: 100px;
   height: 130px;
-  border: 6px solid darkgray;
+  border: 6px solid #999999;
   border-radius: 6px;
-  position: absolute;
-  top: 10px;
-  left: 10px;
+  background:
+    repeating-linear-gradient(
+      120deg, rgba(255, 215, 0, 0.4) 50px,
+      rgba(255, 255, 0, 0.4) 100px, rgba(255, 215, 0, 0.4) 150px),
+    repeating-linear-gradient(30deg, orange 70px, yellow 210px, orange 280px);
 }
 div.bench {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  height: 295px;
   width: 100%;
+  justify-content: center;
+}
+div.box > div.item {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  //box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 div.bench > div.item {
   position: static;
+  box-shadow: none;
 }
 .dragging {
   opacity: 0.5;
@@ -63,11 +74,12 @@ div.bench > div.item {
   transform: translate(-50%, -50%);
 }
 div.item > div {
+  color: #242424;
   background: #ffffff;
   margin: 15px 10px auto 10px;
   text-align: center;
   font-size: x-large;
-  padding: 5px;
+  padding: 10px 5px;
 }
 </style>
 </head>
@@ -174,6 +186,7 @@ const handleTouchStart = (e) => {
 };
 const handleTouchMove = (e) => {
   // 画面にタッチしている指を動かしたときのイベント
+  if (draggedItem == null) return;
   e.preventDefault();  // ブラウザ既定の処理を禁止
   const touch = e.touches[0];  // 最初のタッチポイント
   if (dragPreview) {  // 指に追従させるアイテムを指に追従させる
@@ -194,6 +207,7 @@ const handleTouchMove = (e) => {
 };
 const handleTouchEnd = (e) => {
   // 画面にタッチしている指を放したときのイベント
+  if (draggedItem == null) return;
   e.preventDefault();  // ブラウザ既定の処理を禁止
   const touch = e.changedTouches[0];  // タッチ終了位置
   const element = document.elementFromPoint(touch.clientX, touch.clientY);
