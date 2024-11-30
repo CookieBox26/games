@@ -8,6 +8,9 @@
 *, *:before, *:after {
   box-sizing: border-box;
 }
+html, body {
+  overflow: hidden;
+}
 body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
   line-height: 1.2;
@@ -73,13 +76,31 @@ div.bench > div.item {
   display: none;
   transform: translate(-50%, -50%);
 }
-div.item > div {
+div.kanji {
   color: #242424;
   background: #ffffff;
   margin: 15px 10px auto 10px;
   text-align: center;
   font-size: x-large;
+  font-weight: bold;
   padding: 10px 5px;
+}
+div.yomi {
+  position: relative;
+  display: inline-block;
+  margin-top: 5px;
+  margin-left: -5px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  color: #191919;
+  background: #ffab0f;
+  white-space: nowrap;
+  text-align:center;
+  line-height: 56px;
+  box-shadow: -3px -3px 6px #7f5112 inset;
+  font-size: small;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -107,10 +128,10 @@ div.item > div {
 
 <br/>
 <div class="box bench">
-<div class="item" draggable="true" id="item1"><div>馬脚</div></div>
-<div class="item" draggable="true" id="item2"><div>端麗</div></div>
-<div class="item" draggable="true" id="item3"><div>誇張</div></div>
-<div class="item" draggable="true" id="item4"><div>皆目</div></div>
+<div class="item" draggable="true" id="item1"><div class="kanji">馬脚</div><div class="yomi">ばきゃく</div></div>
+<div class="item" draggable="true" id="item2"><div class="kanji">端麗</div></div>
+<div class="item" draggable="true" id="item3"><div class="kanji">誇張</div></div>
+<div class="item" draggable="true" id="item4"><div class="kanji">皆目</div></div>
 </div>
 
 <script type="text/javascript"><!--
