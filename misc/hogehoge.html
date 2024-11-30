@@ -10,9 +10,11 @@
 }
 body {
   color: #242424;
-  font-family: 'Verdana', 'BIZ UDGothic', sans-serif;
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  line-height: 1.2;
   background: azure;
   margin: 10px;
+  width: 360px;
 }
 div.container {
   display: flex;
@@ -22,9 +24,9 @@ div.container {
 }
 div.box {
   background: gainsboro;
-  width: 130px;
-  height: 170px;
-  padding: 15px;
+  width: 120px;
+  height: 150px;
+  padding: 10px;
   position: relative;
 }
 div.over {
@@ -33,15 +35,24 @@ div.over {
 div.item {
   background: linear-gradient(skyblue, 70%, pink);
   width: 100px;
-  height: 140px;
+  height: 130px;
   border: 6px solid darkgray;
   border-radius: 6px;
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: 10px;
+  left: 10px;
+}
+div.bench {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+div.bench > div.item {
+  position: static;
 }
 .dragging {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 .drag-preview {
   position: fixed;
@@ -53,7 +64,7 @@ div.item {
 }
 div.item > div {
   background: #ffffff;
-  margin: 10px;
+  margin: 15px 10px auto 10px;
   text-align: center;
   font-size: x-large;
   padding: 5px;
@@ -65,11 +76,11 @@ div.item > div {
 <div class="container">
 
 <div class="box box1">
-<div class="item" draggable="true" id="item1"><div>馬脚</div></div>
+物事を実際より大げさに表現すること。
 </div>
 
 <div class="box box2">
-<div class="item" draggable="true" id="item2"><div>端麗</div></div>
+全く、全然。「■■わからない」のように、否定的な表現とともに用いる。
 </div>
 
 <div class="box box3">
@@ -80,6 +91,14 @@ div.item > div {
 「■■をあらわす」の形で用い、隠していたことが現れること。
 </div>
 
+</div>
+
+<br/>
+<div class="box bench">
+<div class="item" draggable="true" id="item1"><div>馬脚</div></div>
+<div class="item" draggable="true" id="item2"><div>端麗</div></div>
+<div class="item" draggable="true" id="item3"><div>誇張</div></div>
+<div class="item" draggable="true" id="item4"><div>皆目</div></div>
 </div>
 
 <script type="text/javascript"><!--
@@ -162,6 +181,9 @@ const handleTouchMove = (e) => {
     dragPreview.style.top = `${touch.clientY}px`;
     dragPreview.style.display = "block";
   }
+  document.querySelectorAll(".box").forEach(box => {
+    box.classList.remove("over");
+  });
   const element = document.elementFromPoint(touch.clientX, touch.clientY);
   if ((element && element.classList.contains("box"))
       && !((![...element.classList].includes("bench") && (element.childElementCount > 0))
