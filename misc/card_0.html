@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>card 0</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overflow: hidden;
+}
+body {
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  background: #1c6d39;
+}
+div.container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+}
+div.box {  /* カードを置くボックス */
+  width: 100px;
+  height: 130px;
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+div.box-over {  /* ボックス上空にカードがドラッグされてきたらボックスをやや白くする */
+  background: rgba(255, 255, 255, 0.3);
+}
+div.card {  /* カード */
+  width: 80px;
+  height: 110px;
+  border: 5px solid darkgray;
+  border-radius: 5px;
+  background: gold;
+  padding: 5px;
+}
+.dragging {  /* ドラッグ中のカード (幽体離脱された側) */
+  opacity: 0.3;
+}
+.drag-preview {  /* ドラッグ中のカード (幽体離脱した側) (スマートフォン用) */
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.7;
+  display: none;
+  transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="box box1">
+<div class="card" draggable="true" id="card_1">1</div>
+</div>
+
+<div class="box box2">
+</div>
+
+<div class="box box3">
+</div>
+
+<div class="box box4">
+<div class="card" draggable="true" id="card_2">2</div>
+</div>
+
+</div>
+
+<script type="text/javascript"><!--
+// ----- パソコン・スマートフォン共通 -----
+let draggedCard = null; // ドラッグ中のカード
+function isDroppable(element) {  // その要素にカードをドロップできるか
+  if (!element || !element.classList.contains("box")) return false;  // ボックスでないとだめ
+  if (element.classList.contains("card")) return false;  // カードであったらだめ
+  if (element.childElementCount > 0) return false;  // 先客のカードがいたらだめ
+  return true;
+}
+
+// ----- パソコンでのドラッグドロップ用 -----
+const handleDragStart = (e) => {
+  // カードをドラッグ開始したときのイベント
+  e.target.classList.add("dragging");
+  draggedCard = e.target;
+};
+const handleDragEnd = (e) => {
+  // カードをドラッグ終了したときのイベント
+  e.target.classList.remove("dragging");
+};
+// カードたちにイベントを登録
+document.querySelectorAll(".card").forEach(card => {
+  card.addEventListener("dragstart", handleDragStart, false);
+  card.addEventListener("dragend", handleDragEnd, false);
+});
+
+const handleDragEnter = (e) => {
+  // ボックス上空にカードが重なってきたときのイベント
+  if (!isDroppable(e.target)) return;
+  e.target.classList.add("box-over");
+};
+const handleDragLeave = (e) => {
+  // ボックス上空からカードが去っていったときのイベント
+  e.target.classList.remove("box-over");
+};
+const handleDragOver = (e) => {
+  // ボックス上空にカードがいるときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  // そのボックスにカードを移動できないならカーソルを禁止マークにする
+  e.dataTransfer.dropEffect = isDroppable(e.target) ? "move" : "none";
+  // ドラッグ中のカード自身や元々いたボックス上空なら便宜上カーソルを禁止マークにしない
+  // ドラッグし始めていきなり禁止マークが出るとびっくりするかもしれないため
+  if (e.target == draggedCard) e.dataTransfer.dropEffect = "move";
+  if (e.target == draggedCard.parentElement) e.dataTransfer.dropEffect = "move";
+};
+const handleDrop = (e) => {
+  // ボックス上空でカードが手放されたときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  e.target.classList.remove("box-over");
+  if (draggedCard == null) return;
+  if (isDroppable(e.target)) e.target.appendChild(draggedCard);  // ドロップ先に要素を追加
+};
+// ボックスたちにイベントを登録
+document.querySelectorAll(".box").forEach(box => {
+  box.addEventListener("dragenter", handleDragEnter, false);
+  box.addEventListener("dragleave", handleDragLeave, false);
+  box.addEventListener("dragover", handleDragOver, false);
+  box.addEventListener("drop", handleDrop, false);
+});
+
+// ----- スマートフォンでのドラッグドロップ用 -----
+let dragPreview = null; // 指に追従させるカード
+const handleTouchStart = (e) => {
+  // 画面にタッチしたときのイベント
+  const target = e.target;
+  if (!target.classList.contains("card")) return;
+  draggedCard = target;
+  draggedCard.classList.add("dragging");
+  // 指に追従させるカードを作成
+  dragPreview = draggedCard.cloneNode(true);
+  dragPreview.classList.add("drag-preview");
+  document.body.appendChild(dragPreview);
+};
+const handleTouchMove = (e) => {
+  // 画面にタッチしている指を動かしたときのイベント
+  if (draggedCard == null) return;
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  const touch = e.touches[0];  // 最初のタッチポイント
+  // 指に追従させるカードを指に追従させる
+  dragPreview.style.left = `${touch.clientX}px`;
+  dragPreview.style.top = `${touch.clientY}px`;
+  dragPreview.style.display = "block";
+  // 全ボックスの box-over クラスを除去し改めて指の下にあるボックスだけに box-over クラスを付与
+  document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (isDroppable(element)) element.classList.add("box-over");
+};
+const handleTouchEnd = (e) => {
+  // 画面にタッチしている指を放したときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  if (draggedCard == null) return;
+  const touch = e.changedTouches[0];  // タッチ終了位置
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (isDroppable(element)) element.appendChild(draggedCard);
+  // ドラッグ中のカードと指に追従させるカードをリセット
+  draggedCard.classList.remove("dragging");
+  document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
+  draggedCard = null;
+  if (dragPreview) dragPreview.remove();
+  dragPreview = null;
+};
+if ("ontouchstart" in window) {
+  // スマートフォンであったら画面にイベントを登録
+  document.addEventListener("touchstart", handleTouchStart, { passive: false });
+  document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  document.addEventListener("touchend", handleTouchEnd, false);
+}
+// --></script>
+</body>
+</html>
