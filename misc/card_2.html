@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>card 2</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overflow: hidden;
+}
+body {
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  background: #1c6d39;
+  width: 360px;
+}
+div.container {
+  display: flex;
+  /* justify-content: center; */
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+}
+div.box {  /* カードを置くボックス */
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.2;
+}
+div.box-over {  /* ボックス上にカードがドラッグされてきたらボックスをやや白くする */
+  background: rgba(255, 255, 255, 0.3);
+}
+div.answer {
+  position: relative;
+  width: 100px;
+  height: 130px;
+}
+div.bench {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: calc(2 * (100px) + 1 * 10px);
+  height: calc(2 * (130px) + 1 * 10px);
+}
+div.card {  /* カード */
+  width: 80px;
+  height: 110px;
+  border: 5px solid darkgray;
+  border-radius: 5px;
+  background: #fffd74;
+  padding: 5px;
+  color: #242424;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-content: start;
+}
+div.answer > div.card {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+.dragging {  /* ドラッグ中のカード (幽体離脱された側) */
+  opacity: 0.3;
+}
+.drag-preview {  /* ドラッグ中のカード (幽体離脱した側) (スマートフォン用) */
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.7;
+  display: none;
+  transform: translate(-50%, -50%);
+}
+div.energy-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-content: start;
+  padding: 10px;
+  width: calc(34px + 3px + 34px);
+  height: calc(2 * (130px) + 1 * 10px);
+}
+div.energy {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #191919;
+  background: #fffd37;
+  text-align: center;
+  line-height: 32px;
+  box-shadow: -3px -3px 4px #84771f inset;
+  font-size: 22px;
+}
+
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: auto;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div class="container">
+<div class="box answer" id="box0"></div>
+<div class="box answer" id="box1"></div>
+<div class="box answer" id="box2"></div>
+<div class="box answer" id="box3"></div>
+</div>
+
+<div class="container">
+<div class="box bench">
+<div class="item card" draggable="true" id="card0"></div>
+<div class="item card" draggable="true" id="card1"></div>
+<div class="item card" draggable="true" id="card2"></div>
+<div class="item card" draggable="true" id="card3"></div>
+</div>
+<div class="box bench energy-field">
+<div class="item energy" draggable="true" id="energy0"></div>
+<div class="item energy" draggable="true" id="energy1"></div>
+<div class="item energy" draggable="true" id="energy2"></div>
+<div class="item energy" draggable="true" id="energy3"></div>
+<div class="item energy" draggable="true" id="energy4"></div>
+<div class="item energy" draggable="true" id="energy5"></div>
+<div class="item energy" draggable="true" id="energy6"></div>
+<div class="item energy" draggable="true" id="energy7"></div>
+<div class="item energy" draggable="true" id="energy8"></div>
+<div class="item energy" draggable="true" id="energy9"></div>
+<div class="item energy" draggable="true" id="energy10"></div>
+<div class="item energy" draggable="true" id="energy11"></div>
+<div class="item energy" draggable="true" id="energy12"></div>
+<div class="item energy" draggable="true" id="energy13"></div>
+</div>
+</div>
+
+<div id="modal" style="display: none;">
+<div class="modal-content">
+<p>正解です！コンティニューしますか？</p>
+<button id="continue">コンティニュー</button>
+<button id="close">閉じる</button>
+</div>
+</div>
+
+<script type="text/javascript"><!--
+// ----- 言葉の注入 -----
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+const words = [
+  {kanji: "馬脚", yomi: "ばきゃく", imi: "「■■をあらわす」の形で用い、隠していたことが現れること。", dummy: "場客" },
+  {kanji: "端麗", yomi: "たんれい", imi: "顔かたちが整っていて美しいこと。", dummy: "丹令"},
+  {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
+  {kanji: "皆目", yomi: "かいもく", imi: "全く、全然。「■■わからない」のように、否定的な表現とともに用いる。", dummy: "開黙"},
+];
+const boxIds = ["box0", "box1", "box2", "box3"];
+const indicesCard = Array.from({ length: 4 }, (_, index) => index);
+const indicesEnergy = Array.from({ length: 14 }, (_, index) => index);
+var cursor = 0;
+
+function init() {
+  shuffleArray(words);
+  let kanjiArray = [];
+  let dummyArray = [];
+  shuffleArray(indicesCard);
+  shuffleArray(indicesEnergy);
+  for (let i = 0; i < 4; i++) {
+    document.getElementById(`box${i}`).innerHTML = words[cursor + i].imi;
+    document.getElementById(`box${i}`).dataset.correct = words[cursor + i].yomi;
+    kanjiArray.push(...words[cursor + i].kanji.split(""));
+    dummyArray.push(...words[cursor + i].dummy.split(""));
+  }
+  shuffleArray(dummyArray);
+  kanjiArray.push(...dummyArray);
+  indicesCard.forEach((j, i) => {
+    document.getElementById(`card${i}`).innerHTML = words[cursor + j].yomi + "<br/>";
+    document.getElementById(`card${i}`).dataset.correct = words[cursor + j].kanji;
+  });
+  indicesEnergy.forEach((j, i) => {
+    document.getElementById(`energy${i}`).innerHTML = kanjiArray[j];
+  });
+}
+function judge(element) {
+  if (element.classList.contains("card")) {
+    let userAnswer = Array.from(element.children).map(child => child.innerHTML).join("");
+    if (userAnswer == element.dataset.correct) {
+      element.style.backgroundColor = "#fedf08";
+      element.dataset.correct = "";
+      for (const child of element.children) {
+        child.classList.remove("item");
+        child.removeAttribute("draggable");
+      }
+    }
+  }
+  let correctCounter = 0;
+  for (let i = 0; i < 4; i++) {
+    let box = document.getElementById(`box${i}`);
+    if (box.children.length == 0) continue;
+    if (box.children[0].dataset.correct != "") continue;
+    let userAnswer = box.children[0].firstChild.textContent.trim();
+    if (userAnswer != box.dataset.correct) continue;
+    correctCounter += 1;
+  };
+  if (correctCounter == 4) {
+    // console.log("congratulations");
+    let modal = document.getElementById("modal");
+    modal.style.display = "flex";
+  }
+}
+
+// ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
+let draggedItem = null; // ドラッグ中のアイテム
+function isDroppableBox(element) {  // その要素はアイテムを置ける場所か
+  if (draggedItem.classList.contains("card")) {
+    if (!element || !element.classList.contains("box")) return false;  // ボックスでないとだめ
+    if (element.classList.contains("card")) return false;  // カードであったらだめ
+    if (element.classList.contains("energy-field")) return false;
+    if (element.classList.contains("bench")) return true;  // ベンチならOK
+    if (element.childElementCount > 0) return false;  // ベンチでないなら先客のカードがいたらだめ
+    return true;
+  }
+  if (draggedItem.classList.contains("energy")) {
+    if (!element) return false;
+    if (element.dataset.correct == "") return false;  // 既に正しいエネルギーが載っていたらだめ
+    if (element.classList.contains("card")) return true;
+    if (element.classList.contains("energy-field")) return true;
+  }
+  return false;
+}
+
+// ----- パソコンでのドラッグドロップ用 -----
+const handleDragItemStart = (e) => {
+  // アイテムをドラッグ開始したときのイベント
+  e.target.classList.add("dragging");
+  draggedItem = e.target;
+};
+const handleDragItemEnd = (e) => {
+  // アイテムをドラッグ終了したときのイベント
+  e.target.classList.remove("dragging");
+  draggedItem = null;
+};
+// アイテムたちにイベントを登録
+document.querySelectorAll(".item").forEach(card => {
+  card.addEventListener("dragstart", handleDragItemStart, false);
+  card.addEventListener("dragend", handleDragItemEnd, false);
+});
+
+const handleDragEnter = (e) => {
+  // 要素の上に何かがドラッグされてきたときのイベント
+  if (draggedItem == null) return;  // ドラッグされてきたのがアイテムでないなら何もしない
+  // ドラッグされてきたのがアイテムであってそこがアイテムを置ける場所なら知らせるため目立たせる
+  if (isDroppableBox(e.target)) e.target.classList.add("box-over");
+};
+const handleDragOver = (e) => {
+  // 要素の上に何かがドラッグされているときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  if (draggedItem == null) {  // ドラッグされてきたのがアイテムでないなら禁止カーソルにする
+    e.dataTransfer.dropEffect = "none";
+    return;
+  }
+  // そこがアイテムを置ける場所でないなら禁止カーソルにする
+  e.dataTransfer.dropEffect = isDroppableBox(e.target) ? "move" : "none";
+  // 但しそこがドラッグ中のアイテム自身や元々いた場所上空なら便宜上移動可能カーソルにする
+  // ドラッグし始めていきなり禁止マークが出るとインタフェースとして微妙なため
+  if (e.target == draggedItem) e.dataTransfer.dropEffect = "move";
+  if (e.target == draggedItem.parentElement) e.dataTransfer.dropEffect = "move";
+};
+const handleDragLeave = (e) => {
+  // 要素の上から何かが去っていったときのイベント
+  e.target.classList.remove("box-over");  // もし目立たせていたら目立たなくする
+};
+const handleDrop = (e) => {
+  // 要素の上でカードが手放されたときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  e.target.classList.remove("box-over");  // もし目立たせていたら目立たなくする
+  // ドラッグされてきたのがアイテムであってそこがアイテムを置ける場所ならそこにアイテムを追加
+  if (draggedItem && isDroppableBox(e.target)) e.target.appendChild(draggedItem);
+  judge(e.target);
+};
+// ページ上に何かがドラッグされてきた/いる/去る/落とされるイベントを登録
+document.addEventListener("dragenter", handleDragEnter, false);
+document.addEventListener("dragover", handleDragOver, false);
+document.addEventListener("dragleave", handleDragLeave, false);
+document.addEventListener("drop", handleDrop, false);
+
+// ----- スマートフォンでのドラッグドロップ用 -----
+let dragPreview = null; // 指に追従させるアイテム
+const handleTouchStart = (e) => {
+  // 画面にタッチしたときのイベント
+  const target = e.target;
+  if (!target.classList.contains("item")) return;
+  draggedItem = target;
+  draggedItem.classList.add("dragging");
+  // 指に追従させるアイテムを作成
+  dragPreview = draggedItem.cloneNode(true);
+  dragPreview.classList.add("drag-preview");
+  document.body.appendChild(dragPreview);
+};
+const handleTouchMove = (e) => {
+  // 画面にタッチしている指を動かしたときのイベント
+  if (draggedItem == null) return;
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  const touch = e.touches[0];  // 最初のタッチポイント
+  // 指に追従させるアイテムを指に追従させる
+  dragPreview.style.left = `${touch.clientX}px`;
+  dragPreview.style.top = `${touch.clientY}px`;
+  dragPreview.style.display = "block";
+  // 全ボックスの box-over クラスを除去し改めて指の下にあるボックスだけに box-over クラスを付与
+  document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (isDroppableBox(element)) element.classList.add("box-over");
+};
+const handleTouchEnd = (e) => {
+  // 画面にタッチしている指を放したときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  if (draggedItem == null) return;
+  const touch = e.changedTouches[0];  // タッチ終了位置
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (isDroppableBox(element)) element.appendChild(draggedItem);
+  judge(element);
+  // ドラッグ中のアイテムと指に追従させるアイテムをリセット
+  draggedItem.classList.remove("dragging");
+  document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
+  draggedItem = null;
+  if (dragPreview) dragPreview.remove();
+  dragPreview = null;
+};
+if ("ontouchstart" in window) {
+  // スマートフォンであったらページにタッチイベントを登録
+  document.addEventListener("touchstart", handleTouchStart, { passive: false });
+  document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  document.addEventListener("touchend", handleTouchEnd, false);
+}
+// --></script>
+</body>
+</html>
