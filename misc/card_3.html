@@ -131,7 +131,6 @@ div.energy {
 <div class="modal-content">
 <p id="message"></p>
 <button id="next"></button>
-<!-- <button id="close">閉じる</button> -->
 </div>
 </div>
 
@@ -247,13 +246,13 @@ function judge(element) {
     document.getElementById("modal").style.display = "flex";
   }
 }
-document.getElementById("next").addEventListener("click", () => {
+const nextButton = document.getElementById("next");
+const handleNext = () => {
   setup();
   document.getElementById("modal").style.display = "none";
-});
-// document.getElementById("close").addEventListener("click", () => {
-//   document.getElementById("modal").style.display = "none";
-// });
+};
+nextButton.addEventListener("click", handleNext);
+nextButton.addEventListener("touchstart", handleNext);
 
 // ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
 let draggedItem = null; // ドラッグ中のアイテム
