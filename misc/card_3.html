@@ -10,7 +10,7 @@ html, body {  /* スマートフォンでの画面外スクロール禁止用 */
 }
 body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
-  background: #1c6d39;
+  background: linear-gradient(#3848c2, #4c6dae 30%, #4c6dae 80%, #3848c2);
   width: 360px;
 }
 div.container {
@@ -22,9 +22,9 @@ div.container {
 }
 div.box {  /* カードを置くボックス */
   padding: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.2;
 }
 div.box-over {  /* ボックス上にカードがドラッグされてきたらボックスをやや白くする */
@@ -60,6 +60,10 @@ div.answer > div.card {
   top: 10px;
   left: 10px;
 }
+div.correct {
+  /* background: #fedf08; */
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+}
 .dragging {  /* ドラッグ中のカード (幽体離脱された側) */
   opacity: 0.3;
 }
@@ -85,11 +89,13 @@ div.energy {
   height: 34px;
   border-radius: 50%;
   color: #191919;
-  background: #fffd37;
+  font-size: 22px;
   text-align: center;
   line-height: 32px;
-  box-shadow: -3px -3px 4px #84771f inset;
-  font-size: 22px;
+  /* background: #fffd37; */
+  /* box-shadow: -3px -3px 4px #84771f inset; */
+  background: #ffffff;
+  box-shadow: -3px -3px 4px #cccccc inset;
 }
 #modal {
   position: fixed;
@@ -211,7 +217,7 @@ function judge(element) {
   if (element.classList.contains("card")) {
     let userAnswer = Array.from(element.children).map(child => child.innerHTML).join("");
     if (userAnswer == element.dataset.correct) {
-      element.style.backgroundColor = "#fedf08";
+      element.classList.add("correct");
       element.dataset.correct = "";
       for (const child of element.children) {
         child.classList.remove("item");
@@ -374,6 +380,7 @@ const handleTouchEnd = (e) => {
   if (dragPreview) dragPreview.remove();
   dragPreview = null;
 };
+
 function addEventSmartphone() {
   // ページにタッチイベントを登録
   document.addEventListener("touchstart", handleTouchStart, { passive: false });
