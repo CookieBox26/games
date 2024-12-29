@@ -10,7 +10,7 @@ html, body {  /* スマートフォンでの画面外スクロール禁止用 */
 }
 body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
-  background: linear-gradient(#3848c2, #4c6dae 30%, #4c6dae 80%, #3848c2);
+  background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
   width: 360px;
 }
 div.container {
@@ -45,15 +45,16 @@ div.bench {
 div.card {  /* カード */
   width: 80px;
   height: 110px;
-  border: 5px solid darkgray;
+  border: 5px solid #a19f93;
   border-radius: 5px;
-  background: #fffd74;
   padding: 5px;
   color: #242424;
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
   align-content: start;
+  /* background: #fffd74; */
+  background: #fee739;
 }
 div.answer > div.card {
   position: absolute;
@@ -94,8 +95,8 @@ div.energy {
   line-height: 32px;
   /* background: #fffd37; */
   /* box-shadow: -3px -3px 4px #84771f inset; */
-  background: #ffffff;
-  box-shadow: -3px -3px 4px #cccccc inset;
+  background: #fff;
+  box-shadow: -3px -3px 4px #bbb inset;
 }
 #modal {
   position: fixed;
@@ -142,19 +143,33 @@ div.energy {
 
 <script type="text/javascript"><!--
 // ----- 言葉の注入 -----
+//  {kanji: "", yomi: "", imi: "", dummy: ""},
 const words = [
-  {kanji: "馬脚", yomi: "ばきゃく", imi: "「■■をあらわす」の形で用い、隠していたことが現れること。", dummy: "場客" },
-  {kanji: "端麗", yomi: "たんれい", imi: "顔かたちが整っていて美しいこと。", dummy: "丹令"},
-  {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
-  {kanji: "皆目", yomi: "かいもく", imi: "全く、全然。「■■わからない」のように、否定的な表現とともに用いる。", dummy: "開黙"},
-  {kanji: "腐敗", yomi: "ふはい", imi: "微生物によって、食べ物が毒をもつようになり、食べられない状態になること。", dummy: "負廃"},
-  {kanji: "風刺", yomi: "ふうし", imi: "社会や人物の欠点を、文章や絵などで遠回しに示すこと。", dummy: "紙"},
-  {kanji: "晩成", yomi: "ばんせい", imi: "年をとってから成功すること。", dummy: "番世"},
   {kanji: "因果", yomi: "いんが", imi: "原因と結果。", dummy: "引画"},
+  {kanji: "皆目", yomi: "かいもく", imi: "全く、全然。「■■わからない」のように、否定的な表現とともに用いる。", dummy: "開黙"},
+  {kanji: "拠点", yomi: "きょてん", imi: "活動の中心とする場所。「兄は駅前を■■にケーキを販売している」", dummy: "居展"},
+  {kanji: "権限", yomi: "けんげん", imi: "国や町や人などが、与えられた役割の中でしてもよいことや決めてもよいこと。", dummy: "件元"},
+  {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
+  {kanji: "寸暇", yomi: "すんか", imi: "ほんの少しの空き時間。「■■をおしんで勉強する」", dummy: "駿可"},
+  {kanji: "脱帽", yomi: "だつぼう", imi: "相手にかなわないと感じ、尊敬の気持ちを示すこと。", dummy: "奪冒"},
+  {kanji: "弾圧", yomi: "だんあつ", imi: "支配者などが権力によって反対する人をおさえつけること。", dummy: "断厚"},
   {kanji: "丹念", yomi: "たんねん", imi: "細かいところまで注意して丁寧に行うこと。", dummy: "探然"},
+  {kanji: "端麗", yomi: "たんれい", imi: "顔かたちが整っていて美しいこと。", dummy: "丹令"},
+  {kanji: "踏襲", yomi: "とうしゅう", imi: "前にやった人と同じやり方でやること。", dummy: "当集"},
+  {kanji: "馬脚", yomi: "ばきゃく", imi: "「■■をあらわす」の形で用い、隠していたことが現れること。", dummy: "場客" },
+  {kanji: "迫真", yomi: "はくしん", imi: "演技や絵画などによる表現が、現実にそっくりであること。", dummy: "白心"},
+  {kanji: "晩成", yomi: "ばんせい", imi: "年をとってから成功すること。", dummy: "番世"},
+  {kanji: "風刺", yomi: "ふうし", imi: "社会や人物の欠点を、文章や絵画などで遠回しに示すこと。", dummy: "不紙"},
+  {kanji: "腐敗", yomi: "ふはい", imi: "微生物によって、食べ物が毒をもつようになり、食べられない状態になること。", dummy: "負廃"},
+  {kanji: "冒頭", yomi: "ぼうとう", imi: "文章や物事の始まりの部分。「会議は■■からおだやかでない雰囲気だった」", dummy: "帽投"},
+  {kanji: "漫遊", yomi: "まんゆう", imi: "気の向くままに各地を旅して回ること。", dummy: "満悠"},
+  {kanji: "利殖", yomi: "りしょく", imi: "株式などを利用して財産を増やすこと。", dummy: "裏植"},
+  {kanji: "謡曲", yomi: "ようきょく", imi: "能 (日本に古くからある歌と踊りからなる劇) のための台本や曲のこと。", dummy: "踊局"},
 ];
+console.log(words.length);
 const indicesCard = Array.from({ length: 4 }, (_, index) => index);
 const indicesEnergy = Array.from({ length: 14 }, (_, index) => index);
+// const colorsCard = ["#d69f51", "#fee739", "#49bbe4", "#8cd345"];
 var cursor = -4;
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -179,6 +194,7 @@ function setup() {
   let dummyArray = [];
   shuffleArray(indicesCard);
   shuffleArray(indicesEnergy);
+  // shuffleArray(colorsCard);
   for (let i = 0; i < 4; i++) {
     document.getElementById(`box${i}`).innerHTML = words[cursor + i].imi;
     document.getElementById(`box${i}`).dataset.correct = words[cursor + i].yomi;
@@ -194,6 +210,7 @@ function setup() {
     card.setAttribute("id", `card${i}`);
     card.innerHTML = words[cursor + j].yomi + "<br/>";
     card.dataset.correct = words[cursor + j].kanji;
+    // card.style.background = colorsCard[i];
     cardBench.appendChild(card);
   });
 
@@ -235,11 +252,12 @@ function judge(element) {
     correctCounter += 1;
   };
   if (correctCounter == 4) {
-    if (cursor + 4 + 3 <= words.length - 1) {
-      document.getElementById("message").innerHTML = "正解です！";
+    if ((cursor + 4 + 3 <= words.length - 1) && (cursor < 16)) {  // 最大5ラウンドまで
+      document.getElementById("message").innerHTML = "ミッションコンプリート！";
       document.getElementById("next").innerHTML = "次の問題";
     } else {
-      document.getElementById("message").innerHTML = "正解です！<br/><br/>これで終わりです<br/>";
+      document.getElementById("message").innerHTML = "ミッションコンプリート！<br/><br/>";
+      document.getElementById("message").innerHTML += "これで終わりです<br/>";
       document.getElementById("message").innerHTML += "今回出てきた言葉は以下です<br/><br/>";
       for (let k = 0; k <= cursor; k += 4) {
         for (let i = 0; i < 4; i++) {
