@@ -8,26 +8,30 @@
 html, body {  /* スマートフォンでの画面外スクロール禁止用 */
   overflow: hidden;
 }
+html {
+  background: #242424;
+}
 body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
   background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
-  width: 360px;
-  padding: 10px 3px;
+  width: 582px;
+  margin: 0;
+  padding: 10px 5px;
 }
 div.container {
   display: flex;
-  /* justify-content: center; */
+  justify-content: center;
   flex-wrap: wrap;
   gap: 16px 12px;
 }
-div.mini-container {
+div#answer-container {
+  order: 2;
   display: flex;
-  width: calc(2 * (124px) + 10px);
-  flex-wrap: wrap;
   gap: 10px;
+  flex-wrap: wrap;
 }
 div.box {  /* カードを置くボックス */
-  padding: 10px;
+  padding: 7px 10px;
   border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 8px;
   color: rgba(255, 255, 255, 0.9);
@@ -41,12 +45,14 @@ div.answer {
   width: 100px;
   height: 130px;
 }
-div.bench {
+div#card-bench {
+  order: 3;
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 10px;
-  width: calc(2 * (100px) + 1 * 10px);
-  height: calc(2 * (130px) + 1 * 10px);
+  width: 570px;
+  height: calc(130px);
 }
 div.card {  /* カード */
   width: 80px;
@@ -63,11 +69,10 @@ div.card {  /* カード */
 }
 div.answer > div.card {
   position: absolute;
-  top: 10px;
+  top: 7px;
   left: 10px;
 }
 div.correct {
-  /* background: #fedf08; */
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
 }
 .dragging {  /* ドラッグ中のカード (幽体離脱された側) */
@@ -81,14 +86,14 @@ div.correct {
   display: none;
   transform: translate(-50%, -50%);
 }
-div.energy-field {
+div#energy-field {
+  order: 4;
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
   align-content: start;
-  padding: 10px;
-  width: calc(36px + 3px + 36px);
-  height: calc(2 * (130px) + 1 * 10px);
+  justify-content: center;
+  width: 570px;
 }
 div.energy {
   width: 36px;
@@ -100,13 +105,14 @@ div.energy {
   line-height: 34px;
   background: #fff;
   box-shadow: -3px -3px 4px #bbb inset;
+  cursor: default;
 }
-#modal {
+div#modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 592px;
+  height: 452px;
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
@@ -114,7 +120,6 @@ div.energy {
 }
 div.modal-content {
   background: white;
-  min-width: 70%;
   padding: 20px;
   border-radius: 6px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -122,8 +127,7 @@ div.modal-content {
   width: auto;
 }
 div#progress-container {
-  margin-left: 30px;
-  width: 42px;
+  order: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
@@ -139,32 +143,61 @@ div#progress-container > div {
   text-align: center;
   line-height: 28px;
 }
-.yet {
+div#progress-container > div.not-yet {
   color: rgba(255, 255, 255, 0.9);
 }
-.current {
+div#progress-container > div.current {
   color: #242424;
   background: #fee739;
 }
-.done {
+div#progress-container > div.done {
   color: #242424;
   background: #8cd345;
+}
+@media (max-width: 480px) {
+  body {
+    width: 350px;
+  }
+  div.container {
+    justify-content: space-between;
+  }
+  div#answer-container {
+    order: 1;
+    width: calc(2 * (124px) + 10px);
+  }
+  div#progress-container {
+    order: 2;
+    width: 34px;
+  }
+  div#card-bench {
+    order: 3;
+    width: calc(2 * (100px) + 10px);
+    height: calc(2 * (130px) + 10px);
+  }
+  div#energy-field {
+    order: 4;
+    width: calc(36px + 3px + 36px);
+    height: calc(2 * (130px) + 1 * 10px);
+  }
+  div#modal {
+    width: 360px;
+    height: 630px;
+  }
 }
 </style>
 </head>
 <body onload="init()">
 
 <div class="container">
-<div class="mini-container">
-<div class="box answer" id="box0"></div>
-<div class="box answer" id="box1"></div>
-<div class="box answer" id="box2"></div>
-<div class="box answer" id="box3"></div>
+<div id="progress-container"></div>
+<div id="answer-container">
+<div id="box0" class="box answer"></div>
+<div id="box1" class="box answer"></div>
+<div id="box2" class="box answer"></div>
+<div id="box3" class="box answer"></div>
 </div>
-<div id="progress-container">
-</div>
-<div class="box bench" id="card-bench"></div>
-<div class="box bench energy-field" id="energy-field"></div>
+<div id="card-bench" class="box"></div>
+<div id="energy-field" class="box"></div>
 </div>
 
 <div id="modal">
@@ -285,7 +318,7 @@ function setup() {
   let rCurrent = Math.floor(cursor / nQ);
   for (let r = 0; r < nRound; r++) {
     let progress = document.getElementById(`progress${r}`);
-    progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "yet");
+    progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "not-yet");
   }
 }
 function judge(element) {
@@ -346,10 +379,11 @@ setButton("close", () => {
 let draggedItem = null; // ドラッグ中のアイテム
 function isDroppableBox(element) {  // その要素はアイテムを置ける場所か
   if (draggedItem.classList.contains("card")) {
-    if (!element || !element.classList.contains("box")) return false;  // ボックスでないとだめ
+    if (!element) return false;
+    if (!element.classList.contains("box")) return false;  // ボックスでないとだめ
+    if (element.id == "energy-field") return false;
     if (element.classList.contains("card")) return false;  // カードであったらだめ
-    if (element.classList.contains("energy-field")) return false;
-    if (element.classList.contains("bench")) return true;  // ベンチならOK
+    if (element.id == "card-bench") return true;  // ベンチならOK
     if (element.childElementCount > 0) return false;  // ベンチでないなら先客のカードがいたらだめ
     return true;
   }
@@ -357,7 +391,7 @@ function isDroppableBox(element) {  // その要素はアイテムを置ける�
     if (!element) return false;
     if (element.dataset.correct == "") return false;  // 既に正しいエネルギーが載っていたらだめ
     if (element.classList.contains("card")) return true;
-    if (element.classList.contains("energy-field")) return true;
+    if (element.id == "energy-field") return true;
   }
   return false;
 }
