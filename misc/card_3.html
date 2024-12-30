@@ -12,13 +12,19 @@ body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
   background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
   width: 360px;
+  padding: 10px 5px;
 }
 div.container {
   display: flex;
   /* justify-content: center; */
   flex-wrap: wrap;
+  gap: 16px 12px;
+}
+div.mini-container {
+  display: flex;
+  width: calc(2 * (124px) + 10px);
+  flex-wrap: wrap;
   gap: 10px;
-  padding: 10px;
 }
 div.box {  /* カードを置くボックス */
   padding: 10px;
@@ -53,7 +59,6 @@ div.card {  /* カード */
   flex-wrap: wrap;
   gap: 3px;
   align-content: start;
-  /* background: #fffd74; */
   background: #fee739;
 }
 div.answer > div.card {
@@ -82,19 +87,17 @@ div.energy-field {
   gap: 3px;
   align-content: start;
   padding: 10px;
-  width: calc(34px + 3px + 34px);
+  width: calc(36px + 3px + 36px);
   height: calc(2 * (130px) + 1 * 10px);
 }
 div.energy {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   color: #191919;
-  font-size: 22px;
+  font-size: 24px;
   text-align: center;
-  line-height: 32px;
-  /* background: #fffd37; */
-  /* box-shadow: -3px -3px 4px #84771f inset; */
+  line-height: 34px;
   background: #fff;
   box-shadow: -3px -3px 4px #bbb inset;
 }
@@ -109,7 +112,7 @@ div.energy {
   justify-content: center;
   align-items: center;
 }
-.modal-content {
+div.modal-content {
   background: white;
   min-width: 70%;
   padding: 20px;
@@ -118,18 +121,48 @@ div.energy {
   text-align: center;
   width: auto;
 }
+div#progress-container {
+  margin-left: 30px;
+  width: 42px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-content: start;
+  justify-content: right;
+}
+div#progress-container > div {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  font-size: 18px;
+  text-align: center;
+  line-height: 28px;
+}
+.yet {
+  color: rgba(255, 255, 255, 0.9);
+}
+.current {
+  color: #242424;
+  background: #fee739;
+}
+.done {
+  color: #242424;
+  background: #8cd345;
+}
 </style>
 </head>
 <body onload="init()">
 
 <div class="container">
+<div class="mini-container">
 <div class="box answer" id="box0"></div>
 <div class="box answer" id="box1"></div>
 <div class="box answer" id="box2"></div>
 <div class="box answer" id="box3"></div>
 </div>
-
-<div class="container">
+<div id="progress-container">
+</div>
 <div class="box bench" id="card-bench"></div>
 <div class="box bench energy-field" id="energy-field"></div>
 </div>
@@ -137,7 +170,8 @@ div.energy {
 <div id="modal">
 <div class="modal-content">
 <p id="message"></p>
-<button id="next"></button>
+<button id="close">もう一度カードの下を確認</button>
+<button id="next">次の問題へ</button>
 </div>
 </div>
 
@@ -146,11 +180,15 @@ div.energy {
 //  {kanji: "", yomi: "", imi: "", dummy: ""},
 const words = [
   {kanji: "因果", yomi: "いんが", imi: "原因と結果。", dummy: "引画"},
+  {kanji: "汚名", yomi: "おめい", imi: "悪い評判。「■■返上」で悪い評判をなくそうと努力すること。", dummy: "悪銘"},
   {kanji: "皆目", yomi: "かいもく", imi: "全く、全然。「■■わからない」のように、否定的な表現とともに用いる。", dummy: "開黙"},
+  {kanji: "及第", yomi: "きゅうだい", imi: "試験に合格すること。求められるレベルを何とか満たしていること。", dummy: "求大"},
   {kanji: "拠点", yomi: "きょてん", imi: "活動の中心とする場所。「兄は駅前を■■にケーキを販売している」", dummy: "居展"},
   {kanji: "権限", yomi: "けんげん", imi: "国や町や人などが、与えられた役割の中でしてもよいことや決めてもよいこと。", dummy: "件元"},
   {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
   {kanji: "寸暇", yomi: "すんか", imi: "ほんの少しの空き時間。「■■をおしんで勉強する」", dummy: "駿可"},
+  {kanji: "是非", yomi: "ぜひ", imi: "よいかどうか。「建設計画の■■」。きっと必ず。「■■来てください」", dummy: "背批"},
+  {kanji: "早熟", yomi: "そうじゅく", imi: "普通より早く何らかの物事ができるようになったり、成功したりすること。", dummy: "総塾"},
   {kanji: "脱帽", yomi: "だつぼう", imi: "相手にかなわないと感じ、尊敬の気持ちを示すこと。", dummy: "奪冒"},
   {kanji: "弾圧", yomi: "だんあつ", imi: "支配者などが権力によって反対する人をおさえつけること。", dummy: "断厚"},
   {kanji: "丹念", yomi: "たんねん", imi: "細かいところまで注意して丁寧に行うこと。", dummy: "探然"},
@@ -159,18 +197,25 @@ const words = [
   {kanji: "馬脚", yomi: "ばきゃく", imi: "「■■をあらわす」の形で用い、隠していたことが現れること。", dummy: "場客" },
   {kanji: "迫真", yomi: "はくしん", imi: "演技や絵画などによる表現が、現実にそっくりであること。", dummy: "白心"},
   {kanji: "晩成", yomi: "ばんせい", imi: "年をとってから成功すること。", dummy: "番世"},
+  {kanji: "敏腕", yomi: "びんわん", imi: "物事を正確にすばやくやることができること。", dummy: "便湾"},
   {kanji: "風刺", yomi: "ふうし", imi: "社会や人物の欠点を、文章や絵画などで遠回しに示すこと。", dummy: "不紙"},
   {kanji: "腐敗", yomi: "ふはい", imi: "微生物によって、食べ物が毒をもつようになり、食べられない状態になること。", dummy: "負廃"},
   {kanji: "冒頭", yomi: "ぼうとう", imi: "文章や物事の始まりの部分。「会議は■■からおだやかでない雰囲気だった」", dummy: "帽投"},
   {kanji: "漫遊", yomi: "まんゆう", imi: "気の向くままに各地を旅して回ること。", dummy: "満悠"},
+  {kanji: "未刊", yomi: "みかん", imi: "書物や雑誌などがまだ出版されていないこと。", dummy: "見間"},
   {kanji: "利殖", yomi: "りしょく", imi: "株式などを利用して財産を増やすこと。", dummy: "裏植"},
   {kanji: "謡曲", yomi: "ようきょく", imi: "能 (日本に古くからある歌と踊りからなる劇) のための台本や曲のこと。", dummy: "踊局"},
 ];
 console.log(words.length);
-const indicesCard = Array.from({ length: 4 }, (_, index) => index);
-const indicesEnergy = Array.from({ length: 14 }, (_, index) => index);
-// const colorsCard = ["#d69f51", "#fee739", "#49bbe4", "#8cd345"];
-var cursor = -4;
+
+const maxRound = 5
+const nQ = 4;
+const nE = 14;
+const indicesCard = Array.from({ length: nQ }, (_, index) => index);
+const indicesEnergy = Array.from({ length: nE }, (_, index) => index);
+var nRound = 0;
+var cursor = -nQ;
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -179,23 +224,24 @@ function shuffleArray(array) {
 }
 function init() {
   shuffleArray(words);
-  if (false) {
-    document.getElementById("message").textContent = "漢字ゲームを始めます";
-    document.getElementById("next").innerHTML = "最初の問題";
-    document.getElementById("modal").style.display = "flex";
-  } else {
-    setup();
-    document.getElementById("modal").style.display = "none";
+  nRound = Math.min(Math.floor(words.length / nQ), maxRound);
+  let progressContainer = document.getElementById("progress-container");
+  for (let r = 0; r < nRound; r++) {
+    let progress = document.createElement("div");
+    progress.setAttribute("id", `progress${r}`);
+    progress.innerHTML = `${r+1}`;
+    progressContainer.appendChild(progress);
   }
+  setup();
+  document.getElementById("modal").style.display = "none";
 }
 function setup() {
-  cursor += 4;
+  cursor += nQ;
   let kanjiArray = [];
   let dummyArray = [];
   shuffleArray(indicesCard);
   shuffleArray(indicesEnergy);
-  // shuffleArray(colorsCard);
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < nQ; i++) {
     document.getElementById(`box${i}`).innerHTML = words[cursor + i].imi;
     document.getElementById(`box${i}`).dataset.correct = words[cursor + i].yomi;
     kanjiArray.push(...words[cursor + i].kanji.split(""));
@@ -210,7 +256,6 @@ function setup() {
     card.setAttribute("id", `card${i}`);
     card.innerHTML = words[cursor + j].yomi + "<br/>";
     card.dataset.correct = words[cursor + j].kanji;
-    // card.style.background = colorsCard[i];
     cardBench.appendChild(card);
   });
 
@@ -229,6 +274,12 @@ function setup() {
 
   addEventPC();
   addEventSmartphone();
+
+  let rCurrent = Math.floor(cursor / nQ);
+  for (let r = 0; r < nRound; r++) {
+    let progress = document.getElementById(`progress${r}`);
+    progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "yet");
+  }
 }
 function judge(element) {
   if (element.classList.contains("card")) {
@@ -243,7 +294,7 @@ function judge(element) {
     }
   }
   let correctCounter = 0;
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < nQ; i++) {
     let box = document.getElementById(`box${i}`);
     if (box.children.length == 0) continue;
     if (box.children[0].dataset.correct != "") continue;
@@ -251,18 +302,19 @@ function judge(element) {
     if (userAnswer != box.dataset.correct) continue;
     correctCounter += 1;
   };
-  if (correctCounter == 4) {
-    if ((cursor + 4 + 3 <= words.length - 1) && (cursor < 16)) {  // 最大5ラウンドまで
+  if (correctCounter == nQ) {
+    let rCurrent = Math.floor(cursor / nQ);
+    document.getElementById(`progress${rCurrent}`).className = "done";
+    if (cursor < nRound * nQ - nQ) {
       document.getElementById("message").innerHTML = "ミッションコンプリート！";
-      document.getElementById("next").innerHTML = "次の問題";
     } else {
       document.getElementById("message").innerHTML = "ミッションコンプリート！<br/><br/>";
       document.getElementById("message").innerHTML += "これで終わりです<br/>";
       document.getElementById("message").innerHTML += "今回出てきた言葉は以下です<br/><br/>";
-      for (let k = 0; k <= cursor; k += 4) {
-        for (let i = 0; i < 4; i++) {
+      for (let k = 0; k <= cursor; k += nQ) {
+        for (let i = 0; i < nQ; i++) {
           document.getElementById("message").innerHTML += words[k + i].kanji;
-          document.getElementById("message").innerHTML += ((i == 3) ? "<br/>" : "　");
+          document.getElementById("message").innerHTML += ((i == (nQ - 1)) ? "<br/>" : "　");
         }
       }
       document.getElementById("next").style.display = "none";
@@ -270,13 +322,18 @@ function judge(element) {
     document.getElementById("modal").style.display = "flex";
   }
 }
-const nextButton = document.getElementById("next");
-const handleNext = () => {
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+  button.addEventListener("touchstart", handle);
+}
+setButton("next", () => {
   setup();
   document.getElementById("modal").style.display = "none";
-};
-nextButton.addEventListener("click", handleNext);
-nextButton.addEventListener("touchstart", handleNext);
+});
+setButton("close", () => {
+  document.getElementById("modal").style.display = "none";
+});
 
 // ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
 let draggedItem = null; // ドラッグ中のアイテム
