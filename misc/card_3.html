@@ -115,7 +115,7 @@ div#modal {
   background: rgba(0, 0, 0, 0.3);
   width: calc(570px + 20px);
   height: 462px;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
 }
@@ -222,13 +222,8 @@ p.help-message {
 <body onload="init()">
 
 <div class="container">
-<div id="progress-container"></div>
-<div id="answer-container">
-<div id="box0" class="box answer"></div>
-<div id="box1" class="box answer"></div>
-<div id="box2" class="box answer"></div>
-<div id="box3" class="box answer"></div>
-</div>
+<div id="progress-container"><div id="help" class="help">?</div></div>
+<div id="answer-container"></div>
 <div id="card-bench" class="box"></div>
 <div id="energy-field" class="box"></div>
 </div>
@@ -238,25 +233,31 @@ p.help-message {
 <p id="message"></p>
 <div id="close"></div>
 <div id="next">次の問題へ</div>
+<div id="new3">もう一度遊ぶ (3ラウンド)</div>
+<div id="new5">もう一度遊ぶ (5ラウンド)</div>
 </div>
 </div>
 
 <script type="text/javascript"><!--
+// ----- ヘルプ文章 -----
 const helpMessage = [
   "読み仮名が書いてあるカードに正しい漢字を置き、対応する説明の上に運ぶゲームです。",
-  "説明には私の解釈を含みます。お気付きの点がございましたら",
+  "説明には私の解釈を含みます。お気付きの点がありましたら",
   "<a href=\"https://github.com/CookieBox26/games/issues\" target=\"_blank\" rel=\"noopener noreferrer\">リポジトリのイシュー</a>か",
   "<a href=\"https://x.com/CookieBox26\" target=\"_blank\" rel=\"noopener noreferrer\">エックス</a>までご連絡ください。",
 ].join("");
 
-// ----- 言葉 -----
+// ----- 言葉データ -----
 // 漢字2文字の単語を想定しています (漢字2文字でなくても動作はするはずですが見た目が崩れると思います)
 // 読みが2文字の場合は全角空白を付けてください (さもないと漢字エネルギーが読みの右隣にきてしまいます)
+// ダミー漢字2文字も登録することを想定しています
 //  {kanji: "", yomi: "", imi: "", dummy: ""},
 const words = [
   {kanji: "因果", yomi: "いんが", imi: "原因と結果。", dummy: "引画"},
   {kanji: "汚名", yomi: "おめい", imi: "悪い評判。「■■返上」で悪い評判をなくそうと努力すること。", dummy: "悪銘"},
+  {kanji: "介入", yomi: "かいにゅう", imi: "事件や問題などに、関係のない人が入り込むこと。", dummy: "会乳"},
   {kanji: "皆目", yomi: "かいもく", imi: "全く、全然。「■■わからない」のように、否定的な表現とともに用いる。", dummy: "開黙"},
+  {kanji: "気丈", yomi: "きじょう", imi: "強い気持ちをもっていること。", dummy: "機情"},
   {kanji: "起訴", yomi: "きそ　", imi: "検察官が、悪いことをした疑いがある人を裁判にかけるよう求めること。", dummy: "基礎"},
   {kanji: "希薄", yomi: "きはく", imi: "液体や気体や人の気持ちがうすく少ないこと。「友人との関係が■■になる」", dummy: "布博"},
   {kanji: "及第", yomi: "きゅうだい", imi: "試験に合格すること。求められるレベルを何とか満たしていること。", dummy: "求大"},
@@ -284,10 +285,12 @@ const words = [
   {kanji: "馬脚", yomi: "ばきゃく", imi: "「■■をあらわす」の形で用い、隠していたことが現れること。", dummy: "場客" },
   {kanji: "迫真", yomi: "はくしん", imi: "演技や絵画などによる表現が、現実にそっくりであること。", dummy: "白心"},
   {kanji: "晩成", yomi: "ばんせい", imi: "年をとってから成功すること。", dummy: "番世"},
+  {kanji: "彼岸", yomi: "ひがん", imi: "向こう岸。この世とあの世を分ける川の向こう岸。ご先祖を供養する行事。", dummy: "悲願"},
   {kanji: "筆致", yomi: "ひっち", imi: "文章や絵画、書道作品にあらわれた、作者の気持ちや技術のすばらしさ。", dummy: "必知"},
   {kanji: "敏腕", yomi: "びんわん", imi: "物事を正確にすばやくやることができること。", dummy: "便湾"},
   {kanji: "風刺", yomi: "ふうし", imi: "社会や人物の欠点を、文章や絵画などで遠回しに示すこと。", dummy: "不紙"},
   {kanji: "腐敗", yomi: "ふはい", imi: "微生物によって、食べ物が毒をもつようになり、食べられない状態になること。", dummy: "負廃"},
+  {kanji: "傍観", yomi: "ぼうかん", imi: "何もせずにただ見ているだけでいること。", dummy: "棒看"},
   {kanji: "冒頭", yomi: "ぼうとう", imi: "文章や物事の始まりの部分。「会議は■■からおだやかでない雰囲気だった」", dummy: "帽投"},
   {kanji: "漫遊", yomi: "まんゆう", imi: "気の向くままに各地を旅して回ること。", dummy: "満悠"},
   {kanji: "未刊", yomi: "みかん", imi: "書物や雑誌などがまだ出版されていないこと。", dummy: "見間"},
@@ -297,60 +300,61 @@ const words = [
   {kanji: "要旨", yomi: "ようし", imi: "文章や話の重要な点を短くまとめたもの。「講演の■■」", dummy: "用誌"},
 ];
 console.log(words.length);
-const nQ = 4;
-const nE = 14;
+const nQ = 4;  // 1ラウンドで出題する言葉数 (4から変更できるが増やすとレイアウトが崩れる)
+const nE = 14;  // 漢字数 (正解の数は nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす) (ただし 14 を超えるとレイアウトが崩れる)
 
 const indicesCard = Array.from({ length: nQ }, (_, index) => index);
 const indicesEnergy = Array.from({ length: nE }, (_, index) => index);
-var maxRound = 3;
+
+const buttonNext = document.getElementById("next");
+const buttonNew3 = document.getElementById("new3");
+const buttonNew5 = document.getElementById("new5");
+
 var nRound = 0;
 var cursor = -nQ;
+
+function showButtons(showButtonNext, showButtonNew) {
+  // モーダル上のボタンの表示非表示を一度に設定する便利関数
+  buttonNext.style.display = showButtonNext;
+  buttonNew3.style.display = showButtonNew;
+  buttonNew5.style.display = showButtonNew;
+}
+
 function shuffleArray(array) {
+  // 配列のランダムシャッフル用
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
-function init() {
-  shuffleArray(words);
-  nRound = Math.min(Math.floor(words.length / nQ), maxRound);
 
-  let progressContainer = document.getElementById("progress-container");
-  for (let r = 0; r < nRound; r++) {
-    let progress = document.createElement("div");
-    progress.setAttribute("id", `progress${r}`);
-    progress.innerHTML = `${r+1}`;
-    progressContainer.appendChild(progress);
-  }
-  let help = document.createElement("div");
-  help.setAttribute("id", "help");
-  help.className = "help";
-  help.innerHTML = "?";
-  progressContainer.appendChild(help);
-  setButton("help", () => {
-    document.getElementById("message").innerHTML = helpMessage;
-    document.getElementById("message").className = "help-message";
-    document.getElementById("next").style.display = "none";
-    document.getElementById("close").innerHTML = "閉じる";
-    document.getElementById("modal").style.display = "flex";
-  });
-
-  setup();
-  document.getElementById("modal").style.display = "none";
-}
+// ----- セットアップ -----
 function setup() {
+  // 1ラウンドのセットアップ
+  // カーソルを進めてカードと漢字の読みだし順をランダムシャッフル
   cursor += nQ;
-  let kanjiArray = [];
-  let dummyArray = [];
   shuffleArray(indicesCard);
   shuffleArray(indicesEnergy);
+
+  // カーソル位置から nQ 語の意味を読み出してカード置き場をつくっていく
+  // 漢字とダミー漢字も収集する
+  let answerContainer = document.getElementById("answer-container");
+  answerContainer.innerHTML = "";
+  let kanjiArray = [];
+  let dummyArray = [];
   for (let i = 0; i < nQ; i++) {
-    document.getElementById(`box${i}`).innerHTML = words[cursor + i].imi;
-    document.getElementById(`box${i}`).dataset.correct = words[cursor + i].yomi;
+    let box = document.createElement("div");
+    box.classList.add("box", "answer");
+    box.setAttribute("id", `box${i}`);
+    box.innerHTML = words[cursor + i].imi;
+    box.dataset.correct = words[cursor + i].yomi;
+    answerContainer.appendChild(box);
     kanjiArray.push(...words[cursor + i].kanji.split(""));
     dummyArray.push(...words[cursor + i].dummy.split(""));
   }
 
+  // カーソル位置から nQ 語の読み仮名を読み出してカードをつくっていく
+  // ただしカーソル位置から順に読み出すのではなくランダムシャッフル順に読み出す
   let cardBench = document.getElementById("card-bench");
   indicesCard.forEach((j, i) => {
     let card = document.createElement("div");
@@ -362,6 +366,8 @@ function setup() {
     cardBench.appendChild(card);
   });
 
+  // 漢字エネルギーをつくっていく
+  // ただし漢字を収集した順でなくランダムシャッフル順に読み出す
   let energyField = document.getElementById("energy-field");
   energyField.innerHTML = "";
   shuffleArray(dummyArray);
@@ -375,47 +381,77 @@ function setup() {
     energyField.appendChild(energy);
   });
 
+  // カード置き場とカードと漢字エネルギーができたらドラッグドロップイベントを設定
   addEventPC();
   addEventSmartphone();
 
+  // プレイヤーに現在何問目か知らせるため挑戦済み・挑戦中・未挑戦で問題番号サークルを色分け
   let rCurrent = Math.floor(cursor / nQ);
   for (let r = 0; r < nRound; r++) {
     let progress = document.getElementById(`progress${r}`);
     progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "not-yet");
   }
 }
+function newGame(maxRound) {
+  // 新しいゲームのセットアップ
+  shuffleArray(words);  // 言葉をランダムシャッフル
+  nRound = Math.min(Math.floor(words.length / nQ), maxRound);  // ラウンド数決定
+
+  // ラウンド数に応じて問題番号サークルを生成
+  let progressContainer = document.getElementById("progress-container");
+  Array.from(progressContainer.children).forEach((child) => {
+    if (child.id != "help") progressContainer.removeChild(child);
+  });  // 2ゲーム目以降は前ゲームのサークルがあるかもしれないので消去
+  for (let r = nRound - 1; r >= 0; r--) {
+    let progress = document.createElement("div");
+    progress.setAttribute("id", `progress${r}`);
+    progress.innerHTML = `${r+1}`;
+    progressContainer.insertBefore(progress, progressContainer.firstChild);
+  }
+
+  // カーソルを -nQ に巻き戻してから最初のラウンドをセットアップ
+  cursor = -nQ;
+  setup();
+}
+function init() {
+  newGame(3);
+}
+
+// ----- 正解判定 -----
 function judge(element) {
-  if (element.classList.contains("card")) {
+  // カードと漢字の配置が正しいかの判定
+  if (element.classList.contains("card")) {  // カードの上に何かがドロップされたとき
     let userAnswer = Array.from(element.children).map(child => child.innerHTML).join("");
     if (userAnswer == element.dataset.correct) {
+      // 配置された漢字が正しいなら正解を消すことで正解済みなのを記録し漢字を動けなくする
       element.classList.add("correct");
-      element.dataset.correct = "";
+      element.dataset.correct = "";  // 正解を消去
       for (const child of element.children) {
         child.classList.remove("item");
-        child.removeAttribute("draggable");
+        child.removeAttribute("draggable");  // PCで漢字を動けなくするためにこれも必要
       }
     }
   }
-  let correctCounter = 0;
-  for (let i = 0; i < nQ; i++) {
+  let correctCounter = 0;  // エネルギー込みで配置が正しいカードの枚数をカウント
+  for (let i = 0; i < nQ; i++) {  // 置き場を一つずつ確認
     let box = document.getElementById(`box${i}`);
-    if (box.children.length == 0) continue;
-    if (box.children[0].dataset.correct != "") continue;
+    if (box.children.length == 0) continue;  // カードがない
+    if (box.children[0].dataset.correct != "") continue;  // カードの漢字が正解済みでない
     let userAnswer = box.children[0].firstChild.textContent;
-    if (userAnswer != box.dataset.correct) continue;
+    if (userAnswer != box.dataset.correct) continue;  // カードの配置が正しくない
     correctCounter += 1;
   };
-  if (correctCounter == nQ) {
+
+  if (correctCounter == nQ) {  // すべて正解であったとき
     let rCurrent = Math.floor(cursor / nQ);
     document.getElementById(`progress${rCurrent}`).className = "done";
     document.getElementById("message").className = "";
-    document.getElementById("close").innerHTML = "もう一度カードの下を確認";
-    if (cursor < nRound * nQ - nQ) {
-      document.getElementById("message").innerHTML = "ミッションコンプリート！";
-      document.getElementById("next").style.display = "block";
-    } else {
-      document.getElementById("message").innerHTML = "ミッションコンプリート！<br/><br/>";
-      document.getElementById("message").innerHTML += "これで終わりです<br/>";
+    document.getElementById("message").innerHTML = "ミッションコンプリート！";
+
+    if (cursor < nRound * nQ - nQ) {  // まだラウンドが残っている
+      showButtons("block", "none");
+    } else {  // 全ラウンド終了
+      document.getElementById("message").innerHTML += "<br/><br/>これで終わりです<br/>";
       document.getElementById("message").innerHTML += "今回出てきた言葉は以下です<br/><br/>";
       for (let k = 0; k <= cursor; k += nQ) {
         for (let i = 0; i < nQ; i++) {
@@ -423,41 +459,59 @@ function judge(element) {
           document.getElementById("message").innerHTML += ((i == (nQ - 1)) ? "<br/>" : "　");
         }
       }
-      document.getElementById("next").style.display = "none";
+      showButtons("none", "block");
     }
-    document.getElementById("modal").style.display = "flex";
+    document.getElementById("close").innerHTML = "もう一度カードの下を確認";
+    document.getElementById("modal").style.display = "flex";  // モーダル表示
   }
 }
+
+// ----- ボタン押下イベント -----
 function setButton(buttonId, handle) {
   let button = document.getElementById(buttonId);
   button.addEventListener("click", handle);
   button.addEventListener("touchstart", handle);
 }
-setButton("next", () => {
+setButton("next", () => {  // 次の問題へボタン
   setup();
   document.getElementById("modal").style.display = "none";
 });
-setButton("close", () => {
+setButton("close", () => {  // 閉じるボタン
   document.getElementById("modal").style.display = "none";
+});
+setButton("new3", () => {  // もう一度遊ぶ (3ラウンド) ボタン
+  newGame(3);
+  document.getElementById("modal").style.display = "none";
+});
+setButton("new5", () => {  // もう一度遊ぶ (5ラウンド) ボタン
+  newGame(5);
+  document.getElementById("modal").style.display = "none";
+});
+setButton("help", () => {  // ヘルプボタン
+  document.getElementById("message").innerHTML = helpMessage;
+  document.getElementById("message").className = "help-message";
+  document.getElementById("close").innerHTML = "閉じる";
+  document.getElementById("modal").style.display = "flex";
+  showButtons("none", "none");
 });
 
 // ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
 let draggedItem = null; // ドラッグ中のアイテム
 function isDroppableBox(element) {  // その要素はアイテムを置ける場所か
-  if (draggedItem.classList.contains("card")) {
+  if (draggedItem.classList.contains("card")) {  // 運搬中のアイテムがカードのとき
     if (!element) return false;
     if (!element.classList.contains("box")) return false;  // ボックスでないとだめ
-    if (element.id == "energy-field") return false;
+    if (element.id == "energy-field") return false;  // ボックスであってもエネルギー置き場はだめ
     if (element.classList.contains("card")) return false;  // カードであったらだめ
     if (element.id == "card-bench") return true;  // ベンチならOK
     if (element.childElementCount > 0) return false;  // ベンチでないなら先客のカードがいたらだめ
     return true;
   }
-  if (draggedItem.classList.contains("energy")) {
+  if (draggedItem.classList.contains("energy")) {  // 運搬中のアイテムがエネルギーのとき
     if (!element) return false;
     if (element.dataset.correct == "") return false;  // 既に正しいエネルギーが載っていたらだめ
-    if (element.classList.contains("card")) return true;
-    if (element.id == "energy-field") return true;
+    if (element.classList.contains("card")) return true;  // カードならOK
+    if (element.id == "energy-field") return true;  // エネルギー置き場ならOK
   }
   return false;
 }
@@ -504,14 +558,14 @@ const handleDrop = (e) => {
   e.target.classList.remove("box-over");  // もし目立たせていたら目立たなくする
   // ドラッグされてきたのがアイテムであってそこがアイテムを置ける場所ならそこにアイテムを追加
   if (draggedItem && isDroppableBox(e.target)) e.target.appendChild(draggedItem);
-  judge(e.target);
+  judge(e.target);  // カードと漢字の配置が正しいかの判定へ
 };
 
 function addEventPC() {
   // アイテムたちにイベントを登録
-  document.querySelectorAll(".item").forEach(card => {
-    card.addEventListener("dragstart", handleDragItemStart, false);
-    card.addEventListener("dragend", handleDragItemEnd, false);
+  document.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("dragstart", handleDragItemStart, false);
+    item.addEventListener("dragend", handleDragItemEnd, false);
   });
   // ページ上に何かがドラッグされてきた/いる/去る/落とされるイベントを登録
   document.addEventListener("dragenter", handleDragEnter, false);
@@ -521,7 +575,8 @@ function addEventPC() {
 }
 
 // ----- スマートフォンでのドラッグドロップ用 -----
-let dragPreview = null; // 指に追従させるアイテム
+var dragPreview = null; // 指に追従させるアイテム
+
 const handleTouchStart = (e) => {
   // 画面にタッチしたときのイベント
   const target = e.target;
@@ -554,7 +609,7 @@ const handleTouchEnd = (e) => {
   const touch = e.changedTouches[0];  // タッチ終了位置
   const element = document.elementFromPoint(touch.clientX, touch.clientY);
   if (isDroppableBox(element)) element.appendChild(draggedItem);
-  judge(element);
+  judge(element);  // カードと漢字の配置が正しいかの判定へ
   // ドラッグ中のアイテムと指に追従させるアイテムをリセット
   draggedItem.classList.remove("dragging");
   document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
