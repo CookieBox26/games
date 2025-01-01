@@ -22,13 +22,14 @@ div.container {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 16px 12px;
+  gap: 15px;
 }
 div#answer-container {
   order: 2;
   display: flex;
-  gap: 10px;
+  justify-content: center;
   flex-wrap: wrap;
+  gap: 10px;
 }
 div.box {  /* カードを置くボックス */
   padding: 7px 10px;
@@ -48,11 +49,11 @@ div.answer {
 div#card-bench {
   order: 3;
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   width: calc(570px - 24px);
-  height: 130px;
+  min-height: 130px;
 }
 div.card {  /* カード */
   width: 80px;
@@ -114,7 +115,6 @@ div#modal {
   left: 0;
   background: rgba(0, 0, 0, 0.3);
   width: calc(570px + 20px);
-  height: 462px;
   display: none;
   justify-content: center;
   align-items: center;
@@ -214,7 +214,6 @@ p.help-message {
   }
   div#modal {
     width: calc(350px + 20px);
-    height: 640px;
   }
 }
 </style>
@@ -233,8 +232,9 @@ p.help-message {
 <p id="message"></p>
 <div id="close"></div>
 <div id="next">次の問題へ</div>
-<div id="new3">もう一度遊ぶ (3ラウンド)</div>
-<div id="new5">もう一度遊ぶ (5ラウンド)</div>
+<div id="new3rounds">もう一度遊ぶ (3ラウンド)</div>
+<div id="new5rounds">もう一度遊ぶ (5ラウンド)</div>
+<div id="new10cards"></div>
 </div>
 </div>
 
@@ -300,24 +300,30 @@ const words = [
   {kanji: "要旨", yomi: "ようし", imi: "文章や話の重要な点を短くまとめたもの。「講演の■■」", dummy: "用誌"},
 ];
 console.log(words.length);
-const nQ = 4;  // 1ラウンドで出題する言葉数 (4から変更できるが増やすとレイアウトが崩れる)
-const nE = 14;  // 漢字数 (正解の数は nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす) (ただし 14 を超えるとレイアウトが崩れる)
 
-const indicesCard = Array.from({ length: nQ }, (_, index) => index);
-const indicesEnergy = Array.from({ length: nE }, (_, index) => index);
-
+const modal = document.getElementById("modal");
 const buttonNext = document.getElementById("next");
-const buttonNew3 = document.getElementById("new3");
-const buttonNew5 = document.getElementById("new5");
+const buttonNew3Rounds = document.getElementById("new3rounds");
+const buttonNew5Rounds = document.getElementById("new5rounds");
+const buttonNew10Cards = document.getElementById("new10cards");
 
+var nQ = 4;  // 1ラウンドで出題する言葉数
+var nE = 14;  // 漢字数 (正解の数は nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす)
 var nRound = 0;
 var cursor = -nQ;
+
+function resetModalSize() {
+  // 画面を覆うモーダルのサイズを画面サイズに合わせる
+  modal.style.width = `${document.body.offsetWidth}px`;
+  modal.style.height = `${document.body.offsetHeight}px`;
+}
 
 function showButtons(showButtonNext, showButtonNew) {
   // モーダル上のボタンの表示非表示を一度に設定する便利関数
   buttonNext.style.display = showButtonNext;
-  buttonNew3.style.display = showButtonNew;
-  buttonNew5.style.display = showButtonNew;
+  buttonNew3Rounds.style.display = showButtonNew;
+  buttonNew5Rounds.style.display = showButtonNew;
+  buttonNew10Cards.style.display = showButtonNew;
 }
 
 function shuffleArray(array) {
@@ -333,6 +339,8 @@ function setup() {
   // 1ラウンドのセットアップ
   // カーソルを進めてカードと漢字の読みだし順をランダムシャッフル
   cursor += nQ;
+  let indicesCard = Array.from({ length: nQ }, (_, index) => index);
+  let indicesEnergy = Array.from({ length: nE }, (_, index) => index);
   shuffleArray(indicesCard);
   shuffleArray(indicesEnergy);
 
@@ -356,6 +364,7 @@ function setup() {
   // カーソル位置から nQ 語の読み仮名を読み出してカードをつくっていく
   // ただしカーソル位置から順に読み出すのではなくランダムシャッフル順に読み出す
   let cardBench = document.getElementById("card-bench");
+  cardBench.innerHTML = "";
   indicesCard.forEach((j, i) => {
     let card = document.createElement("div");
     card.classList.add("item", "card");
@@ -414,7 +423,9 @@ function newGame(maxRound) {
   setup();
 }
 function init() {
+  document.getElementById("new10cards").innerHTML = "カード10枚モードにする<br/>(画面幅 815px 以上ないと無効)";
   newGame(3);
+  resetModalSize();
 }
 
 // ----- 正解判定 -----
@@ -462,7 +473,7 @@ function judge(element) {
       showButtons("none", "block");
     }
     document.getElementById("close").innerHTML = "もう一度カードの下を確認";
-    document.getElementById("modal").style.display = "flex";  // モーダル表示
+    modal.style.display = "flex";  // モーダル表示
   }
 }
 
@@ -474,26 +485,61 @@ function setButton(buttonId, handle) {
 }
 setButton("next", () => {  // 次の問題へボタン
   setup();
-  document.getElementById("modal").style.display = "none";
+  modal.style.display = "none";
 });
 setButton("close", () => {  // 閉じるボタン
-  document.getElementById("modal").style.display = "none";
+  modal.style.display = "none";
 });
-setButton("new3", () => {  // もう一度遊ぶ (3ラウンド) ボタン
+setButton("new3rounds", () => {  // もう一度遊ぶ (3ラウンド) ボタン
   newGame(3);
-  document.getElementById("modal").style.display = "none";
+  modal.style.display = "none";
 });
-setButton("new5", () => {  // もう一度遊ぶ (5ラウンド) ボタン
+setButton("new5rounds", () => {  // もう一度遊ぶ (5ラウンド) ボタン
   newGame(5);
-  document.getElementById("modal").style.display = "none";
+  modal.style.display = "none";
+});
+setButton("new10cards", () => {  // もう一度遊ぶ (カード10枚) ボタン
+  if (window.innerWidth >= 815) {
+    if (nQ == 4) {
+      document.body.style.width = "795px";
+      document.getElementById("answer-container").style.order = "1";
+      document.getElementById("answer-container").style.width = "660px";
+      let progressContainer = document.getElementById("progress-container");
+      progressContainer.style.order = "2";
+      progressContainer.style.width = "120px";
+      progressContainer.style.flexWrap = "wrap";
+      progressContainer.style.rowGap = "5px";
+      progressContainer.style.alignContent = "flex-start";
+      document.getElementById("help").style.marginRight = "5px";
+      document.getElementById("card-bench").style.width = "540px";
+      document.getElementById("energy-field").style.width = "192px";
+      document.getElementById("new10cards").innerHTML = "カード4枚モードに戻す";
+      nQ = 10;
+      nE = 35;
+      newGame(3);
+      resetModalSize();
+    } else {
+      location.reload();
+    }
+  }
+  modal.style.display = "none";
 });
 setButton("help", () => {  // ヘルプボタン
   document.getElementById("message").innerHTML = helpMessage;
   document.getElementById("message").className = "help-message";
   document.getElementById("close").innerHTML = "閉じる";
-  document.getElementById("modal").style.display = "flex";
-  showButtons("none", "none");
+  modal.style.display = "flex";
+  showButtons("none", "block");
 });
+
+// ----- 画面リサイズが幅 600px をまたいだときモーダルのサイズに反映 -----
+var wasBelow600 = window.innerWidth <= 600; // 初期状態を記録
+function handleResize() {
+  const isNowBelow600 = window.innerWidth <= 600;
+  if (wasBelow600 != isNowBelow600) resetModalSize();
+  wasBelow600 = isNowBelow600; // 状態を更新
+}
+window.addEventListener("resize", handleResize);
 
 // ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
 let draggedItem = null; // ドラッグ中のアイテム
