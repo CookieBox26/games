@@ -14,7 +14,7 @@ html {
 body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
   background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
-  width: 570px;
+  width: 570px;  /* 画面幅 */
   margin: 0;
   padding: 15px 10px;
 }
@@ -52,12 +52,13 @@ div#card-bench {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  width: calc(570px - 24px);
+  width: calc(570px - 24px);  /* 画面幅 - ボックスのボーダーとパディング */
   min-height: 130px;
 }
 div.card {  /* カード */
-  width: 80px;
-  height: 110px;
+  box-sizing: border-box;
+  width: 100px;
+  height: 130px;
   border: 5px solid #a19f93;
   border-radius: 5px;
   padding: 5px;
@@ -95,7 +96,7 @@ div#energy-field {
   gap: 3px;
   align-content: start;
   justify-content: center;
-  width: calc(570px - 24px);
+  width: calc(570px - 24px);  /* 画面幅 - ボックスのボーダーとパディング */
 }
 div.energy {
   width: 36px;
@@ -114,7 +115,6 @@ div#modal {
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.3);
-  width: calc(570px + 20px);
   display: none;
   justify-content: center;
   align-items: center;
@@ -184,7 +184,7 @@ p.help-message {
   }
   div#answer-container {
     order: 1;
-    width: calc(2 * (124px) + 10px);
+    width: calc(2 * 124px + 10px);  /* カード置き場2列分 */
   }
   div#progress-container {
     order: 2;
@@ -202,18 +202,15 @@ p.help-message {
   }
   div#card-bench {
     order: 3;
-    width: calc(2 * (100px) + 10px);
-    height: calc(2 * (130px) + 10px);
+    width: calc(2 * 100px + 10px);  /* カード2列分 */
+    height: calc(2 * 130px + 10px);  /* カード2行分 */
     justify-content: start;
   }
   div#energy-field {
     order: 4;
-    width: calc(36px + 3px + 36px);
-    height: calc(2 * (130px) + 1 * 10px);
+    width: calc(2 * 36px + 3px);  /* エネルギー2列分 */
+    height: calc(2 * 130px + 10px);  /* カード2行分 */
     justify-content: start;
-  }
-  div#modal {
-    width: calc(350px + 20px);
   }
 }
 </style>
@@ -266,6 +263,7 @@ const words = [
   {kanji: "訓戒", yomi: "くんかい", imi: "物事の善悪をよく言い聞かせ、注意すること。「■■を垂れる」", dummy: "君改"},
   {kanji: "権限", yomi: "けんげん", imi: "国や町や人などが、与えられた役割の中でしてもよいことや決めてもよいこと。", dummy: "件元"},
   {kanji: "光輝", yomi: "こうき", imi: "かがやき。「その学校は■■ある伝統をもつ」", dummy: "高貴"},
+  {kanji: "豪遊", yomi: "ごうゆう", imi: "お金をとてもたくさんつかって遊ぶこと。", dummy: "剛裕"},
   {kanji: "枯死", yomi: "こし　", imi: "草や木が完全に枯れること。", dummy: "故止"},
   {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
   {kanji: "自供", yomi: "じきょう", imi: "取り調べに対し、自分の罪を述べること。", dummy: "時教"},
@@ -295,6 +293,7 @@ const words = [
   {kanji: "漫遊", yomi: "まんゆう", imi: "気の向くままに各地を旅して回ること。", dummy: "満悠"},
   {kanji: "未刊", yomi: "みかん", imi: "書物や雑誌などがまだ出版されていないこと。", dummy: "見間"},
   {kanji: "黙殺", yomi: "もくさつ", imi: "問題や意見があるのに無視すること。", dummy: "目察"},
+  {kanji: "模範", yomi: "もはん", imi: "手本として見習うべき人や物事。", dummy: "摸軛"},
   {kanji: "利殖", yomi: "りしょく", imi: "株式などを利用して財産を増やすこと。", dummy: "裏植"},
   {kanji: "謡曲", yomi: "ようきょく", imi: "能 (日本に古くからある歌と踊りからなる劇) のための台本や曲のこと。", dummy: "踊局"},
   {kanji: "要旨", yomi: "ようし", imi: "文章や話の重要な点を短くまとめたもの。「講演の■■」", dummy: "用誌"},
@@ -302,15 +301,18 @@ const words = [
 console.log(words.length);
 
 const modal = document.getElementById("modal");
+const message = document.getElementById("message");
+const buttonClose = document.getElementById("close");
 const buttonNext = document.getElementById("next");
 const buttonNew3Rounds = document.getElementById("new3rounds");
 const buttonNew5Rounds = document.getElementById("new5rounds");
 const buttonNew10Cards = document.getElementById("new10cards");
 
 var nQ = 4;  // 1ラウンドで出題する言葉数
-var nE = 14;  // 漢字数 (正解の数は nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす)
-var nRound = 0;
-var cursor = -nQ;
+var nE = 14;  // 選択肢の漢字数 (正解のみなら nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす)
+
+var nRound = 3;  // ラウンド数を保存 (後から言葉データ数に応じて調整)
+var cursor = -nQ;  // 言葉データを参照するカーソル
 
 function resetModalSize() {
   // 画面を覆うモーダルのサイズを画面サイズに合わせる
@@ -318,12 +320,18 @@ function resetModalSize() {
   modal.style.height = `${document.body.offsetHeight}px`;
 }
 
-function showButtons(showButtonNext, showButtonNew) {
+function showModal(showButtonNext, showButtonNew, closeText) {
   // モーダル上のボタンの表示非表示を一度に設定する便利関数
   buttonNext.style.display = showButtonNext;
   buttonNew3Rounds.style.display = showButtonNew;
   buttonNew5Rounds.style.display = showButtonNew;
   buttonNew10Cards.style.display = showButtonNew;
+  if (showButtonNew == "block") {
+    if (nQ == 4) buttonNew10Cards.innerHTML = "カード10枚モードにする<br/>(画面幅 815px 以上ないと無効)";
+    if (nQ == 10) buttonNew10Cards.innerHTML = "カード4枚モードに戻す";
+  }
+  buttonClose.innerHTML = closeText;
+  modal.style.display = "flex";
 }
 
 function shuffleArray(array) {
@@ -423,13 +431,12 @@ function newGame(maxRound) {
   setup();
 }
 function init() {
-  document.getElementById("new10cards").innerHTML = "カード10枚モードにする<br/>(画面幅 815px 以上ないと無効)";
   newGame(3);
-  resetModalSize();
+  resetModalSize();  // 画面上の要素を作成後にモーダルサイズをセット
 }
 
 // ----- 正解判定 -----
-function judge(element) {
+function judgeImpl(element) {
   // カードと漢字の配置が正しいかの判定
   if (element.classList.contains("card")) {  // カードの上に何かがドロップされたとき
     let userAnswer = Array.from(element.children).map(child => child.innerHTML).join("");
@@ -452,28 +459,31 @@ function judge(element) {
     if (userAnswer != box.dataset.correct) continue;  // カードの配置が正しくない
     correctCounter += 1;
   };
+  return (correctCounter == nQ);  // すべて正解
+}
+function judge(element) {
+  if (!judgeImpl(element)) return;  // すべて正解でないなら何もしない
 
-  if (correctCounter == nQ) {  // すべて正解であったとき
-    let rCurrent = Math.floor(cursor / nQ);
-    document.getElementById(`progress${rCurrent}`).className = "done";
-    document.getElementById("message").className = "";
-    document.getElementById("message").innerHTML = "ミッションコンプリート！";
+  // すべて正解ならこのラウンドの問題番号サークルを緑に点灯
+  let rCurrent = Math.floor(cursor / nQ);
+  document.getElementById(`progress${rCurrent}`).className = "done";
 
-    if (cursor < nRound * nQ - nQ) {  // まだラウンドが残っている
-      showButtons("block", "none");
-    } else {  // 全ラウンド終了
-      document.getElementById("message").innerHTML += "<br/><br/>これで終わりです<br/>";
-      document.getElementById("message").innerHTML += "今回出てきた言葉は以下です<br/><br/>";
-      for (let k = 0; k <= cursor; k += nQ) {
-        for (let i = 0; i < nQ; i++) {
-          document.getElementById("message").innerHTML += words[k + i].kanji;
-          document.getElementById("message").innerHTML += ((i == (nQ - 1)) ? "<br/>" : "　");
-        }
+  // モーダル作成
+  let closeText = "もう一度カードの下を確認";
+  message.className = "";
+  message.innerHTML = "ミッションコンプリート！";
+  if (cursor < nRound * nQ - nQ) {  // まだラウンドが残っているとき
+    showModal("block", "none", closeText);
+  } else {  // 全ラウンド終了したとき
+    message.innerHTML += "<br/><br/>これで終わりです<br/>";
+    message.innerHTML += "今回出てきた言葉は以下です<br/><br/>";
+    for (let k = 0; k <= cursor; k += nQ) {
+      for (let i = 0; i < nQ; i++) {
+        message.innerHTML += words[k + i].kanji;
+        message.innerHTML += ((i == (nQ - 1)) ? "<br/>" : "　");
       }
-      showButtons("none", "block");
     }
-    document.getElementById("close").innerHTML = "もう一度カードの下を確認";
-    modal.style.display = "flex";  // モーダル表示
+    showModal("none", "block", closeText);
   }
 }
 
@@ -513,7 +523,6 @@ setButton("new10cards", () => {  // もう一度遊ぶ (カード10枚) ボタ�
       document.getElementById("help").style.marginRight = "5px";
       document.getElementById("card-bench").style.width = "540px";
       document.getElementById("energy-field").style.width = "192px";
-      document.getElementById("new10cards").innerHTML = "カード4枚モードに戻す";
       nQ = 10;
       nE = 35;
       newGame(3);
@@ -525,19 +534,17 @@ setButton("new10cards", () => {  // もう一度遊ぶ (カード10枚) ボタ�
   modal.style.display = "none";
 });
 setButton("help", () => {  // ヘルプボタン
-  document.getElementById("message").innerHTML = helpMessage;
-  document.getElementById("message").className = "help-message";
-  document.getElementById("close").innerHTML = "閉じる";
-  modal.style.display = "flex";
-  showButtons("none", "block");
+  message.innerHTML = helpMessage;
+  message.className = "help-message";
+  showModal("none", "block", "閉じる");
 });
 
-// ----- 画面リサイズが幅 600px をまたいだときモーダルのサイズに反映 -----
-var wasBelow600 = window.innerWidth <= 600; // 初期状態を記録
+// ----- 画面幅がリサイズにより 600px をまたいだときモーダルサイズに反映 -----
+var wasBelow600 = window.innerWidth <= 600; // 画面が 600px 以下かどうか
 function handleResize() {
   const isNowBelow600 = window.innerWidth <= 600;
   if (wasBelow600 != isNowBelow600) resetModalSize();
-  wasBelow600 = isNowBelow600; // 状態を更新
+  wasBelow600 = isNowBelow600;
 }
 window.addEventListener("resize", handleResize);
 
