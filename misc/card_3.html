@@ -6,7 +6,6 @@
 <title>card 3</title>
 <style type="text/css">
 html, body {  /* スマートフォンでの画面外スクロール禁止用 */
-  overflow: hidden;
   overscroll-behavior: none;
 }
 body {
@@ -14,7 +13,7 @@ body {
   background: #242424;
   margin: 0;
 }
-div#mat {
+div#mat {  /* 画面に引く青いマット */
   background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
   display: flex;
   justify-content: center;
@@ -89,10 +88,11 @@ div.correct {
 }
 .drag-preview {  /* ドラッグ中のカード (幽体離脱した側) (スマートフォン用) */
   position: fixed;
+  top: -1000px;  /* 画面をタッチした瞬間にみえないようにする */
+  left: -1000px;  /* 画面をタッチした瞬間にみえないようにする */
   pointer-events: none;
   z-index: 1000;
   opacity: 0.7;
-  display: none;
   transform: translate(-50%, -50%);
 }
 div#energy-field {
@@ -134,6 +134,7 @@ div.modal-content {
   width: auto;
   max-width: 80%;
   color: #242424;
+  line-height: 1.2;
 }
 div.modal-content > div {
   background: #242424;
@@ -143,6 +144,7 @@ div.modal-content > div {
   cursor: pointer;
   margin-top: 6px;
   font-size: 90%;
+  line-height: 1.2;
 }
 div#progress-container {
   order: 1;
@@ -244,14 +246,6 @@ p.help-message {
 </div>
 
 <script type="text/javascript"><!--
-// ----- ヘルプ文章 -----
-const helpMessage = [
-  "読み仮名が書いてあるカードに正しい漢字を置き、対応する説明の上に運ぶゲームです。",
-  "説明には私の解釈を含みます。お気付きの点がありましたら",
-  "<a href=\"https://github.com/CookieBox26/games/issues\" target=\"_blank\" rel=\"noopener noreferrer\">リポジトリのイシュー</a>か",
-  "<a href=\"https://x.com/CookieBox26\" target=\"_blank\" rel=\"noopener noreferrer\">エックス</a>までご連絡ください。",
-].join("");
-
 // ----- 言葉データ -----
 // 漢字2文字の単語を想定しています (漢字2文字でなくても動作はするはずですが見た目が崩れると思います)
 // 読みが2文字の場合は全角空白を付けてください (さもないと漢字エネルギーが読みの右隣にきてしまいます)
@@ -276,7 +270,9 @@ const words = [
   {kanji: "枯死", yomi: "こし　", imi: "草や木が完全に枯れること。", dummy: "故止"},
   {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
   {kanji: "自供", yomi: "じきょう", imi: "取り調べに対し、自分の罪を述べること。", dummy: "時教"},
+  {kanji: "執刀", yomi: "しっとう", imi: "手術や解剖 (かいぼう) を行うこと。", dummy: "熱刃"},
   {kanji: "師範", yomi: "しはん", imi: "(特に日本に古くからあるスポーツや芸の) 先生。", dummy: "士半"},
+  {kanji: "雌雄", yomi: "しゆう", imi: "めすとおす。勝ち負け。「■■を決する」", dummy: "志優"},
   {kanji: "周到", yomi: "しゅうとう", imi: "すみずみまで注意されていて見落としがないこと。", dummy: "秀当"},
   {kanji: "称号", yomi: "しょうごう", imi: "身分や立場や資格を表した呼び名。「今日の対局の勝者は竜王の■■を得る」", dummy: "照合"},
   {kanji: "称賛", yomi: "しょうさん", imi: "心からほめること。", dummy: "正参"},  // TODO: 賞賛も可
@@ -300,6 +296,7 @@ const words = [
   {kanji: "敏腕", yomi: "びんわん", imi: "物事を正確にすばやくやることができること。", dummy: "便湾"},
   {kanji: "風刺", yomi: "ふうし", imi: "社会や人物の欠点を、文章や絵画などで遠回しに示すこと。", dummy: "不紙"},
   {kanji: "富豪", yomi: "ふごう", imi: "大金持ち。", dummy: "不号"},
+  {kanji: "不詳", yomi: "ふしょう", imi: "くわしくわからないこと。「作者■■の絵画」", dummy: "負小"},
   {kanji: "腐敗", yomi: "ふはい", imi: "微生物によって、食べ物が毒をもつようになり、食べられない状態になること。", dummy: "負廃"},
   {kanji: "傍観", yomi: "ぼうかん", imi: "何もせずにただ見ているだけでいること。", dummy: "棒看"},
   {kanji: "冒頭", yomi: "ぼうとう", imi: "文章や物事の始まりの部分。「会議は■■からおだやかでない雰囲気だった」", dummy: "帽投"},
@@ -311,8 +308,17 @@ const words = [
   {kanji: "謡曲", yomi: "ようきょく", imi: "能 (日本に古くからある歌と踊りからなる劇) のための台本や曲のこと。", dummy: "踊局"},
   {kanji: "要旨", yomi: "ようし", imi: "文章や話の重要な点を短くまとめたもの。「講演の■■」", dummy: "用誌"},
 ];
-console.log(words.length);
 
+// ----- ヘルプ文章 -----
+const helpMessage = [
+  "読み仮名が書いてあるカードに正しい漢字を置き、対応する説明の上に運ぶゲームです。",
+  "説明には私の解釈を含みます。お気付きの点がありましたら",
+  "<a href=\"https://github.com/CookieBox26/games/issues\" target=\"_blank\" rel=\"noopener noreferrer\">リポジトリのイシュー</a>か",
+  "<a href=\"https://x.com/CookieBox26\" target=\"_blank\" rel=\"noopener noreferrer\">エックス</a>までご連絡ください。",
+  `<br/>現在登録されている言葉は${words.length}語です。`,
+].join("");
+
+const mat = document.getElementById("mat");
 const modal = document.getElementById("modal");
 const message = document.getElementById("message");
 const buttonClose = document.getElementById("close");
@@ -328,17 +334,13 @@ var nRound = 3;  // ラウンド数を保存 (後から言葉データ数に応�
 var cursor = -nQ;  // 言葉データを参照するカーソル
 
 var wasPortrait = window.innerWidth <= 600; // 画面が 600px 以下かどうか
-var wideMode = false;
+var wideMode = false;  // 一度にカード10枚分を解くワイドモード
 
 function resetMargin() {
-  let mat = document.getElementById("mat");
-  if (window.innerWidth <= 600) {
-    let w = Math.floor(0.5 * (window.innerWidth - mat.clientWidth));
-    let h = Math.floor(0.5 * (window.innerHeight - mat.clientHeight));
-    mat.style.margin = `${h}px ${w}px`;
-  } else {
-    mat.style.margin = "0";
-  }
+  // マットを画面の中央に引くためにウィンドウサイズに応じたマージンを設定する
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
 }
 
 function resetModalSize() {
@@ -368,16 +370,24 @@ function shuffleArray(array) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+
+  // 表示確認用 ( kanji フィールドの先頭に ! マークを付けた言葉を先頭に)
+  if (typeof array[0] == "object" && "kanji" in array[0]) {
+    array.sort((a, b) => {
+      return (a.kanji.startsWith("!") ? -1 : 1) - (b.kanji.startsWith("!") ? -1 : 1)
+    });
+    for (let item of array) {
+      if (item.kanji.startsWith("!")) item.kanji = item.kanji.replace(/^!/, "");
+    }
+  }
 }
 
 // ----- 画面幅がリサイズされたときレイアウトに反映 -----
 function handleResize() {
   // ゲーム画面のセンタリングとモーダルのリサイズを処理する
+  resetMargin();  // ゲーム画面のセンタリングは常に行う
   const isNowPortrait = window.innerWidth <= 600;
-  if (wideMode) return;  // ワイドモード中なら何もしない
-  if (!wasPortrait && !isNowPortrait) return;  // 変化前も後も横長なら何もしない
-  resetMargin();  // 変化前か後のどちらかが縦長ならセンタリングまたはセンタリング解除
-  if (wasPortrait != isNowPortrait) resetModalSize();  // 縦長と横長の変化が起きたならモーダルリサイズ
+  if (wasPortrait != isNowPortrait) resetModalSize();  // 縦長と横長の変化が起きたらモーダルリサイズ
   wasPortrait = isNowPortrait;
 }
 window.addEventListener("resize", handleResize);
@@ -571,6 +581,7 @@ setButton("wide-mode", () => {  // もう一度遊ぶ (カード10枚) ボタン
       nQ = 10;
       nE = 35;
       newGame(1);
+      resetMargin();
       resetModalSize();
     } else {
       wideMode = false;
@@ -686,7 +697,6 @@ const handleTouchMove = (e) => {
   // 指に追従させるアイテムを指に追従させる
   dragPreview.style.left = `${touch.clientX}px`;
   dragPreview.style.top = `${touch.clientY}px`;
-  dragPreview.style.display = "block";
   // 全ボックスの box-over クラスを除去し改めて指の下にあるボックスだけに box-over クラスを付与
   document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
   const element = document.elementFromPoint(touch.clientX, touch.clientY);
