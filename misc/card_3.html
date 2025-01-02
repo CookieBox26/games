@@ -329,11 +329,6 @@ function resetMargin() {
 }
 
 function resetLayout() {
-  // 画面を覆うモーダルのサイズを画面サイズに合わせる
-  let mat = document.getElementById("mat");
-  modal.style.width = `${mat.clientWidth}px`;
-  modal.style.height = `${mat.clientHeight}px`;
-
   // 問題番号コンテナの主軸方向とマージンを調整する
   let directionRow = (window.innerWidth > 600) && !wideMode;
   progressContainer.style.flexDirection = directionRow ? "row" : "column";
@@ -342,6 +337,11 @@ function resetLayout() {
     progress.style.margin = directionRow ? "0 5px 0 0" : "0 0 5px 0";
   }
   buttonHelp.style.margin = directionRow ? "0 0 0 auto" : "auto 0 0 0";
+
+  // 画面を覆うモーダルのサイズを画面サイズに合わせる
+  let mat = document.getElementById("mat");
+  modal.style.width = `${mat.clientWidth}px`;
+  modal.style.height = `${mat.clientHeight}px`;
 }
 
 function showModal(showButtonNext, showButtonNew, closeText) {
@@ -378,10 +378,10 @@ function shuffleArray(array) {
 // ----- 画面幅がリサイズされたときレイアウトに反映 -----
 function handleResize() {
   // ゲーム画面のセンタリングとモーダルのリサイズを処理する
-  resetMargin();  // ゲーム画面のセンタリングは常に行う
   const isNowPortrait = window.innerWidth <= 600;
   if (wasPortrait != isNowPortrait) resetLayout();  // 縦長と横長の変化が起きたらモーダルリサイズ
   wasPortrait = isNowPortrait;
+  resetMargin();  // ゲーム画面のセンタリングは常に行う
 }
 window.addEventListener("resize", handleResize);
 
@@ -473,8 +473,8 @@ function newGame(maxRound) {
   setup();
 
   // 画面上の要素を作成後にレイアウトをセット
-  resetMargin();
   resetLayout();
+  resetMargin();
   modal.style.display = "none";
 }
 function init() {
@@ -566,7 +566,7 @@ setButton("wide-mode", () => {  // もう一度遊ぶ (カード10枚) ボタン
       document.getElementById("energy-field").style.width = "192px";
       nQ = 10;
       nE = 35;
-      newGame(5);
+      newGame(1);
     } else {
       wideMode = false;
       location.reload();
