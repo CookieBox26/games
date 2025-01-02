@@ -25,7 +25,7 @@ div#mat {  /* 画面に引く青いマット */
 }
 div.container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 15px;
 }
@@ -53,11 +53,11 @@ div.answer {
 }
 div#card-bench {
   order: 3;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  width: 100%;
   min-height: 130px;
 }
 div.card {  /* カード */
@@ -97,12 +97,12 @@ div.correct {
 }
 div#energy-field {
   order: 4;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
   align-content: start;
   justify-content: center;
-  width: 100%;
 }
 div.energy {
   width: 36px;
@@ -148,7 +148,7 @@ div.modal-content > div {
 }
 div#progress-container {
   order: 1;
-  width: 570px;
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
@@ -160,7 +160,6 @@ div#progress-container > div {
   font-size: 18px;
   text-align: center;
   line-height: 28px;
-  margin-right: 5px;
   cursor: default;
   color: rgba(255, 255, 255, 0.9);
 }
@@ -172,8 +171,6 @@ div#progress-container > div.done {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
 }
 div#progress-container > div.help {
-  margin-right: 0;
-  margin-left: auto;
   border-radius: 7px;
   cursor: pointer;
 }
@@ -185,9 +182,6 @@ p.help-message {
   div#mat {
     width: 350px;
   }
-  div.container {
-    justify-content: space-between;
-  }
   div#answer-container {
     order: 1;
     width: calc(2 * 124px + 10px);  /* カード置き場2列分 */
@@ -195,25 +189,13 @@ p.help-message {
   div#progress-container {
     order: 2;
     width: 34px;
-    flex-direction: column;
-  }
-  div#progress-container > div {
-    margin-right: 0;
-    margin-bottom: 5px;
-  }
-  div#progress-container > div.help {
-    margin-left: 0;
-    margin-bottom: 0;
-    margin-top: auto;
   }
   div#card-bench {
-    order: 3;
     width: calc(2 * 100px + 10px);  /* カード2列分 */
     height: calc(2 * 130px + 10px);  /* カード2行分 */
     justify-content: start;
   }
   div#energy-field {
-    order: 4;
     width: calc(2 * 36px + 3px);  /* エネルギー2列分 */
     height: calc(2 * 130px + 10px);  /* カード2行分 */
     justify-content: start;
@@ -319,6 +301,7 @@ const helpMessage = [
 ].join("");
 
 const mat = document.getElementById("mat");
+const progressContainer = document.getElementById("progress-container");
 const modal = document.getElementById("modal");
 const message = document.getElementById("message");
 const buttonClose = document.getElementById("close");
@@ -326,6 +309,7 @@ const buttonNext = document.getElementById("next");
 const buttonNew3Rounds = document.getElementById("new3rounds");
 const buttonNew5Rounds = document.getElementById("new5rounds");
 const buttonWideMode = document.getElementById("wide-mode");
+const buttonHelp = document.getElementById("help");
 
 var nQ = 4;  // 1ラウンドで出題する言葉数
 var nE = 14;  // 選択肢の漢字数 (正解のみなら nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす)
@@ -337,17 +321,26 @@ var wasPortrait = window.innerWidth <= 600; // 画面が 600px 以下かどう�
 var wideMode = false;  // 一度にカード10枚分を解くワイドモード
 
 function resetMargin() {
-  // マットを画面の中央に引くためにウィンドウサイズに応じたマージンを設定する
+  // マットが画面の中央に配置されるようにウィンドウサイズに応じたマージンを設定する
   let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
   let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
   mat.style.margin = `${h}px ${w}px`;
 }
 
-function resetModalSize() {
+function resetLayout() {
   // 画面を覆うモーダルのサイズを画面サイズに合わせる
   let mat = document.getElementById("mat");
   modal.style.width = `${mat.clientWidth}px`;
   modal.style.height = `${mat.clientHeight}px`;
+
+  // 問題番号コンテナの主軸方向とマージンを調整する
+  let directionRow = (window.innerWidth > 600) && !wideMode;
+  progressContainer.style.flexDirection = directionRow ? "row" : "column";
+  for (let r = 0; r < nRound - 1; r++) {
+    let progress = document.getElementById(`progress${r}`);
+    progress.style.margin = directionRow ? "0 5px 0 0" : "0 0 5px 0";
+  }
+  buttonHelp.style.margin = directionRow ? "0 0 0 auto" : "auto 0 0 0";
 }
 
 function showModal(showButtonNext, showButtonNew, closeText) {
@@ -370,7 +363,6 @@ function shuffleArray(array) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-
   // 表示確認用 ( kanji フィールドの先頭に ! マークを付けた言葉を先頭に)
   if (typeof array[0] == "object" && "kanji" in array[0]) {
     array.sort((a, b) => {
@@ -387,7 +379,7 @@ function handleResize() {
   // ゲーム画面のセンタリングとモーダルのリサイズを処理する
   resetMargin();  // ゲーム画面のセンタリングは常に行う
   const isNowPortrait = window.innerWidth <= 600;
-  if (wasPortrait != isNowPortrait) resetModalSize();  // 縦長と横長の変化が起きたらモーダルリサイズ
+  if (wasPortrait != isNowPortrait) resetLayout();  // 縦長と横長の変化が起きたらモーダルリサイズ
   wasPortrait = isNowPortrait;
 }
 window.addEventListener("resize", handleResize);
@@ -465,7 +457,6 @@ function newGame(maxRound) {
   nRound = Math.min(Math.floor(words.length / nQ), maxRound);  // ラウンド数決定
 
   // ラウンド数に応じて問題番号サークルを生成
-  let progressContainer = document.getElementById("progress-container");
   Array.from(progressContainer.children).forEach((child) => {
     if (child.id != "help") progressContainer.removeChild(child);
   });  // 2ゲーム目以降は前ゲームのサークルがあるかもしれないので消去
@@ -479,13 +470,14 @@ function newGame(maxRound) {
   // カーソルを -nQ に巻き戻してから最初のラウンドをセットアップ
   cursor = -nQ;
   setup();
-}
-function init() {
-  newGame(1);
 
   // 画面上の要素を作成後にレイアウトをセット
   resetMargin();
-  resetModalSize();
+  resetLayout();
+  modal.style.display = "none";
+}
+function init() {
+  newGame(3);
 }
 
 // ----- 正解判定 -----
@@ -555,40 +547,30 @@ setButton("close", () => {  // 閉じるボタン
 });
 setButton("new3rounds", () => {  // もう一度遊ぶ (3ラウンド) ボタン
   newGame(3);
-  modal.style.display = "none";
 });
 setButton("new5rounds", () => {  // もう一度遊ぶ (5ラウンド) ボタン
   newGame(5);
-  modal.style.display = "none";
 });
 setButton("wide-mode", () => {  // もう一度遊ぶ (カード10枚) ボタン
   if (window.innerWidth >= 815) {
     if (!wideMode) {
       wideMode = true;
-      document.getElementById("mat").style.width = "795px";
+      mat.style.width = "795px";
       document.getElementById("answer-container").style.order = "1";
       document.getElementById("answer-container").style.width = "660px";
-      let progressContainer = document.getElementById("progress-container");
       progressContainer.style.order = "2";
-      progressContainer.style.width = "120px";
-      progressContainer.style.flexWrap = "wrap";
-      progressContainer.style.rowGap = "5px";
-      progressContainer.style.alignContent = "flex-start";
-      document.getElementById("help").style.marginRight = "5px";
+      progressContainer.style.width = "34px";
       document.getElementById("card-bench").style.width = "540px";
       document.getElementById("card-bench").style.height = "270px";
       document.getElementById("energy-field").style.width = "192px";
       nQ = 10;
       nE = 35;
-      newGame(1);
-      resetMargin();
-      resetModalSize();
+      newGame(5);
     } else {
       wideMode = false;
       location.reload();
     }
   }
-  modal.style.display = "none";
 });
 setButton("help", () => {  // ヘルプボタン
   message.innerHTML = helpMessage;
