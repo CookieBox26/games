@@ -7,16 +7,22 @@
 <style type="text/css">
 html, body {  /* スマートフォンでの画面外スクロール禁止用 */
   overflow: hidden;
-}
-html {
-  background: #242424;
+  overscroll-behavior: none;
 }
 body {
   font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
-  background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
-  width: 570px;  /* 画面幅 */
+  background: #242424;
   margin: 0;
+}
+div#mat {
+  background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 570px;
   padding: 15px 10px;
+  margin: 0;
+  position: relative;
 }
 div.container {
   display: flex;
@@ -52,7 +58,7 @@ div#card-bench {
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  width: calc(570px - 24px);  /* 画面幅 - ボックスのボーダーとパディング */
+  width: 100%;
   min-height: 130px;
 }
 div.card {  /* カード */
@@ -96,7 +102,7 @@ div#energy-field {
   gap: 3px;
   align-content: start;
   justify-content: center;
-  width: calc(570px - 24px);  /* 画面幅 - ボックスのボーダーとパディング */
+  width: 100%;
 }
 div.energy {
   width: 36px;
@@ -111,7 +117,7 @@ div.energy {
   cursor: pointer;
 }
 div#modal {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   background: rgba(0, 0, 0, 0.3);
@@ -156,8 +162,6 @@ div#progress-container > div {
   cursor: default;
   color: rgba(255, 255, 255, 0.9);
 }
-div#progress-container > div.not-yet {
-}
 div#progress-container > div.current {
   background: rgba(255, 255, 255, 0.37);
 }
@@ -176,7 +180,7 @@ p.help-message {
   text-align: left;
 }
 @media (max-width: 600px) {
-  body {
+  div#mat {
     width: 350px;
   }
   div.container {
@@ -217,6 +221,8 @@ p.help-message {
 </head>
 <body onload="init()">
 
+<div id="mat">
+
 <div class="container">
 <div id="progress-container"><div id="help" class="help">?</div></div>
 <div id="answer-container"></div>
@@ -231,8 +237,10 @@ p.help-message {
 <div id="next">次の問題へ</div>
 <div id="new3rounds">もう一度遊ぶ (3ラウンド)</div>
 <div id="new5rounds">もう一度遊ぶ (5ラウンド)</div>
-<div id="new10cards"></div>
+<div id="wide-mode"></div>
 </div>
+</div>
+
 </div>
 
 <script type="text/javascript"><!--
@@ -258,7 +266,7 @@ const words = [
   {kanji: "起訴", yomi: "きそ　", imi: "検察官が、悪いことをした疑いがある人を裁判にかけるよう求めること。", dummy: "基礎"},
   {kanji: "希薄", yomi: "きはく", imi: "液体や気体や人の気持ちがうすく少ないこと。「友人との関係が■■になる」", dummy: "布博"},
   {kanji: "及第", yomi: "きゅうだい", imi: "試験に合格すること。求められるレベルを何とか満たしていること。", dummy: "求大"},
-  {kanji: "強豪", yomi: "きょうごう", imi: "強く、なかなか負かすことができない人や団体。「サッカーの■■校」", dummy: ""},
+  {kanji: "強豪", yomi: "きょうごう", imi: "強く、なかなか負かすことができない人や団体。「サッカーの■■校」", dummy: "興剛"},
   {kanji: "驚嘆", yomi: "きょうたん", imi: "予想を超えることやすばらしいことに出会って驚くこと。", dummy: "叫漢"},
   {kanji: "拠点", yomi: "きょてん", imi: "活動の中心とする場所。「兄は駅前を■■にケーキを販売している」", dummy: "居展"},
   {kanji: "訓戒", yomi: "くんかい", imi: "物事の善悪をよく言い聞かせ、注意すること。「■■を垂れる」", dummy: "君改"},
@@ -268,7 +276,7 @@ const words = [
   {kanji: "枯死", yomi: "こし　", imi: "草や木が完全に枯れること。", dummy: "故止"},
   {kanji: "誇張", yomi: "こちょう", imi: "物事を実際より大げさに表現すること。", dummy: "故超"},
   {kanji: "自供", yomi: "じきょう", imi: "取り調べに対し、自分の罪を述べること。", dummy: "時教"},
-  {kanji: "師範", yomi: "しはん", imi: "(特に日本に古くからあるスポーツや芸の) 先生。", dummy: ""},
+  {kanji: "師範", yomi: "しはん", imi: "(特に日本に古くからあるスポーツや芸の) 先生。", dummy: "士半"},
   {kanji: "周到", yomi: "しゅうとう", imi: "すみずみまで注意されていて見落としがないこと。", dummy: "秀当"},
   {kanji: "称号", yomi: "しょうごう", imi: "身分や立場や資格を表した呼び名。「今日の対局の勝者は竜王の■■を得る」", dummy: "照合"},
   {kanji: "称賛", yomi: "しょうさん", imi: "心からほめること。", dummy: "正参"},  // TODO: 賞賛も可
@@ -311,7 +319,7 @@ const buttonClose = document.getElementById("close");
 const buttonNext = document.getElementById("next");
 const buttonNew3Rounds = document.getElementById("new3rounds");
 const buttonNew5Rounds = document.getElementById("new5rounds");
-const buttonNew10Cards = document.getElementById("new10cards");
+const buttonWideMode = document.getElementById("wide-mode");
 
 var nQ = 4;  // 1ラウンドで出題する言葉数
 var nE = 14;  // 選択肢の漢字数 (正解のみなら nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす)
@@ -319,10 +327,25 @@ var nE = 14;  // 選択肢の漢字数 (正解のみなら nQ の 2 倍だがダ
 var nRound = 3;  // ラウンド数を保存 (後から言葉データ数に応じて調整)
 var cursor = -nQ;  // 言葉データを参照するカーソル
 
+var wasPortrait = window.innerWidth <= 600; // 画面が 600px 以下かどうか
+var wideMode = false;
+
+function resetMargin() {
+  let mat = document.getElementById("mat");
+  if (window.innerWidth <= 600) {
+    let w = Math.floor(0.5 * (window.innerWidth - mat.clientWidth));
+    let h = Math.floor(0.5 * (window.innerHeight - mat.clientHeight));
+    mat.style.margin = `${h}px ${w}px`;
+  } else {
+    mat.style.margin = "0";
+  }
+}
+
 function resetModalSize() {
   // 画面を覆うモーダルのサイズを画面サイズに合わせる
-  modal.style.width = `${document.body.offsetWidth}px`;
-  modal.style.height = `${document.body.offsetHeight}px`;
+  let mat = document.getElementById("mat");
+  modal.style.width = `${mat.clientWidth}px`;
+  modal.style.height = `${mat.clientHeight}px`;
 }
 
 function showModal(showButtonNext, showButtonNew, closeText) {
@@ -330,10 +353,10 @@ function showModal(showButtonNext, showButtonNew, closeText) {
   buttonNext.style.display = showButtonNext;
   buttonNew3Rounds.style.display = showButtonNew;
   buttonNew5Rounds.style.display = showButtonNew;
-  buttonNew10Cards.style.display = showButtonNew;
+  buttonWideMode.style.display = showButtonNew;
   if (showButtonNew == "block") {
-    if (nQ == 4) buttonNew10Cards.innerHTML = "カード10枚モードにする<br/>(画面幅 815px 以上ないと無効)";
-    if (nQ == 10) buttonNew10Cards.innerHTML = "カード4枚モードに戻す";
+    if (!wideMode) buttonWideMode.innerHTML = "カード10枚モードにする<br/>(画面幅 815px 以上ないと無効)";
+    if (wideMode) buttonWideMode.innerHTML = "カード4枚モードに戻す";
   }
   buttonClose.innerHTML = closeText;
   modal.style.display = "flex";
@@ -346,6 +369,18 @@ function shuffleArray(array) {
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
+
+// ----- 画面幅がリサイズされたときレイアウトに反映 -----
+function handleResize() {
+  // ゲーム画面のセンタリングとモーダルのリサイズを処理する
+  const isNowPortrait = window.innerWidth <= 600;
+  if (wideMode) return;  // ワイドモード中なら何もしない
+  if (!wasPortrait && !isNowPortrait) return;  // 変化前も後も横長なら何もしない
+  resetMargin();  // 変化前か後のどちらかが縦長ならセンタリングまたはセンタリング解除
+  if (wasPortrait != isNowPortrait) resetModalSize();  // 縦長と横長の変化が起きたならモーダルリサイズ
+  wasPortrait = isNowPortrait;
+}
+window.addEventListener("resize", handleResize);
 
 // ----- セットアップ -----
 function setup() {
@@ -411,7 +446,7 @@ function setup() {
   let rCurrent = Math.floor(cursor / nQ);
   for (let r = 0; r < nRound; r++) {
     let progress = document.getElementById(`progress${r}`);
-    progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "not-yet");
+    progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "");
   }
 }
 function newGame(maxRound) {
@@ -436,8 +471,11 @@ function newGame(maxRound) {
   setup();
 }
 function init() {
-  newGame(3);
-  resetModalSize();  // 画面上の要素を作成後にモーダルサイズをセット
+  newGame(1);
+
+  // 画面上の要素を作成後にレイアウトをセット
+  resetMargin();
+  resetModalSize();
 }
 
 // ----- 正解判定 -----
@@ -513,10 +551,11 @@ setButton("new5rounds", () => {  // もう一度遊ぶ (5ラウンド) ボタン
   newGame(5);
   modal.style.display = "none";
 });
-setButton("new10cards", () => {  // もう一度遊ぶ (カード10枚) ボタン
+setButton("wide-mode", () => {  // もう一度遊ぶ (カード10枚) ボタン
   if (window.innerWidth >= 815) {
-    if (nQ == 4) {
-      document.body.style.width = "795px";
+    if (!wideMode) {
+      wideMode = true;
+      document.getElementById("mat").style.width = "795px";
       document.getElementById("answer-container").style.order = "1";
       document.getElementById("answer-container").style.width = "660px";
       let progressContainer = document.getElementById("progress-container");
@@ -534,6 +573,7 @@ setButton("new10cards", () => {  // もう一度遊ぶ (カード10枚) ボタ�
       newGame(1);
       resetModalSize();
     } else {
+      wideMode = false;
       location.reload();
     }
   }
@@ -544,15 +584,6 @@ setButton("help", () => {  // ヘルプボタン
   message.className = "help-message";
   showModal("none", "block", "閉じる");
 });
-
-// ----- 画面幅がリサイズにより 600px をまたいだときモーダルサイズに反映 -----
-var wasBelow600 = window.innerWidth <= 600; // 画面が 600px 以下かどうか
-function handleResize() {
-  const isNowBelow600 = window.innerWidth <= 600;
-  if (wasBelow600 != isNowBelow600) resetModalSize();
-  wasBelow600 = isNowBelow600;
-}
-window.addEventListener("resize", handleResize);
 
 // ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
 let draggedItem = null; // ドラッグ中のアイテム
