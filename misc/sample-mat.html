@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sample-mat</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+}
+body {
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  background: #242424;
+  margin: 0;
+}
+div#mat {  /* 画面に引くマット */
+  background: #1e9167;
+  width: 350px;
+  height: 600px;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div id="mat">
+</div>
+
+<script type="text/javascript"><!--
+const mat = document.getElementById('mat');
+
+function alignMatCenter() {  // 画面がリサイズされたときマットをセンタリング
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+}
+window.addEventListener('resize', alignMatCenter);
+alignMatCenter();
+// --></script>
+</body>
+</html>
