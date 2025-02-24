@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sample-flex</title>
+<style type="text/css">
+body {
+  font-family: 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  margin: 10px;
+  font-size: 80%;
+  font-weight: bold;
+}
+div.flex {
+  margin: 5px 0;
+  padding: 5px;
+  height: 115px;
+  width: 260px;
+  display: flex;
+  gap: 5px;
+}
+div.row {
+  flex-flow: row wrap;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to right, deepskyblue, hotpink);
+}
+div.rowr {
+  flex-flow: row-reverse wrap;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to left, deepskyblue, hotpink);
+}
+div.col {
+  flex-flow: column wrap;
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(deepskyblue, hotpink);
+}
+div.colr {
+  flex-flow: column-reverse wrap;
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to top, deepskyblue, hotpink);
+}
+div.legend {
+  margin: 5px 0;
+  padding: 5px;
+  height: 20px;
+  width: 250px;
+  color: white;
+}
+div.jcn {
+  justify-content: normal;
+}
+div.jcfs {
+  justify-content: flex-start;
+}
+div.jcfe {
+  justify-content: flex-end;
+}
+div.jcc {
+  justify-content: center;
+}
+div.jcsb {
+  justify-content: space-between;
+}
+div.ais {
+  align-items: start;
+}
+div.aie {
+  align-items: end;
+}
+div.aic {
+  align-items: center;
+}
+div.acs {
+  align-content: start;
+}
+div.ace {
+  align-content: end;
+}
+div.acsb {
+  align-content: space-between;
+}
+div.box {
+  background: gold;
+  padding: 5px;
+}
+</style>
+</head>
+<body>
+
+<div style="display: flex; gap: 30px;">
+
+<div>
+<h3>flex-flow: row-wrap;</h3>
+STEP1. <div class="flex row ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style="">012</div></div>
+STEP2. <div class="flex row ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP3. <div class="flex row fww">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP4. <div class="flex row jcfe">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP5. <div class="flex row jcfe aic">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP6. <div class="flex row jcfe aic acsb">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+</div>
+
+<div>
+<h3>flex-flow: row-reverse wrap;</h3>
+STEP1. <div class="flex rowr ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style="">012</div></div>
+STEP2. <div class="flex rowr ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP3. <div class="flex rowr fww">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP4. <div class="flex rowr jcfe">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP5. <div class="flex rowr jcfe aic">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP6. <div class="flex rowr jcfe aic acsb">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+</div>
+
+<div>
+<h3>flex-flow: column wrap;</h3>
+STEP1. <div class="flex col ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style="">012</div></div>
+STEP2. <div class="flex col ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP3. <div class="flex col fww">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP4. <div class="flex col jcfe">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP5. <div class="flex col jcfe aic">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP6. <div class="flex col jcfe aic acsb">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+</div>
+
+<div>
+<h3>flex-flow: column-reverse wrap;</h3>
+STEP1. <div class="flex colr ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style="">012</div></div>
+STEP2. <div class="flex colr ais acs">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP3. <div class="flex colr fww">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP4. <div class="flex colr jcfe">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP5. <div class="flex colr jcfe aic">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+STEP6. <div class="flex colr jcfe aic acsb">
+  <div class="box">001</div><div class="box">002</div><div class="box">003</div>
+  <div class="box">004</div><div class="box">005</div><div class="box" style="height: 30px; width: 30px;">006</div>
+  <div class="box">007</div><div class="box">008</div><div class="box">009</div>
+  <div class="box">010</div><div class="box">011</div><div class="box" style=" flex: auto;">012</div></div>
+</div>
+
+</div>
+
+</body>
+</html>
