@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sample-mat-modal</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  background: #242424;
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+}
+div#mat {  /* 画面に引くマット */
+  width: 350px;
+  height: 600px;
+  background: #1e9167;
+}
+div.flex {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: start;
+  align-items: start;
+  gap: 10px;
+}
+div.container {
+  padding: 20px;
+  flex-flow: column wrap;
+}
+div.header {
+  width: 100%;
+  justify-content: end;
+}
+div.area {
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
+}
+div.mini-btn {
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  padding: 4px 6px;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+div#modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.35);
+  justify-content: center;
+  align-items: center;
+}
+div.modal-content {
+  border-radius: 6px;
+  padding: 20px;
+  width: auto;
+  max-width: 80%;
+  flex-flow: column wrap;
+  align-items: center;
+  background: white;
+  color: #242424;
+  line-height: 1.2;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+div.modal-content-btn {
+  border-radius: 5px;
+  padding: 4px 10px;
+  background: #242424;
+  color: #fff;
+  font-size: 92%;
+  text-align: center;
+  cursor: pointer;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div id="mat">
+
+<div class="flex container">
+<div class="flex header">
+<div id="help" class="area mini-btn">?</div>
+</div>
+</div>
+
+<div id="modal" class="flex">
+<div class="flex modal-content">
+<div id="message">こんにちは。</div>
+<div class="modal-content-btn" id="close">閉じる</div>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript"><!--
+const mat = document.getElementById('mat');  // マット
+const modal = document.getElementById("modal");  // モーダル
+
+function resetLayout() {
+  // マットとモーダルをセンタリング
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+  modal.style.margin = `${h}px ${w}px`;
+}
+
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+  button.addEventListener("touchstart", handle);
+}
+
+function init() {
+  // モーダルのサイズをマットのサイズに合わせる
+  modal.style.width = `${mat.clientWidth}px`;
+  modal.style.height = `${mat.clientHeight}px`;
+  modal.style.display = "none";
+
+  // マットとモーダルをセンタリングする
+  resetLayout();
+  // リサイズのたびにマットとモーダルをセンタリングするようにする
+  window.addEventListener('resize', resetLayout);
+
+  setButton("help", () => {  // ヘルプボタン
+    modal.style.display = "flex";
+  });
+  setButton("close", () => {  // 閉じるボタン
+    modal.style.display = "none";
+  });
+}
+// --></script>
+</body>
+</html>
