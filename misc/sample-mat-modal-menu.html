@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sample-mat-modal-menu</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  background: #242424;
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+}
+div#mat {  /* 画面に引くマット */
+  width: 350px;
+  height: 600px;
+  background: #1e9167;
+}
+div.flex {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: start;
+  gap: 10px;
+}
+div.container {
+  padding: 15px;
+  width: 320px;
+  height: 570px;
+  flex-flow: column wrap;
+  align-items: stretch;
+}
+div.header {
+  width: 100%;
+  justify-content: end;
+}
+div.area {
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
+}
+div.mini-btn {
+  box-sizing: border-box;
+  width: 38px;
+  height: 38px;
+  padding: 6px;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
+div.bar {
+  box-sizing: border-box;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.8);
+}
+div#main {
+  flex-grow: 1;
+  border-radius: 10px;
+  font-size: 105%;
+}
+div#modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 350px;
+  height: 600px;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+}
+div.modal-content {
+  border-radius: 6px;
+  padding: 20px;
+  width: auto;
+  max-width: 80%;
+  flex-flow: column wrap;
+  gap: 7px;
+  background: white;
+  color: #242424;
+  line-height: 1.2;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+div#message {
+  margin-bottom: 5px;
+}
+div.modal-content-btn {
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 5px;
+  padding: 4px 10px;
+  background: #242424;
+  color: #fff;
+  font-size: 92%;
+  text-align: center;
+  cursor: pointer;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div id="mat">
+
+<div class="flex container">
+<div class="flex header">
+<div id="menu" class="flex area mini-btn">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+</div>
+<div id="main" class="area">
+</div>
+</div>
+
+<div id="modal" class="flex">
+<div class="flex modal-content">
+<div id="message">何をするか選んでください</div>
+<div id="study" class="modal-content-btn">勉強する</div>
+<div id="test" class="modal-content-btn">テストする</div>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript"><!--
+const mat = document.getElementById('mat');  // マット
+const modal = document.getElementById("modal");  // モーダル
+const main = document.getElementById("main");
+
+function resetLayout() {
+  // マットとモーダルをセンタリング
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+  modal.style.margin = `${h}px ${w}px`;
+}
+
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+  button.addEventListener("touchstart", handle);
+}
+
+function init() {
+  // マットとモーダルをセンタリングする
+  resetLayout();
+  // リサイズのたびにマットとモーダルをセンタリングするようにする
+  window.addEventListener('resize', resetLayout);
+
+  setButton("menu", () => {  // メニューボタン
+    modal.style.display = "flex";
+  });
+  setButton("study", () => {  // 勉強するボタン
+    main.innerHTML = `
+      ◆ 雲散霧消 (うんさんむしょう)<br/>
+      雲が散って霧が消えるように、すっかりなくなること。
+      「友人に相談したら悩みが雲散霧消した。」
+      <br/><br/>
+      ◆ 理路整然 (りろせいぜん)<br/>
+      文章や人の話が、誰にとっても納得しやすいように飛躍や矛盾なく組み立てられているようす。
+      「理路整然とした説明。」`;
+    modal.style.display = "none";
+  });
+  setButton("test", () => {  // テストするボタン
+    main.innerHTML = `
+      ・ 不安がウンサン霧消した。<br/>
+      ・ 彼女の意見はリロ整然としていた。<br/>`;
+    modal.style.display = "none";
+  });
+}
+// --></script>
+</body>
+</html>
