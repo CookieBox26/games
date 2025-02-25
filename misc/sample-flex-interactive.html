@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sample-flex-interactive</title>
+<style type="text/css">
+body {
+  margin: 0;
+}
+body, option {
+  font-size: 15px;
+}
+div.big-container {
+  padding: 10px;
+  width: 600px;
+  display: flex;
+  flex-flow: row wrap;
+  gap: 10px;
+}
+div.flex {
+  padding: 7px;
+  width: 200px;
+  height: 105px;
+  display: flex;
+  gap: 5px;
+  background: deepskyblue;
+}
+div.label0 {
+  padding: 5px;
+  width: 120px;
+}
+div.label1 {
+  padding: 5px;
+  width: 200px;
+}
+div.row {
+  flex-flow: row wrap;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to right, deepskyblue, hotpink);
+}
+div.row-r {
+  flex-flow: row wrap-reverse;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to right, deepskyblue, hotpink);
+}
+div.rowr {
+  flex-flow: row-reverse wrap;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to left, deepskyblue, hotpink);
+}
+div.rowr-r {
+  flex-flow: row-reverse wrap-reverse;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to left, deepskyblue, hotpink);
+}
+div.col {
+  flex-flow: column wrap;
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(deepskyblue, hotpink);
+}
+div.col-r {
+  flex-flow: column wrap-reverse;
+  background:
+    linear-gradient(to left, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(deepskyblue, hotpink);
+}
+div.colr {
+  flex-flow: column-reverse wrap;
+  background:
+    linear-gradient(to right, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to top, deepskyblue, hotpink);
+}
+div.colr-r {
+  flex-flow: column-reverse wrap-reverse;
+  background:
+    linear-gradient(to left, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(to top, deepskyblue, hotpink);
+}
+div.box {
+  background: gold;
+  padding: 3px;
+  font-size: 13px;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div class="big-container">
+<div style="width: 600px;">
+<label for="select-jc">justify-content:</label>
+<select id="select-jc">
+<option value="normal">normal</option>
+<option value="start">start</option>
+<option value="center">center</option>
+<option value="end">end</option>
+<option value="space-between">space-between</option>
+</select><br/>
+<label for="select-ai">align-items:</label>
+<select id="select-ai">
+<option value="stretch">stretch</option>
+<option value="start">start</option>
+<option value="center">center</option>
+<option value="end">end</option>
+<option value="flex-start">flex-start</option>
+<option value="flex-end">flex-end</option>
+</select><br/>
+<label for="select-ac">align-content:</label>
+<select id="select-ac">
+<option value="normal">normal</option>
+<option value="start">start</option>
+<option value="center">center</option>
+<option value="end">end</option>
+<option value="space-between">space-between</option>
+</select>
+</div>
+<div class="label0"></div>
+<div class="label1">flex-wrap: wrap</div>
+<div class="label1">flex-wrap: wrap-reverse</div>
+<div class="label0">flex-direction:<br/>row</div>
+<div id="container0" class="flex row"></div>
+<div id="container1" class="flex row-r"></div>
+<div class="label0">flex-direction:<br/>row-reverse</div>
+<div id="container2" class="flex rowr"></div>
+<div id="container3" class="flex rowr-r"></div>
+<div class="label0">flex-direction:<br/>column</div>
+<div id="container4" class="flex col"></div>
+<div id="container5" class="flex col-r"></div>
+<div class="label0">flex-direction:<br/>column-reverse</div>
+<div id="container6" class="flex colr"></div>
+<div id="container7" class="flex colr-r"></div>
+</div>
+
+<script type="text/javascript"><!--
+const containers = []
+const selectJC = document.getElementById('select-jc');
+const selectAI = document.getElementById('select-ai');
+const selectAC = document.getElementById('select-ac');
+selectJC.addEventListener('change', function() {
+  containers.forEach(container => {
+    container.style.justifyContent = selectJC.value;
+  });
+});
+selectAI.addEventListener('change', function() {
+  containers.forEach(container => {
+    container.style.alignItems = selectAI.value;
+  });
+});
+selectAC.addEventListener('change', function() {
+  containers.forEach(container => {
+    container.style.alignContent = selectAC.value;
+  });
+});
+
+function init() {
+  for (let i = 0; i < 8; i++) {
+    containers.push(document.getElementById(`container${i}`));
+  }
+  containers.forEach(container => {
+    for (let j = 0; j < 8; j++) {
+      let box = document.createElement('div');
+      box.classList.add('box');
+      if (j == 3) {
+        box.style.width = '32px';
+        box.style.height = '32px';
+      }
+      if (j == 7) {
+        box.style.flex = 'auto';
+      }
+      box.innerHTML = `0${j}`;
+      container.appendChild(box);
+    }
+  });
+}
+// --></script>
+</body>
+</html>
