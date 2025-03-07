@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dice</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  background: #242424;
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+div#mat {  /* 画面に引くマット */
+  width: 369px;
+  height: 578px;
+  display: flex;
+  flex-flow: column;
+  gap: 13px;
+}
+div.area {
+  box-sizing: border-box;
+  width: 369px;
+  flex: auto;
+  display: flex;
+  flex-flow: row wrap;
+  align-content: start;
+  padding: 15px 20px;
+  gap: 12px;
+}
+div.blue {
+  background: #107ab0;
+}
+div.green {
+  background: #5fa052;
+}
+div#btn-roll {
+  width: 369px;
+  height: 50px;
+  background: #c44240;
+  font-size: 30px;
+  line-height: 50px;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+}
+div.dice {
+  width: 70px;
+  height: 70px;
+  background: white;
+  color: #242424;
+  font-size: 50px;
+  line-height: 68px;
+  text-align: center;
+}
+div.controll {
+  width: 250px;
+  display: flex;
+  flex-flow: row;
+  gap: 10px;
+}
+div.btn {
+  width: 35px;
+  height: 35px;
+  color: white;
+  font-size: 35px;
+  line-height: 35px;
+  text-align: center;
+  cursor: pointer;
+}
+</style>
+<body onload="init()">
+<div id="mat">
+<div id="btn-roll">サイコロを振る</div>
+<div class="area blue" id="area-blue">
+<div class="controll">
+<div class="btn" id="btn-blue-minus">－</div>
+<div class="btn" id="btn-blue-plus">＋</div>
+</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+</div>
+<div class="area green" id="area-green">
+<div class="controll">
+<div class="btn" id="btn-green-minus">－</div>
+<div class="btn" id="btn-green-plus">＋</div>
+</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+<div class="dice">1</div>
+</div>
+</div>
+<script type="text/javascript"><!--
+const mat = document.getElementById('mat');
+
+function alignMat() {  // マットをセンタリング
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+}
+
+function hatena(dices) {
+  Array.from(dices).forEach((dice) => {
+    dice.innerHTML = '<span style="color: gray">?</span>';
+  });
+}
+
+function roll(dices) {
+  Array.from(dices).forEach((dice) => {
+    let n = Math.floor(Math.random() * 6) + 1;
+    dice.innerHTML = `${n}`;
+  });
+}
+
+function removeDice(areaName) {
+  const area = document.getElementById(areaName);
+  const diceList = area.getElementsByClassName('dice');
+  if (diceList.length > 0) {
+    area.removeChild(diceList[diceList.length - 1]);
+  }
+}
+
+function addDice(areaName) {
+  const area = document.getElementById(areaName);
+  const diceList = area.getElementsByClassName('dice');
+  if (diceList.length == 8) return;
+  const newDice = document.createElement('div');
+  newDice.className = 'dice';
+  newDice.textContent = '1';
+  area.appendChild(newDice);
+}
+
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+}
+
+function init() {
+  alignMat();
+  window.addEventListener('resize', alignMat);
+  setButton('btn-roll', () => {
+    const dices = document.getElementsByClassName('dice');
+    hatena(dices);
+    new Promise((resolve) => {
+      setTimeout(resolve, 750);
+    }).then(() => {
+      roll(dices);
+    });
+  });
+  setButton('btn-blue-minus', () => {
+    removeDice("area-blue");
+  });
+  setButton('btn-blue-plus', () => {
+    addDice("area-blue");
+  });
+  setButton('btn-green-minus', () => {
+    removeDice("area-green");
+  });
+  setButton('btn-green-plus', () => {
+    addDice("area-green");
+  });
+}
+// --></script>
+</body>
+</html>
