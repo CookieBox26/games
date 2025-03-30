@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>yoji</title>
+<style type="text/css">
+:root {
+  --header: #1e9167;
+}
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+}
+body {
+  margin: 0;
+  background: #242424;
+  font-size: 18px;
+  font-family: 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+}
+h1, h2, h3 {
+  margin: 0.5em 0;
+  padding: 0.5em 0 0;
+}
+div#mat {  /* 画面に引くマット */
+  width: 350px;
+  height: 600px;
+  background: #ffffff;
+  color: #242424;
+}
+div.flex {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: start;
+}
+div.container {
+  width: 350px;
+  height: 600px;
+  flex-flow: column wrap;
+  align-items: stretch;
+}
+div.header {
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  justify-content: end;
+  background: var(--header);
+}
+div.mini-btn {
+  padding: 13px 18px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  width: 38px;
+  height: 38px;
+  padding: 6px;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+}
+div.bar {
+  box-sizing: border-box;
+  width: 100%;
+  height: 4px;
+  background: #ffffff;
+}
+div#main {
+  flex-grow: 1;
+  border-radius: 10px;
+  font-size: 105%;
+}
+div#modal {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  width: 350px;
+  height: calc(600px - 58px);
+  justify-content: end;
+  align-items: center;
+  /* background: rgba(0, 0, 0, 0.3); */
+}
+div.modal-content {
+  box-sizing: border-box;
+  width: 58%;
+  height: 100%;
+  flex-flow: column wrap;
+  align-items: center;
+  background: var(--header);
+  line-height: 1.2;
+}
+div.hr {
+  box-sizing: border-box;
+  width: calc(100% - 10px);
+  height: 2px;
+  background: #ffffff;
+}
+div.modal-content-btn {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 15px 10px;
+  color: #fff;
+  font-size: 26px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+div.area {
+  box-sizing: border-box;
+  width: 350px;
+  height: calc(600px - 58px);
+  padding: 18px;
+  line-height: 1.2;
+  display: none;
+  flex-flow: column;
+  gap: 10px;
+}
+div#top {
+  align-items: center;
+}
+div#test {
+}
+div#study {
+  overflow-y: scroll;
+  gap: 0;
+}
+div.masu-container {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  gap: 7px;
+  justify-content: center;
+  align-content: center;
+  padding: 0 0 10px;
+  user-select: none;
+}
+div.masu {
+  border: 4px solid #242424;
+  width: 62px;
+  height: 62px;
+  font-size: 52px;
+  text-align: center;
+  line-height: 62px;
+  font-weight: bold;
+  cursor: pointer;
+}
+div.mini-masu {
+  border: 3px solid #242424;
+  width: 55px;
+  height: 55px;
+  font-size: 45px;
+  text-align: center;
+  line-height: 55px;
+  cursor: pointer;
+}
+div.main-btn {
+  width: 100%;
+  height: 50px;
+  color: #ffffff;
+  font-size: 26px;
+  text-align: center;
+  line-height: 50px;
+  background: #242424;
+  cursor: pointer;
+  user-select: none;
+}
+div.yomi {
+  font-size: 25px;
+  font-weight: bold;
+}
+div.yoji {
+  font-size: 50px;
+  font-weight: bold;
+  letter-spacing: 3px;
+}
+div.desc {
+  padding: 5px 0 20px;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div id="mat">
+
+<div class="flex container">
+
+<div class="flex header">
+<div id="menu" class="flex mini-btn">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+</div>
+
+<div id="main">
+
+<div id="top" class="area">
+<div class="yoji" style="font-size: 64px; height: 100px; line-height: 100px;">四字熟語</div>
+<div>あなたが正しく答えられた<br/>四字熟語の数は <span id="span-count"></span> です。<br/><br/></div>
+<div id="main-btn-test" class="main-btn">問題を解く</div>
+<div id="main-btn-study" class="main-btn">勉強する</div>
+</div>
+
+<div id="test" class="area">
+<div class="yomi">問題</div>
+<div id="question"></div>
+
+<div class="masu-container">
+<div id="ans0" class="masu"></div>
+<div id="ans1" class="masu"></div>
+<div id="ans2" class="masu"></div>
+<div id="ans3" class="masu"></div>
+</div>
+
+<div class="masu-container">
+<div id="s0" class="mini-masu"></div>
+<div id="s1" class="mini-masu"></div>
+<div id="s2" class="mini-masu"></div>
+<div id="s3" class="mini-masu"></div>
+<div id="s4" class="mini-masu"></div>
+<div id="s5" class="mini-masu"></div>
+<div id="s6" class="mini-masu"></div>
+<div id="s7" class="mini-masu"></div>
+</div>
+
+<div id="answer" class="main-btn">回答する</div>
+<div id="message" style="font-weight: bold;"></div>
+<div id="back" class="main-btn">トップに戻る</div>
+</div>
+
+<div id="study" class="area">
+
+<div class="yomi">アオイキトイキ</div>
+<div class="yoji">青息吐息</div>
+<div class="desc">困り果ててため息が出るような状態。「物価高で青息吐息だ。」</div>
+
+<div class="yomi">ウンサンムショウ</div>
+<div class="yoji">雲散霧消</div>
+<div class="desc">雲が散って霧が消えるように、すっかりなくなること。「友人に相談したら悩みが雲散霧消した。」</div>
+
+<div class="yomi">リロセイゼン</div>
+<div class="yoji">理路整然</div>
+<div class="desc">文章や人の話が、誰にとっても納得しやすいように飛躍や矛盾なく組み立てられているようす。「理路整然とした説明。」</div>
+
+</div>
+
+</div>
+</div>
+
+<div id="modal" class="flex">
+<div class="flex modal-content">
+<div class="hr"></div>
+<div id="menu-btn-top" class="modal-content-btn">トップページ</div>
+<div class="hr"></div>
+<div id="menu-btn-test" class="modal-content-btn">問題を解く</div>
+<div class="hr"></div>
+<div id="menu-btn-study" class="modal-content-btn">勉強する</div>
+<div class="hr"></div>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript"><!--
+const mat = document.getElementById('mat');  // マット
+const modal = document.getElementById("modal");  // モーダル
+const divTop = document.getElementById("top");
+const divTest = document.getElementById("test");
+const divStudy = document.getElementById("study");
+const divQ = document.getElementById("question");
+const divA = document.getElementById("answer");
+const back = document.getElementById("back");
+const spanCount = document.getElementById("span-count");
+const STORAGE_KEY = 'yojijukugo';
+var cursor = 0;
+var trueAns = "";
+
+function getYojiList() {
+  const json = localStorage.getItem(STORAGE_KEY);
+  return json ? JSON.parse(json) : [];
+}
+
+function saveYojiList(list) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+}
+
+function addYoji(yojijukugo) {
+  const list = getYojiList();
+  if (!list.includes(yojijukugo)) {
+    list.push(yojijukugo);
+    saveYojiList(list);
+  }
+}
+
+function removeYoji(yojijukugo) {
+  let list = getYojiList();
+  const newList = list.filter(item => item !== yojijukugo);
+  if (newList.length !== list.length) {
+    saveYojiList(newList);
+  }
+}
+
+function countYoji() {
+  return getYojiList().length;
+}
+
+function resetLayout() {
+  // マットとモーダルをセンタリング
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+  modal.style.margin = `${h}px ${w}px`;
+}
+
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+  button.addEventListener("touchstart", handle);
+}
+
+function setCursor(i) {
+  cursor = i;
+  for (let j = 0; j < 4; j++) {
+    document.getElementById(`ans${j}`).style.background = (j == i) ? "#fffd37" : "white";
+  }
+}
+
+function shuffleAndSet(text) {
+  const chars = text.split('');
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  for (let i = 0; i < 8; i++) {
+    const div = document.getElementById(`s${i}`);
+    div.innerHTML = chars[i];
+  }
+}
+
+function setQ() {
+  let r = Math.floor(Math.random() * 2);
+  if (r == 0) {
+    trueAns = "理路整然";
+    divQ.innerHTML = "彼女の意見はリロセイゼンとしていた。";
+    shuffleAndSet("理路整然利露正全");
+  } else {
+    trueAns = "雲散霧消";
+    divQ.innerHTML = "悩みがウンサンムショウした。";
+    shuffleAndSet("雲散霧消運算無小");
+  }
+
+  for (let i = 0; i < 4; i++) {
+    let div = document.getElementById(`ans${i}`);
+    div.innerHTML = "";
+    div.style.color = "#242424";
+    div.style.pointerEvents = "auto";
+  }
+  for (let i = 0; i < 8; i++) {
+    document.getElementById(`s${i}`).style.pointerEvents = "auto";
+  }
+  divA.style.pointerEvents = "auto";
+  back.style.display = "none";
+  divA.style.background = "#242424";
+  document.getElementById("message").innerHTML = "";
+  setCursor(0);
+}
+
+function judge() {
+  const chars = trueAns.split('');
+  let point = 0;
+  for (let i = 0; i < 4; i++) {
+    let div = document.getElementById(`ans${i}`);
+    let ans = div.innerHTML;
+    if (ans == chars[i]) {
+      ++point;
+      div.style.color = "#287c37";
+    } else {
+      div.style.color = "#ef4026";
+    }
+    div.style.pointerEvents = "none";
+  }
+  if (point == 4) {
+    document.getElementById("message").style.color = "#287c37";
+    document.getElementById("message").innerHTML = "正解です。";
+    addYoji(trueAns);
+  } else {
+    document.getElementById("message").style.color = "#ef4026";
+    document.getElementById("message").innerHTML = `不正解です。正解は「${trueAns}」`;
+    removeYoji(trueAns);
+  }
+  for (let i = 0; i < 8; i++) {
+    document.getElementById(`s${i}`).style.pointerEvents = "none";
+  }
+  divA.style.pointerEvents = "none";
+  divA.style.background = "#aaaaaa";
+  back.style.display = "block";
+}
+
+function showTop() {
+  spanCount.innerText = `${countYoji()}`;
+  divTop.style.display = "flex";
+  divTest.style.display = "none";
+  divStudy.style.display = "none";
+  modal.style.display = "none";
+}
+
+function showTest() {
+  setQ();
+  divTop.style.display = "none";
+  divTest.style.display = "flex";
+  divStudy.style.display = "none";
+  modal.style.display = "none";
+}
+
+function showStudy() {
+  divTop.style.display = "none";
+  divTest.style.display = "none";
+  divStudy.style.display = "flex";
+  modal.style.display = "none";
+}
+
+function init() {
+  // マットとモーダルをセンタリングする
+  resetLayout();
+  // リサイズのたびにマットとモーダルをセンタリングするようにする
+  window.addEventListener('resize', resetLayout);
+
+  for (let i = 0; i < 4; i++) {
+    setButton(`ans${i}`, () => {
+      setCursor(i);
+    });
+  }
+  for (let i = 0; i < 8; i++) {
+    setButton(`s${i}`, () => {
+      document.getElementById(`ans${cursor}`).innerHTML = document.getElementById(`s${i}`).innerHTML;
+      if (cursor != 3) setCursor(cursor + 1);
+    });
+  }
+  setButton("answer", judge);
+
+  setButton("menu", () => {  // メニューボタン
+    modal.style.display = (modal.style.display != "none") ? "none" : "flex";
+  });
+  setButton("menu-btn-top", showTop);
+  setButton("back", showTop);
+  setButton("main-btn-test", showTest);
+  setButton("menu-btn-test", showTest);
+  setButton("main-btn-study", showStudy);
+  setButton("menu-btn-study", showStudy);
+  showTop();
+}
+// --></script>
+</body>
+</html>
