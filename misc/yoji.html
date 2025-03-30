@@ -17,10 +17,6 @@ body {
   font-size: 18px;
   font-family: 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
 }
-h1, h2, h3 {
-  margin: 0.5em 0;
-  padding: 0.5em 0 0;
-}
 div#mat {  /* 画面に引くマット */
   width: 350px;
   height: 600px;
@@ -139,7 +135,6 @@ div.masu {
   font-size: 52px;
   text-align: center;
   line-height: 62px;
-  font-weight: bold;
   cursor: pointer;
 }
 div.mini-masu {
@@ -164,11 +159,9 @@ div.main-btn {
 }
 div.yomi {
   font-size: 25px;
-  font-weight: bold;
 }
 div.yoji {
   font-size: 50px;
-  font-weight: bold;
   letter-spacing: 3px;
 }
 div.desc {
@@ -222,7 +215,7 @@ div.desc {
 </div>
 
 <div id="answer" class="main-btn">回答する</div>
-<div id="message" style="font-weight: bold;"></div>
+<div id="message"></div>
 <div id="back" class="main-btn">トップに戻る</div>
 </div>
 
@@ -231,6 +224,14 @@ div.desc {
 <div class="yomi">アオイキトイキ</div>
 <div class="yoji">青息吐息</div>
 <div class="desc">困り果ててため息が出るような状態。「物価高で青息吐息だ。」</div>
+
+<div class="yomi">アンウンテイメイ</div>
+<div class="yoji">暗雲低迷</div>
+<div class="desc">悪い状態が長く続いていること。「経済は暗雲低迷を続けている。」</div>
+
+<div class="yomi">イッシンイッタイ</div>
+<div class="yoji">一進一退</div>
+<div class="desc">状況がよくなったり悪くなったりすること。「病状が一進一退している。」</div>
 
 <div class="yomi">ウンサンムショウ</div>
 <div class="yoji">雲散霧消</div>
@@ -260,6 +261,9 @@ div.desc {
 </div>
 
 <script type="text/javascript"><!--
+const words = [
+  {},
+];
 const mat = document.getElementById('mat');  // マット
 const modal = document.getElementById("modal");  // モーダル
 const divTop = document.getElementById("top");
@@ -313,7 +317,6 @@ function resetLayout() {
 function setButton(buttonId, handle) {
   let button = document.getElementById(buttonId);
   button.addEventListener("click", handle);
-  button.addEventListener("touchstart", handle);
 }
 
 function setCursor(i) {
