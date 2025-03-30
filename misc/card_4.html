@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>card 4</title>
+<style type="text/css">
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+}
+body {
+  font-family: 'Verdana', 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  background: #242424;
+  margin: 0;
+}
+div#mat {  /* 画面に引く青いマット */
+  background: linear-gradient(#3f55ba, #4c6dae 30%, #4c6dae 80%, #3f55ba);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 570px;
+  padding: 15px 10px;
+  margin: 0;
+  position: relative;
+}
+div.container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+div#answer-container {
+  order: 2;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+div.box {  /* カードを置くボックス */
+  padding: 7px 10px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
+}
+div.box-over {  /* ボックス上にカードがドラッグされてきたらボックスをやや白くする */
+  background: rgba(255, 255, 255, 0.3);
+}
+div.answer {
+  position: relative;
+  width: 100px;
+  height: 130px;
+}
+div#card-bench {
+  order: 3;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  min-height: 130px;
+}
+div.card {  /* カード */
+  box-sizing: border-box;
+  width: 100px;
+  height: 130px;
+  border: 5px solid #a19f93;
+  border-radius: 5px;
+  padding: 5px;
+  color: #242424;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-content: start;
+  background: #ffad01;
+  cursor: pointer;
+}
+div.answer > div.card {
+  position: absolute;
+  top: 7px;
+  left: 10px;
+}
+div.correct {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+}
+.dragging {  /* ドラッグ中のカード (幽体離脱された側) */
+  opacity: 0.3;
+}
+.drag-preview {  /* ドラッグ中のカード (幽体離脱した側) (スマートフォン用) */
+  position: fixed;
+  top: -1000px;  /* 画面をタッチした瞬間にみえないようにする */
+  left: -1000px;  /* 画面をタッチした瞬間にみえないようにする */
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.7;
+  transform: translate(-50%, -50%);
+}
+div#energy-field {
+  order: 4;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-content: start;
+  justify-content: center;
+}
+div.energy {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #191919;
+  font-size: 24px;
+  text-align: center;
+  line-height: 34px;
+  background: #fff;
+  box-shadow: -3px -3px 4px #bbb inset;
+  cursor: pointer;
+}
+div#modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+div.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: auto;
+  max-width: 80%;
+  color: #242424;
+  line-height: 1.2;
+}
+div.modal-content > div {
+  background: #242424;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 6px;
+  font-size: 90%;
+  line-height: 1.2;
+}
+div#progress-container {
+  order: 1;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+div#progress-container > div {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  font-size: 18px;
+  text-align: center;
+  line-height: 28px;
+  cursor: default;
+  color: rgba(255, 255, 255, 0.9);
+}
+div#progress-container > div.current {
+  background: rgba(255, 255, 255, 0.37);
+}
+div#progress-container > div.done {
+  background: #8cd345;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+}
+div#progress-container > div.help {
+  border-radius: 7px;
+  cursor: pointer;
+}
+p.help-message {
+  font-size: 90%;
+  text-align: left;
+}
+span.yoji {
+  word-break: break-all;
+}
+span.yoji::before {
+  content: "■■■■";
+}
+@media (max-width: 600px) {
+  div#mat {
+    width: 350px;
+  }
+  div#answer-container {
+    order: 1;
+    width: calc(2 * 124px + 10px);  /* カード置き場2列分 */
+  }
+  div#progress-container {
+    order: 2;
+    width: 34px;
+  }
+  div#card-bench {
+    width: calc(2 * 100px + 10px);  /* カード2列分 */
+    height: calc(2 * 130px + 10px);  /* カード2行分 */
+    justify-content: start;
+  }
+  div#energy-field {
+    width: calc(2 * 36px + 3px);  /* エネルギー2列分 */
+    height: calc(2 * 130px + 10px);  /* カード2行分 */
+    justify-content: start;
+  }
+}
+</style>
+</head>
+<body onload="init()">
+
+<div id="mat">
+
+<div class="container">
+<div id="progress-container"><div id="help" class="help">?</div></div>
+<div id="answer-container"></div>
+<div id="card-bench" class="box"></div>
+<div id="energy-field" class="box"></div>
+</div>
+
+<div id="modal">
+<div class="modal-content">
+<p id="message"></p>
+<div id="close"></div>
+<div id="next">次の問題へ</div>
+<div id="new3rounds">もう一度遊ぶ (3ラウンド)</div>
+<div id="new5rounds">もう一度遊ぶ (5ラウンド)</div>
+<div id="wide-mode"></div>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript"><!--
+// ----- 言葉データ -----
+//  {kanji: "", yomi: "", imi: "", dummy: ""},
+const words = [
+  {yomi: "青息<br/>トイキ", kanji: "吐息", imi: "困り果ててため息が出るような状態。「物価高で<span class=\"yoji\"></span>だ」", dummy: "途行"},
+  {yomi: "アンウン<br/>低迷", kanji: "暗雲", imi: "悪い状態が長く続いていること。「経済は<span class=\"yoji\"></span>を続けている」", dummy: "安運"},
+  {yomi: "一進<br/>イッタイ", kanji: "一退", imi: "状況がよくなったり悪くなったりすること。「病状が<span class=\"yoji\"></span>している」", dummy: "逸体"},
+  {yomi: "ウンサン<br/>霧消", kanji: "雲散", imi: "すっかり消えてなくなること。「友人に相談したら悩みが<span class=\"yoji\"></span>した」", dummy: "運算"},
+  {yomi: "ゲンコウ<br/>一致", kanji: "言行", imi: "いうこととやることに矛盾がないこと。「彼は<span class=\"yoji\"></span>の人だ」", dummy: "現公"},
+  {yomi: "タントウ<br/>直入", kanji: "単刀", imi: "遠回りをせず直接要点に入ること。「<span class=\"yoji\"></span>に質問する」", dummy: "短到"},
+  {yomi: "無念<br/>ムソウ", kanji: "無想", imi: "迷いの心がないこと。「<span class=\"yoji\"></span>で試合に臨む」", dummy: "夢双"},
+  {yomi: "リロ　<br/>整然", kanji: "理路", imi: "文章や人の話が飛躍や矛盾なく納得しやすいこと。「<span class=\"yoji\"></span>とした意見」", dummy: "夢双"},
+];
+
+// ----- ヘルプ文章 -----
+const helpMessage = [
+  "読み仮名が書いてあるカードに正しい漢字を置き、対応する説明の上に運ぶゲームです。",
+  "説明には私の解釈を含みます。お気付きの点がありましたら",
+  "<a href=\"https://github.com/CookieBox26/games/issues\" target=\"_blank\" rel=\"noopener noreferrer\">リポジトリのイシュー</a>か",
+  "<a href=\"https://x.com/CookieBox26\" target=\"_blank\" rel=\"noopener noreferrer\">エックス</a>までご連絡ください。",
+  `<br/>現在登録されている言葉は${words.length}語です。`,
+].join("");
+
+const mat = document.getElementById("mat");
+const progressContainer = document.getElementById("progress-container");
+const modal = document.getElementById("modal");
+const message = document.getElementById("message");
+const buttonClose = document.getElementById("close");
+const buttonNext = document.getElementById("next");
+const buttonNew3Rounds = document.getElementById("new3rounds");
+const buttonNew5Rounds = document.getElementById("new5rounds");
+const buttonWideMode = document.getElementById("wide-mode");
+const buttonHelp = document.getElementById("help");
+
+var nQ = 4;  // 1ラウンドで出題する言葉数
+var nE = 14;  // 選択肢の漢字数 (正解のみなら nQ の 2 倍だがダミーを混ぜるなら 4 倍まで増やす)
+
+var nRound = 3;  // ラウンド数を保存 (後から言葉データ数に応じて調整)
+var cursor = -nQ;  // 言葉データを参照するカーソル
+
+var wasPortrait = window.innerWidth <= 600; // 画面が 600px 以下かどうか
+var wideMode = false;  // 一度にカード10枚分を解くワイドモード
+
+function resetMargin() {
+  // マットが画面の中央に配置されるようにウィンドウサイズに応じたマージンを設定する
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+}
+
+function resetLayout() {
+  // 問題番号コンテナの主軸方向とマージンを調整する
+  let directionRow = (window.innerWidth > 600) && !wideMode;
+  progressContainer.style.flexDirection = directionRow ? "row" : "column";
+  for (let r = 0; r < nRound - 1; r++) {
+    let progress = document.getElementById(`progress${r}`);
+    progress.style.margin = directionRow ? "0 5px 0 0" : "0 0 5px 0";
+  }
+  buttonHelp.style.margin = directionRow ? "0 0 0 auto" : "auto 0 0 0";
+
+  // 画面を覆うモーダルのサイズを画面サイズに合わせる
+  modal.style.width = `${mat.clientWidth}px`;
+  modal.style.height = `${mat.clientHeight}px`;
+}
+
+function showModal(showButtonNext, showButtonNew, closeText) {
+  // モーダル上のボタンの表示非表示を一度に設定する便利関数
+  buttonNext.style.display = showButtonNext;
+  buttonNew3Rounds.style.display = showButtonNew;
+  buttonNew5Rounds.style.display = showButtonNew;
+  buttonWideMode.style.display = showButtonNew;
+  if (showButtonNew == "block") {
+    if (!wideMode) buttonWideMode.innerHTML = "カード10枚モードにする<br/>(画面幅 815px 以上ないと無効)";
+    if (wideMode) buttonWideMode.innerHTML = "カード4枚モードに戻す";
+  }
+  buttonClose.innerHTML = closeText;
+  modal.style.display = "flex";
+}
+
+function shuffleArray(array) {
+  // 配列のランダムシャッフル用
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  // 表示確認用 ( kanji フィールドの先頭に ! マークを付けた言葉を先頭に)
+  if (typeof array[0] == "object" && "kanji" in array[0]) {
+    array.sort((a, b) => {
+      return (a.kanji.startsWith("!") ? -1 : 1) - (b.kanji.startsWith("!") ? -1 : 1)
+    });
+    for (let item of array) {
+      if (item.kanji.startsWith("!")) item.kanji = item.kanji.replace(/^!/, "");
+    }
+  }
+}
+
+// ----- 画面幅がリサイズされたときレイアウトに反映 -----
+function handleResize() {
+  // ゲーム画面のセンタリングとモーダルのリサイズを処理する
+  const isNowPortrait = window.innerWidth <= 600;
+  if (wasPortrait != isNowPortrait) resetLayout();  // 縦長と横長の変化が起きたらモーダルリサイズ
+  wasPortrait = isNowPortrait;
+  resetMargin();  // ゲーム画面のセンタリングは常に行う
+}
+window.addEventListener("resize", handleResize);
+
+// ----- セットアップ -----
+function setup() {
+  // 1ラウンドのセットアップ
+  // カーソルを進めてカードと漢字の読みだし順をランダムシャッフル
+  cursor += nQ;
+  let indicesCard = Array.from({ length: nQ }, (_, index) => index);
+  let indicesEnergy = Array.from({ length: nE }, (_, index) => index);
+  shuffleArray(indicesCard);
+  shuffleArray(indicesEnergy);
+
+  // カーソル位置から nQ 語の意味を読み出してカード置き場をつくっていく
+  // 漢字とダミー漢字も収集する
+  let answerContainer = document.getElementById("answer-container");
+  answerContainer.innerHTML = "";
+  let kanjiArray = [];
+  let dummyArray = [];
+  for (let i = 0; i < nQ; i++) {
+    let box = document.createElement("div");
+    box.classList.add("box", "answer");
+    box.setAttribute("id", `box${i}`);
+    box.innerHTML = words[cursor + i].imi;
+    box.dataset.correct = words[cursor + i].yomi;
+    answerContainer.appendChild(box);
+    kanjiArray.push(...words[cursor + i].kanji.split(""));
+    dummyArray.push(...words[cursor + i].dummy.split(""));
+  }
+
+  // カーソル位置から nQ 語の読み仮名を読み出してカードをつくっていく
+  // ただしカーソル位置から順に読み出すのではなくランダムシャッフル順に読み出す
+  let cardBench = document.getElementById("card-bench");
+  cardBench.innerHTML = "";
+  indicesCard.forEach((j, i) => {
+    let card = document.createElement("div");
+    card.classList.add("item", "card");
+    card.setAttribute("draggable", "true");
+    card.setAttribute("id", `card${i}`);
+    card.innerHTML = words[cursor + j].yomi + "<br/>";
+    card.dataset.correct = words[cursor + j].kanji;
+    card.dataset.correctYomi = words[cursor + j].yomi;
+    cardBench.appendChild(card);
+  });
+
+  // 漢字エネルギーをつくっていく
+  // ただし漢字を収集した順でなくランダムシャッフル順に読み出す
+  let energyField = document.getElementById("energy-field");
+  energyField.innerHTML = "";
+  shuffleArray(dummyArray);
+  kanjiArray.push(...dummyArray);
+  indicesEnergy.forEach((j, i) => {
+    let energy = document.createElement("div");
+    energy.classList.add("item", "energy");
+    energy.setAttribute("draggable", "true");
+    energy.setAttribute("id", `energy${i}`);
+    energy.innerHTML = kanjiArray[j];
+    energyField.appendChild(energy);
+  });
+
+  // カード置き場とカードと漢字エネルギーができたらドラッグドロップイベントを設定
+  addEventPC();
+  addEventSmartphone();
+
+  // プレイヤーに現在何問目か知らせるため挑戦済み・挑戦中・未挑戦で問題番号サークルを色分け
+  let rCurrent = Math.floor(cursor / nQ);
+  for (let r = 0; r < nRound; r++) {
+    let progress = document.getElementById(`progress${r}`);
+    progress.className = (r < rCurrent) ? "done" : ((r == rCurrent) ? "current" : "");
+  }
+}
+function newGame(maxRound) {
+  // 新しいゲームのセットアップ
+  shuffleArray(words);  // 言葉をランダムシャッフル
+  nRound = Math.min(Math.floor(words.length / nQ), maxRound);  // ラウンド数決定
+
+  // ラウンド数に応じて問題番号サークルを生成
+  Array.from(progressContainer.children).forEach((child) => {
+    if (child.id != "help") progressContainer.removeChild(child);
+  });  // 2ゲーム目以降は前ゲームのサークルがあるかもしれないので消去
+  for (let r = nRound - 1; r >= 0; r--) {
+    let progress = document.createElement("div");
+    progress.setAttribute("id", `progress${r}`);
+    progress.innerHTML = `${r+1}`;
+    progressContainer.insertBefore(progress, progressContainer.firstChild);
+  }
+
+  // カーソルを -nQ に巻き戻してから最初のラウンドをセットアップ
+  cursor = -nQ;
+  setup();
+
+  // 画面上の要素を作成後にレイアウトをセット
+  resetLayout();
+  resetMargin();
+  modal.style.display = "none";
+}
+function init() {
+  newGame(1);
+}
+
+// ----- 正解判定 -----
+function judgeImpl(element) {
+  // カードと漢字の配置が正しいかの判定
+  if (element.classList.contains("card")) {  // カードの上に何かがドロップされたとき
+    let userAnswer = Array.from(element.children).map(child => child.innerHTML).join("");
+    if (userAnswer == element.dataset.correct) {
+      // 配置された漢字が正しいなら正解を消すことで正解済みなのを記録し漢字を動けなくする
+      element.classList.add("correct");
+      element.dataset.correct = "";  // 正解を消去
+      for (const child of element.children) {
+        child.classList.remove("item");
+        child.removeAttribute("draggable");  // PCで漢字を動けなくするためにこれも必要
+      }
+    }
+  }
+  let correctCounter = 0;  // エネルギー込みで配置が正しいカードの枚数をカウント
+  for (let i = 0; i < nQ; i++) {  // 置き場を一つずつ確認
+    let box = document.getElementById(`box${i}`);
+    const child = Array.from(box.children).find(child => !child.classList.contains("yoji"));
+    if (!child) continue;  // カードがない
+    if (child.dataset.correct != "") continue;  // カードの漢字が正解済みでない
+    let userAnswer = child.dataset.correctYomi;
+    if (userAnswer != box.dataset.correct) continue;  // カードの配置が正しくない
+    correctCounter += 1;
+  };
+  return (correctCounter == nQ);  // すべて正解
+}
+function judge(element) {
+  if (!judgeImpl(element)) return;  // すべて正解でないなら何もしない
+
+  // すべて正解ならこのラウンドの問題番号サークルを緑に点灯
+  let rCurrent = Math.floor(cursor / nQ);
+  document.getElementById(`progress${rCurrent}`).className = "done";
+
+  // モーダル作成
+  let closeText = "もう一度カードの下を確認";
+  message.className = "";
+  message.innerHTML = "ミッションコンプリート！";
+  if (cursor < nRound * nQ - nQ) {  // まだラウンドが残っているとき
+    showModal("block", "none", closeText);
+  } else {  // 全ラウンド終了したとき
+    message.innerHTML += "<br/><br/>これで終わりです<br/>";
+    message.innerHTML += "今回出てきた言葉は以下です<br/><br/>";
+    for (let k = 0; k <= cursor; k += nQ) {
+      for (let i = 0; i < nQ; i++) {
+        message.innerHTML += words[k + i].kanji;
+        message.innerHTML += ((i == (nQ - 1)) ? "<br/>" : "　");
+      }
+    }
+    showModal("none", "block", closeText);
+  }
+}
+
+// ----- ボタン押下イベント -----
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+  button.addEventListener("touchstart", handle);
+}
+setButton("next", () => {  // 次の問題へボタン
+  setup();
+  modal.style.display = "none";
+});
+setButton("close", () => {  // 閉じるボタン
+  modal.style.display = "none";
+});
+setButton("new3rounds", () => {  // もう一度遊ぶ (3ラウンド) ボタン
+  newGame(3);
+});
+setButton("new5rounds", () => {  // もう一度遊ぶ (5ラウンド) ボタン
+  newGame(5);
+});
+setButton("wide-mode", () => {  // もう一度遊ぶ (カード10枚) ボタン
+  if (window.innerWidth >= 815) {
+    if (!wideMode) {
+      wideMode = true;
+      mat.style.width = "795px";
+      document.getElementById("answer-container").style.order = "1";
+      document.getElementById("answer-container").style.width = "660px";
+      progressContainer.style.order = "2";
+      progressContainer.style.width = "34px";
+      document.getElementById("card-bench").style.width = "540px";
+      document.getElementById("card-bench").style.height = "270px";
+      document.getElementById("energy-field").style.width = "192px";
+      nQ = 10;
+      nE = 35;
+      newGame(1);
+    } else {
+      wideMode = false;
+      location.reload();
+    }
+  }
+});
+setButton("help", () => {  // ヘルプボタン
+  message.innerHTML = helpMessage;
+  message.className = "help-message";
+  showModal("none", "block", "閉じる");
+});
+
+// ----- パソコン・スマートフォン共通のドラッグドロップ用 -----
+let draggedItem = null; // ドラッグ中のアイテム
+function isDroppableBox(element) {  // その要素はアイテムを置ける場所か
+  if (draggedItem.classList.contains("card")) {  // 運搬中のアイテムがカードのとき
+    if (!element) return false;
+    if (!element.classList.contains("box")) return false;  // ボックスでないとだめ
+    if (element.id == "energy-field") return false;  // ボックスであってもエネルギー置き場はだめ
+    if (element.classList.contains("card")) return false;  // カードであったらだめ
+    if (element.id == "card-bench") return true;  // ベンチならOK
+    const child = Array.from(element.children).find(child => !child.classList.contains("yoji"));
+    if (child) return false;  // ベンチでないなら先客のカードがいたらだめ
+    return true;
+  }
+  if (draggedItem.classList.contains("energy")) {  // 運搬中のアイテムがエネルギーのとき
+    if (!element) return false;
+    if (element.dataset.correct == "") return false;  // 既に正しいエネルギーが載っていたらだめ
+    if (element.classList.contains("card")) return true;  // カードならOK
+    if (element.id == "energy-field") return true;  // エネルギー置き場ならOK
+  }
+  return false;
+}
+
+// ----- パソコンでのドラッグドロップ用 -----
+const handleDragItemStart = (e) => {
+  // アイテムをドラッグ開始したときのイベント
+  e.target.classList.add("dragging");
+  draggedItem = e.target;
+};
+const handleDragItemEnd = (e) => {
+  // アイテムをドラッグ終了したときのイベント
+  e.target.classList.remove("dragging");
+  draggedItem = null;
+};
+
+const handleDragEnter = (e) => {
+  // 要素の上に何かがドラッグされてきたときのイベント
+  if (draggedItem == null) return;  // ドラッグされてきたのがアイテムでないなら何もしない
+  // ドラッグされてきたのがアイテムであってそこがアイテムを置ける場所なら知らせるため目立たせる
+  if (isDroppableBox(e.target)) e.target.classList.add("box-over");
+};
+const handleDragOver = (e) => {
+  // 要素の上に何かがドラッグされているときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  if (draggedItem == null) {  // ドラッグされてきたのがアイテムでないなら禁止カーソルにする
+    e.dataTransfer.dropEffect = "none";
+    return;
+  }
+  // そこがアイテムを置ける場所でないなら禁止カーソルにする
+  e.dataTransfer.dropEffect = isDroppableBox(e.target) ? "move" : "none";
+  // 但しそこがドラッグ中のアイテム自身や元々いた場所上空なら便宜上移動可能カーソルにする
+  // ドラッグし始めていきなり禁止マークが出るとインタフェースとして微妙なため
+  if (e.target == draggedItem) e.dataTransfer.dropEffect = "move";
+  if (e.target == draggedItem.parentElement) e.dataTransfer.dropEffect = "move";
+};
+const handleDragLeave = (e) => {
+  // 要素の上から何かが去っていったときのイベント
+  e.target.classList.remove("box-over");  // もし目立たせていたら目立たなくする
+};
+const handleDrop = (e) => {
+  // 要素の上でカードが手放されたときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  e.target.classList.remove("box-over");  // もし目立たせていたら目立たなくする
+  // ドラッグされてきたのがアイテムであってそこがアイテムを置ける場所ならそこにアイテムを追加
+  if (draggedItem && isDroppableBox(e.target)) e.target.appendChild(draggedItem);
+  judge(e.target);  // カードと漢字の配置が正しいかの判定へ
+};
+
+function addEventPC() {
+  // アイテムたちにイベントを登録
+  document.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("dragstart", handleDragItemStart, false);
+    item.addEventListener("dragend", handleDragItemEnd, false);
+  });
+  // ページ上に何かがドラッグされてきた/いる/去る/落とされるイベントを登録
+  document.addEventListener("dragenter", handleDragEnter, false);
+  document.addEventListener("dragover", handleDragOver, false);
+  document.addEventListener("dragleave", handleDragLeave, false);
+  document.addEventListener("drop", handleDrop, false);
+}
+
+// ----- スマートフォンでのドラッグドロップ用 -----
+var dragPreview = null; // 指に追従させるアイテム
+
+const handleTouchStart = (e) => {
+  // 画面にタッチしたときのイベント
+  const target = e.target;
+  if (!target.classList.contains("item")) return;
+  draggedItem = target;
+  draggedItem.classList.add("dragging");
+  // 指に追従させるアイテムを作成
+  dragPreview = draggedItem.cloneNode(true);
+  dragPreview.classList.add("drag-preview");
+  document.body.appendChild(dragPreview);
+};
+const handleTouchMove = (e) => {
+  // 画面にタッチしている指を動かしたときのイベント
+  if (draggedItem == null) return;
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  const touch = e.touches[0];  // 最初のタッチポイント
+  // 指に追従させるアイテムを指に追従させる
+  dragPreview.style.left = `${touch.clientX}px`;
+  dragPreview.style.top = `${touch.clientY}px`;
+  // 全ボックスの box-over クラスを除去し改めて指の下にあるボックスだけに box-over クラスを付与
+  document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (isDroppableBox(element)) element.classList.add("box-over");
+};
+const handleTouchEnd = (e) => {
+  // 画面にタッチしている指を放したときのイベント
+  e.preventDefault();  // ブラウザ既定の処理を禁止
+  if (draggedItem == null) return;
+  const touch = e.changedTouches[0];  // タッチ終了位置
+  const element = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (isDroppableBox(element)) element.appendChild(draggedItem);
+  judge(element);  // カードと漢字の配置が正しいかの判定へ
+  // ドラッグ中のアイテムと指に追従させるアイテムをリセット
+  draggedItem.classList.remove("dragging");
+  document.querySelectorAll(".box").forEach(box => {box.classList.remove("box-over");});
+  draggedItem = null;
+  if (dragPreview) dragPreview.remove();
+  dragPreview = null;
+};
+
+function addEventSmartphone() {
+  // ページにタッチイベントを登録
+  document.addEventListener("touchstart", handleTouchStart, { passive: false });
+  document.addEventListener("touchmove", handleTouchMove, { passive: false });
+  document.addEventListener("touchend", handleTouchEnd, false);
+}
+// --></script>
+</body>
+</html>
