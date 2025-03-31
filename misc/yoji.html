@@ -194,6 +194,7 @@ div.desc {
 <div>あなたが正しく答えられた<br/>四字熟語の数は <span id="span-count"></span> です。<br/><br/></div>
 <div id="main-btn-test" class="main-btn">問題を解く</div>
 <div id="main-btn-study" class="main-btn">勉強する</div>
+<div id="main-btn-reset" class="main-btn">リセットする</div>
 </div>
 
 <div id="test" class="area">
@@ -305,6 +306,7 @@ const STORAGE_KEY_OK = 'yojijukugo';
 const STORAGE_KEY_NG = 'yojijukugo-ng';
 var cursor = 0;
 var trueAns = "";
+var iRLast = null;
 
 function getYojiList(ok=true) {
   const storageKey = ok ? STORAGE_KEY_OK : STORAGE_KEY_NG;
@@ -353,9 +355,17 @@ function setButton(buttonId, handle) {
 function setStudy() {
   divStudy.innerHTML = '';
   const n = yojiWords.length;
+  const list = getYojiList();
+  const listNg = getYojiList(false);
   for (let i = 0; i < n; i++) {
     let container = document.createElement('div');
     container.classList.add("yoji-container");
+    if (list.includes(yojiWords[i].yoji)) {
+      container.style.background = '#cefcc6';
+    }
+    if (listNg.includes(yojiWords[i].yoji)) {
+      container.style.background = '#fed7df';
+    }
     container.innerHTML = `
       <div class="yomi">${yojiWords[i].yomi}</div>
       <div class="yoji">${yojiWords[i].yoji}</div>
@@ -384,9 +394,20 @@ function shuffleAndSet(text) {
   }
 }
 
+function getIR(n) {
+  let iR = Math.floor(Math.random() * n);
+  if (iRLast != null) {
+    while (iR == iRLast) {
+      iR = Math.floor(Math.random() * n);
+    }
+  }
+  iRLast = iR;
+  return iR;
+}
+
 function setQ() {
   const n = yojiWords.length;
-  let iR = Math.floor(Math.random() * n);
+  let iR = getIR(n);
   trueAns = yojiWords[iR].yoji;
   divQ.innerHTML = yojiWords[iR].example[0].replace(yojiWords[iR].yoji, yojiWords[iR].yomi);
   shuffleAndSet(yojiWords[iR].yoji + yojiWords[iR].dummy);
@@ -425,10 +446,12 @@ function judge() {
     document.getElementById("message").style.color = "#287c37";
     document.getElementById("message").innerHTML = "正解です。";
     addYoji(trueAns);
+    removeYoji(trueAns, false);
   } else {
     document.getElementById("message").style.color = "#ef4026";
     document.getElementById("message").innerHTML = `不正解です。正解は「${trueAns}」`;
     removeYoji(trueAns);
+    addYoji(trueAns, false);
   }
   for (let i = 0; i < 8; i++) {
     document.getElementById(`s${i}`).style.pointerEvents = "none";
@@ -462,6 +485,12 @@ function showStudy() {
   modal.style.display = "none";
 }
 
+function reset() {
+  localStorage.removeItem(STORAGE_KEY_OK);
+  localStorage.removeItem(STORAGE_KEY_NG);
+  showTop();
+}
+
 function init() {
   // マットとモーダルをセンタリングする
   resetLayout();
@@ -490,6 +519,7 @@ function init() {
   setButton("menu-btn-test", showTest);
   setButton("main-btn-study", showStudy);
   setButton("menu-btn-study", showStudy);
+  setButton("main-btn-reset", reset);
   showTop();
 }
 // --></script>
