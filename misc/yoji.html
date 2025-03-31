@@ -76,7 +76,7 @@ div#modal {
 }
 div.modal-content {
   box-sizing: border-box;
-  width: 58%;
+  width: 70%;
   height: 100%;
   flex-flow: column wrap;
   align-items: center;
@@ -116,7 +116,7 @@ div#test {
 }
 div#study {
   overflow-y: scroll;
-  gap: 0;
+  gap: 15px;
 }
 div.masu-container {
   display: flex;
@@ -157,6 +157,10 @@ div.main-btn {
   cursor: pointer;
   user-select: none;
 }
+div.yoji-container {
+  padding: 10px;
+  background: #e0e0e0;
+}
 div.yomi {
   font-size: 25px;
 }
@@ -165,7 +169,7 @@ div.yoji {
   letter-spacing: 3px;
 }
 div.desc {
-  padding: 5px 0 20px;
+  padding: 5px 0 0;
 }
 </style>
 </head>
@@ -186,14 +190,14 @@ div.desc {
 <div id="main">
 
 <div id="top" class="area">
-<div class="yoji" style="font-size: 64px; height: 100px; line-height: 100px;">四字熟語</div>
+<div style="font-size: 64px; letter-spacing: 4px; height: 100px; line-height: 100px;">四字熟語</div>
 <div>あなたが正しく答えられた<br/>四字熟語の数は <span id="span-count"></span> です。<br/><br/></div>
 <div id="main-btn-test" class="main-btn">問題を解く</div>
 <div id="main-btn-study" class="main-btn">勉強する</div>
 </div>
 
 <div id="test" class="area">
-<div class="yomi">問題</div>
+<div id="test-header" style="font-size: 25px;"></div>
 <div id="question"></div>
 
 <div class="masu-container">
@@ -220,27 +224,6 @@ div.desc {
 </div>
 
 <div id="study" class="area">
-
-<div class="yomi">アオイキトイキ</div>
-<div class="yoji">青息吐息</div>
-<div class="desc">困り果ててため息が出るような状態。「物価高で青息吐息だ。」</div>
-
-<div class="yomi">アンウンテイメイ</div>
-<div class="yoji">暗雲低迷</div>
-<div class="desc">悪い状態が長く続いていること。「経済は暗雲低迷を続けている。」</div>
-
-<div class="yomi">イッシンイッタイ</div>
-<div class="yoji">一進一退</div>
-<div class="desc">状況がよくなったり悪くなったりすること。「病状が一進一退している。」</div>
-
-<div class="yomi">ウンサンムショウ</div>
-<div class="yoji">雲散霧消</div>
-<div class="desc">雲が散って霧が消えるように、すっかりなくなること。「友人に相談したら悩みが雲散霧消した。」</div>
-
-<div class="yomi">リロセイゼン</div>
-<div class="yoji">理路整然</div>
-<div class="desc">文章や人の話が、誰にとっても納得しやすいように飛躍や矛盾なく組み立てられているようす。「理路整然とした説明。」</div>
-
 </div>
 
 </div>
@@ -261,49 +244,97 @@ div.desc {
 </div>
 
 <script type="text/javascript"><!--
-const words = [
-  {},
+const yojiWords = [
+  {
+    yomi: 'アオイキトイキ', yoji: '青息吐息', dummy: '赤行途生',
+    desc: [
+      '困り果ててため息が出るような状態。',
+    ],
+    example: [
+      '「物価高で青息吐息だ。」',
+    ],
+  },
+  {
+    yomi: 'アンウンテイメイ', yoji: '暗雲低迷', dummy: '安運定謎',
+    desc: [
+      '悪い状態が長く続いていること。',
+    ],
+    example: [
+      '「経済は暗雲低迷を続けている。」',
+    ],
+  },
+  {
+    yomi: 'イッシンイッタイ', yoji: '一進一退', dummy: '逸新乙体',
+    desc: [
+      '状況がよくなったり悪くなったりすること。',
+    ],
+    example: [
+      '「病状が一進一退している。」',
+    ],
+  },
+  {
+    yomi: 'ウンサンムショウ', yoji: '雲散霧消', dummy: '運算無小',
+    desc: [
+      '雲が散って霧が消えるように、すっかりなくなること。',
+    ],
+    example: [
+      '「友人に相談したら悩みが雲散霧消した。」',
+    ],
+  },
+  {
+    yomi: 'リロセイゼン', yoji: '理路整然', dummy: '利露正全',
+    desc: [
+      '文章や人の話が、誰にとっても納得しやすいように飛躍や矛盾なく組み立てられているようす。',
+    ],
+    example: [
+      '「理路整然とした説明。」',
+    ],
+  },
 ];
 const mat = document.getElementById('mat');  // マット
 const modal = document.getElementById("modal");  // モーダル
 const divTop = document.getElementById("top");
 const divTest = document.getElementById("test");
 const divStudy = document.getElementById("study");
+const divH = document.getElementById("test-header");
 const divQ = document.getElementById("question");
 const divA = document.getElementById("answer");
 const back = document.getElementById("back");
 const spanCount = document.getElementById("span-count");
-const STORAGE_KEY = 'yojijukugo';
+const STORAGE_KEY_OK = 'yojijukugo';
+const STORAGE_KEY_NG = 'yojijukugo-ng';
 var cursor = 0;
 var trueAns = "";
 
-function getYojiList() {
-  const json = localStorage.getItem(STORAGE_KEY);
+function getYojiList(ok=true) {
+  const storageKey = ok ? STORAGE_KEY_OK : STORAGE_KEY_NG;
+  const json = localStorage.getItem(storageKey);
   return json ? JSON.parse(json) : [];
 }
 
-function saveYojiList(list) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+function saveYojiList(list, ok=true) {
+  const storageKey = ok ? STORAGE_KEY_OK : STORAGE_KEY_NG;
+  localStorage.setItem(storageKey, JSON.stringify(list));
 }
 
-function addYoji(yojijukugo) {
-  const list = getYojiList();
+function addYoji(yojijukugo, ok=true) {
+  const list = getYojiList(ok);
   if (!list.includes(yojijukugo)) {
     list.push(yojijukugo);
-    saveYojiList(list);
+    saveYojiList(list, ok);
   }
 }
 
-function removeYoji(yojijukugo) {
-  let list = getYojiList();
+function removeYoji(yojijukugo, ok=true) {
+  let list = getYojiList(ok);
   const newList = list.filter(item => item !== yojijukugo);
   if (newList.length !== list.length) {
-    saveYojiList(newList);
+    saveYojiList(newList, ok);
   }
 }
 
-function countYoji() {
-  return getYojiList().length;
+function countYoji(ok=true) {
+  return getYojiList(ok).length;
 }
 
 function resetLayout() {
@@ -317,6 +348,21 @@ function resetLayout() {
 function setButton(buttonId, handle) {
   let button = document.getElementById(buttonId);
   button.addEventListener("click", handle);
+}
+
+function setStudy() {
+  divStudy.innerHTML = '';
+  const n = yojiWords.length;
+  for (let i = 0; i < n; i++) {
+    let container = document.createElement('div');
+    container.classList.add("yoji-container");
+    container.innerHTML = `
+      <div class="yomi">${yojiWords[i].yomi}</div>
+      <div class="yoji">${yojiWords[i].yoji}</div>
+      <div class="desc">${yojiWords[i].desc.join('')}${yojiWords[i].example[0]}</div>
+    `;
+    divStudy.appendChild(container);
+  }
 }
 
 function setCursor(i) {
@@ -339,17 +385,12 @@ function shuffleAndSet(text) {
 }
 
 function setQ() {
-  let r = Math.floor(Math.random() * 2);
-  if (r == 0) {
-    trueAns = "理路整然";
-    divQ.innerHTML = "彼女の意見はリロセイゼンとしていた。";
-    shuffleAndSet("理路整然利露正全");
-  } else {
-    trueAns = "雲散霧消";
-    divQ.innerHTML = "悩みがウンサンムショウした。";
-    shuffleAndSet("雲散霧消運算無小");
-  }
-
+  const n = yojiWords.length;
+  let iR = Math.floor(Math.random() * n);
+  trueAns = yojiWords[iR].yoji;
+  divQ.innerHTML = yojiWords[iR].example[0].replace(yojiWords[iR].yoji, yojiWords[iR].yomi);
+  shuffleAndSet(yojiWords[iR].yoji + yojiWords[iR].dummy);
+  divH.innerHTML = "問題";
   for (let i = 0; i < 4; i++) {
     let div = document.getElementById(`ans${i}`);
     div.innerHTML = "";
@@ -414,6 +455,7 @@ function showTest() {
 }
 
 function showStudy() {
+  setStudy();
   divTop.style.display = "none";
   divTest.style.display = "none";
   divStudy.style.display = "flex";
