@@ -70,15 +70,47 @@ div#modal {
   left: 0;
   width: 350px;
   height: calc(600px - 58px);
-  justify-content: end;
+  justify-content: center;
   align-items: center;
-  /* background: rgba(0, 0, 0, 0.3); */
+  background: rgba(0, 0, 0, 0.65);
 }
 div.modal-content {
   box-sizing: border-box;
+  padding: 45px 18px;
+  max-width: 90%;
+  flex-flow: column;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  font-size: 20px;
+  line-height: 1.2;
+}
+div.modal-content-btn {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 15px 5px;
+  font-size: 23px;
+  background: #242424;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+div#menu {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  width: 350px;
+  height: calc(600px - 58px);
+  justify-content: end;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.65);
+}
+div.menu-content {
+  box-sizing: border-box;
   width: 70%;
   height: 100%;
-  flex-flow: column wrap;
+  flex-flow: column;
   align-items: center;
   background: var(--header);
   line-height: 1.2;
@@ -89,7 +121,7 @@ div.hr {
   height: 2px;
   background: #ffffff;
 }
-div.modal-content-btn {
+div.menu-content-btn {
   box-sizing: border-box;
   width: 100%;
   padding: 15px 10px;
@@ -180,7 +212,7 @@ div.desc {
 <div class="flex container">
 
 <div class="flex header">
-<div id="menu" class="flex mini-btn">
+<div id="header-btn-menu" class="flex mini-btn">
 <div class="bar"></div>
 <div class="bar"></div>
 <div class="bar"></div>
@@ -230,15 +262,23 @@ div.desc {
 </div>
 </div>
 
+<div id="menu" class="flex">
+<div class="flex menu-content">
+<div class="hr"></div>
+<div id="menu-btn-top" class="menu-content-btn">トップページ</div>
+<div class="hr"></div>
+<div id="menu-btn-test" class="menu-content-btn">問題を解く</div>
+<div class="hr"></div>
+<div id="menu-btn-study" class="menu-content-btn">勉強する</div>
+<div class="hr"></div>
+</div>
+</div>
+
 <div id="modal" class="flex">
 <div class="flex modal-content">
-<div class="hr"></div>
-<div id="menu-btn-top" class="modal-content-btn">トップページ</div>
-<div class="hr"></div>
-<div id="menu-btn-test" class="modal-content-btn">問題を解く</div>
-<div class="hr"></div>
-<div id="menu-btn-study" class="modal-content-btn">勉強する</div>
-<div class="hr"></div>
+<div style="height: 3em; line-height: 3em;">本当にリセットしますか？</div>
+<div id="modal-btn-reset" class="modal-content-btn">リセットする</div>
+<div id="modal-btn-cancel" class="modal-content-btn">リセットしない</div>
 </div>
 </div>
 
@@ -283,6 +323,15 @@ const yojiWords = [
     ],
   },
   {
+    yomi: 'タントウチョクニュウ', yoji: '単刀直入', dummy: '短頭捗乳',
+    desc: [
+      '遠回りをせず直接要点に入ること。',
+    ],
+    example: [
+      '「単刀直入に質問する。」',
+    ],
+  },
+  {
     yomi: 'リロセイゼン', yoji: '理路整然', dummy: '利露正全',
     desc: [
       '文章や人の話が、誰にとっても納得しやすいように飛躍や矛盾なく組み立てられているようす。',
@@ -292,8 +341,9 @@ const yojiWords = [
     ],
   },
 ];
-const mat = document.getElementById('mat');  // マット
-const modal = document.getElementById("modal");  // モーダル
+const mat = document.getElementById('mat');
+const menu = document.getElementById("menu");
+const modal = document.getElementById("modal");
 const divTop = document.getElementById("top");
 const divTest = document.getElementById("test");
 const divStudy = document.getElementById("study");
@@ -340,10 +390,11 @@ function countYoji(ok=true) {
 }
 
 function resetLayout() {
-  // マットとモーダルをセンタリング
+  // マットとメニューとモーダルをセンタリング
   let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
   let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
   mat.style.margin = `${h}px ${w}px`;
+  menu.style.margin = `${h}px ${w}px`;
   modal.style.margin = `${h}px ${w}px`;
 }
 
@@ -466,7 +517,7 @@ function showTop() {
   divTop.style.display = "flex";
   divTest.style.display = "none";
   divStudy.style.display = "none";
-  modal.style.display = "none";
+  menu.style.display = "none";
 }
 
 function showTest() {
@@ -474,7 +525,7 @@ function showTest() {
   divTop.style.display = "none";
   divTest.style.display = "flex";
   divStudy.style.display = "none";
-  modal.style.display = "none";
+  menu.style.display = "none";
 }
 
 function showStudy() {
@@ -482,13 +533,7 @@ function showStudy() {
   divTop.style.display = "none";
   divTest.style.display = "none";
   divStudy.style.display = "flex";
-  modal.style.display = "none";
-}
-
-function reset() {
-  localStorage.removeItem(STORAGE_KEY_OK);
-  localStorage.removeItem(STORAGE_KEY_NG);
-  showTop();
+  menu.style.display = "none";
 }
 
 function init() {
@@ -510,8 +555,8 @@ function init() {
   }
   setButton("answer", judge);
 
-  setButton("menu", () => {  // メニューボタン
-    modal.style.display = (modal.style.display != "none") ? "none" : "flex";
+  setButton("header-btn-menu", () => {
+    menu.style.display = (menu.style.display != "none") ? "none" : "flex";
   });
   setButton("menu-btn-top", showTop);
   setButton("back", showTop);
@@ -519,8 +564,24 @@ function init() {
   setButton("menu-btn-test", showTest);
   setButton("main-btn-study", showStudy);
   setButton("menu-btn-study", showStudy);
-  setButton("main-btn-reset", reset);
+
+  setButton("main-btn-reset", () => {
+    modal.style.display = "flex";
+    document.getElementById("header-btn-menu").style.pointerEvents = "none";
+  });
+  setButton("modal-btn-reset", () => {
+    localStorage.removeItem(STORAGE_KEY_OK);
+    localStorage.removeItem(STORAGE_KEY_NG);
+    showTop();
+    modal.style.display = "none";
+    document.getElementById("header-btn-menu").style.pointerEvents = "auto";
+  });
+  setButton("modal-btn-cancel", () => {
+    modal.style.display = "none";
+    document.getElementById("header-btn-menu").style.pointerEvents = "auto";
+  });
   showTop();
+  modal.style.display = "none";
 }
 // --></script>
 </body>
