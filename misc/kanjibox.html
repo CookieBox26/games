@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>漢字の練習</title>
+<style type="text/css">
+:root {
+  --header: #1e9167;
+}
+html, body {  /* スマートフォンでの画面外スクロール禁止用 */
+  overscroll-behavior: none;
+  letter-spacing: 0.04em;
+}
+body {
+  margin: 0;
+  background: #242424;
+  font-size: 18px;
+  font-family: 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+}
+div#mat {  /* 画面に引くマット */
+  width: 350px;
+  height: 600px;
+  background: #ffffff;
+  color: #242424;
+}
+div.flex {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: start;
+}
+div.container {
+  width: 350px;
+  height: 600px;
+  flex-flow: column wrap;
+  align-items: stretch;
+}
+div.header {
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  justify-content: end;
+  background: var(--header);
+}
+div.mini-btn {
+  font-size: 24px;
+  line-height: 24px;
+  box-sizing: border-box;
+  width: 40px;
+  height: 38px;
+  flex-flow: column nowrap;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  align-items: center;
+  color: #ffffff;
+  user-select: none;
+}
+div#main {
+  flex-grow: 1;
+  border-radius: 10px;
+  font-size: 105%;
+}
+div#modal {
+  position: absolute;
+  top: 58px;
+  left: 0;
+  width: 350px;
+  height: calc(600px - 58px);
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.65);
+}
+div.modal-content {
+  box-sizing: border-box;
+  padding: 35px 25px;
+  max-width: 90%;
+  flex-flow: column;
+  align-items: center;
+  gap: 15px;
+  background: #fff;
+  font-size: 20px;
+  line-height: 1.2;
+}
+div.modal-content-btn {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 4px;
+  font-size: 22px;
+  background: #242424;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+div.area {
+  box-sizing: border-box;
+  width: 350px;
+  height: calc(600px - 58px);
+  padding: 18px;
+  line-height: 1.2;
+  display: none;
+  flex-flow: column;
+  gap: 10px;
+}
+div#top {
+  align-items: center;
+}
+div#test {
+}
+div#study {
+  overflow-y: scroll;
+  gap: 15px;
+}
+div.masu-container {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%;
+  gap: 7px;
+  justify-content: center;
+  align-content: center;
+  padding: 0 0 10px;
+  user-select: none;
+}
+div.masu {
+  border: 4px solid #242424;
+  width: 62px;
+  height: 62px;
+  font-size: 52px;
+  text-align: center;
+  line-height: 62px;
+  cursor: pointer;
+}
+div.mini-masu {
+  border: 3px solid #242424;
+  width: 55px;
+  height: 55px;
+  font-size: 45px;
+  text-align: center;
+  line-height: 55px;
+  cursor: pointer;
+}
+div.main-btn {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  color: #ffffff;
+  font-size: 22px;
+  text-align: center;
+  background: #242424;
+  cursor: pointer;
+  user-select: none;
+}
+div.yoji-container {
+  padding: 10px;
+  background: #e0e0e0;
+}
+div.yomi {
+  font-size: 25px;
+}
+div.yoji {
+  font-size: 50px;
+}
+div.desc {
+  padding: 5px 0 0;
+}
+</style>
+</head>
+<body onload="init()">
+
+<div id="mat">
+
+<div class="flex container">
+
+<div class="flex header">
+<div id="header-btn-top" class="flex mini-btn">TOP</div>
+</div>
+
+<div id="main">
+
+<div id="top" class="area">
+<div style="font-size: 54px; height: 80px; line-height: 80px;">漢字の練習</div>
+<div>あなたが正しく答えられた<br/>四字熟語の数は
+<span id="span-count-yoji"></span> です。<br/></div>
+<div>あなたが正しく答えられた<br/>対義語・類義語の数は
+<span id="span-count-tairui"></span> です。<br/><br/></div>
+<div id="main-btn-study-yoji" class="main-btn">四字熟語の勉強</div>
+<div id="main-btn-test-yoji" class="main-btn">四字熟語の問題</div>
+<div id="main-btn-study-tairui" class="main-btn">対/類義語の勉強</div>
+<div id="main-btn-test-tairui" class="main-btn">対/類義語の問題</div>
+<div id="main-btn-reset" class="main-btn">リセットする</div>
+</div>
+
+<div id="test" class="area">
+<div id="test-header" style="font-size: 24px;"></div>
+<div id="question"></div>
+<div class="masu-container" id="masu-container-ans">
+<div id="ans0" class="masu"></div>
+<div id="ans1" class="masu"></div>
+<div id="ans2" class="masu"></div>
+<div id="ans3" class="masu"></div>
+</div>
+<div class="masu-container">
+<div id="s0" class="mini-masu"></div>
+<div id="s1" class="mini-masu"></div>
+<div id="s2" class="mini-masu"></div>
+<div id="s3" class="mini-masu"></div>
+<div id="s4" class="mini-masu"></div>
+<div id="s5" class="mini-masu"></div>
+<div id="s6" class="mini-masu"></div>
+<div id="s7" class="mini-masu"></div>
+</div>
+<div id="answer" class="main-btn">回答する</div>
+<div id="message"></div>
+<div id="back" class="main-btn">トップに戻る</div>
+</div>
+
+<div id="study" class="area">
+</div>
+
+</div>
+</div>
+
+<div id="modal" class="flex">
+<div class="flex modal-content">
+<div style="height: 3em; line-height: 3em;">本当にリセットしますか？</div>
+<div id="modal-btn-reset-yoji" class="modal-content-btn">四字熟語をリセット</div>
+<div id="modal-btn-reset-tairui" class="modal-content-btn">対/類義語をリセット</div>
+<div id="modal-btn-cancel" class="modal-content-btn">リセットしない</div>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript"><!--
+const masterTairui = [
+  {
+    yomi: 'エンヨウ', yoji: '遠洋', dummy: '園縁延塩用陽',
+    desc: [''],
+    example: [
+      '近海の対義語。<br/>「マグロの遠洋漁業。」',
+    ],
+  },
+  {
+    yomi: 'カンチ', yoji: '完治', dummy: '間致快復療癒',
+    desc: [''],
+    example: [
+      '全快の類義語。<br/>「病気が完治する。」',
+    ],
+  },
+]
+const masterYoji = [
+  {
+    yomi: 'アオイキトイキ', yoji: '青息吐息', dummy: '赤行途生',
+    desc: [
+      '困り果ててため息が出るような状態。',
+    ],
+    example: [
+      '「物価高で青息吐息だ。」',
+    ],
+  },
+  {
+    yomi: 'アンウンテイメイ', yoji: '暗雲低迷', dummy: '安運定謎',
+    desc: [
+      '悪い状態が長く続いていること。',
+    ],
+    example: [
+      '「経済は暗雲低迷を続けている。」',
+    ],
+  },
+  {
+    yomi: 'イクドウオン',
+    yoji: '異口同音', dummy: '違句動温',
+    desc: [
+      'たくさんの人が同じ意見を言うこと。',
+    ],
+    example: [
+      '「子どもたちは異口同音にその給食をおいしいと言った。」',
+      '「観客たちは異口同音にそのサッカー選手を褒め称えた。」',
+    ],
+  },
+  {
+    yomi: 'イッシンイッタイ', yoji: '一進一退', dummy: '逸新乙体',
+    desc: [
+      '状況がよくなったり悪くなったりすること。',
+    ],
+    example: [
+      '「病状が一進一退している。」',
+    ],
+  },
+  {
+    yomi: 'ウンサンムショウ', yoji: '雲散霧消', dummy: '運算無小',
+    desc: [
+      '雲が散って霧が消えるように、すっかりなくなること。',
+    ],
+    example: [
+      '「友人に相談したら悩みが雲散霧消した。」',
+    ],
+  },
+  {
+    yomi: 'タントウチョクニュウ', yoji: '単刀直入', dummy: '短頭捗乳',
+    desc: [
+      '遠回りをせず直接要点に入ること。',
+    ],
+    example: [
+      '「単刀直入に質問する。」',
+    ],
+  },
+  {
+    yomi: 'ホウフクゼットウ',
+    yoji: '抱腹絶倒', dummy: '豊復舌到',
+    desc: [
+      'おなかをかかえて、ひっくり返りそうになるほど大笑いすること。',
+    ],
+    example: [
+      '「この映画は抱腹絶倒ものだ。」',
+    ],
+  },
+  {
+    yomi: 'リロセイゼン', yoji: '理路整然', dummy: '利露正全',
+    desc: [
+      '文章や人の話が、誰にとっても納得しやすいように飛躍や矛盾なく組み立てられているようす。',
+    ],
+    example: [
+      '「理路整然とした説明。」',
+    ],
+  },
+];
+const mat = document.getElementById('mat');
+const modal = document.getElementById("modal");
+const divTop = document.getElementById("top");
+const divTest = document.getElementById("test");
+const divStudy = document.getElementById("study");
+const divH = document.getElementById("test-header");
+const divQ = document.getElementById("question");
+const containerAns = document.getElementById("masu-container-ans");
+const divA = document.getElementById("answer");
+const back = document.getElementById("back");
+var cursor = 0;
+var trueAns = "";
+
+function getMaster(key) {
+  return (key == 'yoji') ? masterYoji : masterTairui;
+}
+
+function getList(key, ok=true) {
+  const storageKey = ok ? `${key}-ok` : `${key}-ng`;
+  const json = localStorage.getItem(storageKey);
+  return json ? JSON.parse(json) : [];
+}
+
+function saveList(key, list, ok=true) {
+  const storageKey = ok ? `${key}-ok` : `${key}-ng`;
+  localStorage.setItem(storageKey, JSON.stringify(list));
+}
+
+function addList(key, word, ok=true) {
+  const list = getList(key, ok);
+  if (!list.includes(word)) {
+    list.push(word);
+    saveList(key, list, ok);
+  }
+}
+
+function removeList(key, word, ok=true) {
+  let list = getList(key, ok);
+  const newList = list.filter(item => item !== word);
+  if (newList.length !== list.length) {
+    saveList(key, newList, ok);
+  }
+}
+
+function countList(key, ok=true) {
+  return getList(key, ok).length;
+}
+
+function resetLayout() {
+  let w = Math.max(Math.floor(0.5 * (window.innerWidth - mat.clientWidth)), 0);
+  let h = Math.max(Math.floor(0.5 * (window.innerHeight - mat.clientHeight)), 0);
+  mat.style.margin = `${h}px ${w}px`;
+  modal.style.margin = `${h}px ${w}px`;
+}
+
+function setButton(buttonId, handle) {
+  let button = document.getElementById(buttonId);
+  button.addEventListener("click", handle);
+}
+
+function setStudy(key='yoji') {
+  const master = getMaster(key);
+  divStudy.innerHTML = '';
+  const n = master.length;
+  const list = getList(key);
+  const listNg = getList(key, false);
+  for (let i = 0; i < n; i++) {
+    let container = document.createElement('div');
+    container.classList.add('yoji-container');
+    if (list.includes(master[i].yoji)) {
+      container.style.background = '#cefcc6';
+    }
+    if (listNg.includes(master[i].yoji)) {
+      container.style.background = '#fed7df';
+    }
+    container.innerHTML = `
+      <div class="yomi">${master[i].yomi}</div>
+      <div class="yoji">${master[i].yoji}</div>
+      <div class="desc">${master[i].desc.join('')}${master[i].example[0]}</div>
+    `;
+    divStudy.appendChild(container);
+  }
+}
+
+function setCursor(key, i) {
+  cursor = i;
+  if ((key == 'tairui') && (i == 0)) {
+    cursor = 1;
+  }
+  for (let j = 0; j < trueAns.length; j++) {
+    document.getElementById(`ans${j}`).style.background = (j == cursor) ? '#fffd37' : 'white';
+  }
+}
+
+function shuffleAndSet(text) {
+  const chars = text.split('');
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  for (let i = 0; i < 8; i++) {
+    const div = document.getElementById(`s${i}`);
+    div.innerHTML = chars[i];
+  }
+}
+
+function getIR(key) {
+  const master = getMaster(key);
+  const n = master.length;
+  const list = getList(key);
+  const Array = [];
+  for (let i = 0; i < n; i++) {
+    if (!list.includes(master[i].yoji)) {
+      Array.push(i);
+    }
+  }
+  if (Array.length == 0) {
+    let iR = Math.floor(Math.random() * n);
+    return iR;
+  }
+  let iR = Math.floor(Math.random() * Array.length);
+  return Array[iR];
+}
+
+function setQ(key) {
+  const master = getMaster(key);
+  let iR = getIR(key);
+  trueAns = master[iR].yoji;
+  divH.innerHTML = '問題';
+  if (key == 'yoji') {
+    divQ.innerHTML = master[iR].example[0].replace(master[iR].yoji, master[iR].yomi);
+  } else {
+    divQ.innerHTML = master[iR].example[0].replace(master[iR].yoji, '■■');
+  }
+  shuffleAndSet(master[iR].yoji + master[iR].dummy);
+  containerAns.innerHTML = "";
+  for (let i = 0; i < trueAns.length; i++) {
+    let div = document.createElement('div');
+    div.setAttribute('id', `ans${i}`);
+    div.classList.add('masu');
+    div.style.color = "#242424";
+    div.addEventListener("click", () => {
+      setCursor(key, i);
+    });
+    if ((key == 'tairui') && (i == 0)) {
+      div.innerHTML = trueAns.substr(i, 1);
+    }
+    containerAns.appendChild(div);
+  }
+  for (let i = 0; i < 8; i++) {
+    document.getElementById(`s${i}`).style.pointerEvents = "auto";
+  }
+  divA.style.pointerEvents = "auto";
+  back.style.display = "none";
+  divA.style.background = "#242424";
+  document.getElementById("message").innerHTML = "";
+  setCursor(key, 0);
+  setButton("answer", () => {
+    judge(key);
+  });
+
+  for (let i = 0; i < 8; i++) {
+    setButton(`s${i}`, () => {
+      document.getElementById(`ans${cursor}`).innerHTML = document.getElementById(`s${i}`).innerHTML;
+      if (cursor != (trueAns.length - 1)) setCursor(key, cursor + 1);
+    });
+  }
+}
+
+function judge(key) {
+  const chars = trueAns.split('');
+  let point = 0;
+  for (let i = 0; i < trueAns.length; i++) {
+    let div = document.getElementById(`ans${i}`);
+    let ans = div.innerHTML;
+    if (ans == chars[i]) {
+      ++point;
+      div.style.color = "#287c37";
+    } else {
+      div.style.color = "#ef4026";
+    }
+    div.style.pointerEvents = "none";
+  }
+  if (point == trueAns.length) {
+    document.getElementById("message").style.color = "#287c37";
+    document.getElementById("message").innerHTML = "正解です。";
+    addList(key, trueAns);
+    removeList(key, trueAns, false);
+  } else {
+    document.getElementById("message").style.color = "#ef4026";
+    document.getElementById("message").innerHTML = `不正解です。正解は「${trueAns}」`;
+    removeList(key, trueAns);
+    addList(key, trueAns, false);
+  }
+  for (let i = 0; i < 8; i++) {
+    document.getElementById(`s${i}`).style.pointerEvents = "none";
+  }
+  divA.style.pointerEvents = "none";
+  divA.style.background = "#aaaaaa";
+  back.style.display = "block";
+}
+
+function showTop() {
+  const spanCountYoji = document.getElementById("span-count-yoji");
+  const spanCountTairui = document.getElementById("span-count-tairui");
+  spanCountYoji.innerText = `${countList('yoji')}`;
+  spanCountTairui.innerText = `${countList('tairui')}`;
+  divTop.style.display = "flex";
+  divTest.style.display = "none";
+  divStudy.style.display = "none";
+  modal.style.display = "none";
+}
+
+function showTest(key) {
+  setQ(key);
+  divTop.style.display = "none";
+  divTest.style.display = "flex";
+  divStudy.style.display = "none";
+}
+
+function showStudy(key) {
+  setStudy(key);
+  divTop.style.display = "none";
+  divTest.style.display = "none";
+  divStudy.style.display = "flex";
+}
+
+function init() {
+  // マットとモーダルをセンタリングする
+  resetLayout();
+  // リサイズのたびにマットとモーダルをセンタリングするようにする
+  window.addEventListener('resize', resetLayout);
+
+  setButton("header-btn-top", showTop);
+  setButton("back", showTop);
+  setButton("main-btn-test-yoji", () => {showTest('yoji');});
+  setButton("main-btn-study-yoji", () => {showStudy('yoji');});
+  setButton("main-btn-test-tairui", () => {showTest('tairui');});
+  setButton("main-btn-study-tairui", () => {showStudy('tairui');});
+
+  setButton("main-btn-reset", () => {
+    modal.style.display = "flex";
+  });
+  setButton("modal-btn-reset-yoji", () => {
+    localStorage.removeItem('yoji-ok');
+    localStorage.removeItem('yoji-ng');
+    showTop();
+    modal.style.display = "none";
+  });
+  setButton("modal-btn-reset-tairui", () => {
+    localStorage.removeItem('tairui-ok');
+    localStorage.removeItem('tairui-ng');
+    showTop();
+    modal.style.display = "none";
+  });
+  setButton("modal-btn-cancel", () => {
+    modal.style.display = "none";
+  });
+  showTop();
+  modal.style.display = "none";
+}
+// --></script>
+</body>
+</html>
