@@ -46,7 +46,7 @@ div.mini-btn {
   font-size: 24px;
   line-height: 24px;
   box-sizing: border-box;
-  width: 40px;
+  width: 44px;
   height: 38px;
   flex-flow: column nowrap;
   justify-content: center;
@@ -186,8 +186,8 @@ div.desc {
 <span id="span-count-tairui"></span> です。<br/><br/></div>
 <div id="main-btn-study-yoji" class="main-btn">四字熟語の勉強</div>
 <div id="main-btn-test-yoji" class="main-btn">四字熟語の問題</div>
-<div id="main-btn-study-tairui" class="main-btn">対/類義語の勉強</div>
-<div id="main-btn-test-tairui" class="main-btn">対/類義語の問題</div>
+<div id="main-btn-study-tairui" class="main-btn">対義語・類義語の勉強</div>
+<div id="main-btn-test-tairui" class="main-btn">対義語・類義語の問題</div>
 <div id="main-btn-reset" class="main-btn">リセットする</div>
 </div>
 
@@ -337,7 +337,8 @@ const containerAns = document.getElementById("masu-container-ans");
 const divA = document.getElementById("answer");
 const back = document.getElementById("back");
 var cursor = 0;
-var trueAns = "";
+var trueAns = '';
+var key = 'yoji';
 
 function getMaster(key) {
   return (key == 'yoji') ? masterYoji : masterTairui;
@@ -386,7 +387,7 @@ function setButton(buttonId, handle) {
   button.addEventListener("click", handle);
 }
 
-function setStudy(key='yoji') {
+function setStudy() {
   const master = getMaster(key);
   divStudy.innerHTML = '';
   const n = master.length;
@@ -450,7 +451,7 @@ function getIR(key) {
   return Array[iR];
 }
 
-function setQ(key) {
+function setQ() {
   const master = getMaster(key);
   let iR = getIR(key);
   trueAns = master[iR].yoji;
@@ -486,16 +487,9 @@ function setQ(key) {
   setButton("answer", () => {
     judge(key);
   });
-
-  for (let i = 0; i < 8; i++) {
-    setButton(`s${i}`, () => {
-      document.getElementById(`ans${cursor}`).innerHTML = document.getElementById(`s${i}`).innerHTML;
-      if (cursor != (trueAns.length - 1)) setCursor(key, cursor + 1);
-    });
-  }
 }
 
-function judge(key) {
+function judge() {
   const chars = trueAns.split('');
   let point = 0;
   for (let i = 0; i < trueAns.length; i++) {
@@ -539,15 +533,15 @@ function showTop() {
   modal.style.display = "none";
 }
 
-function showTest(key) {
-  setQ(key);
+function showTest() {
+  setQ();
   divTop.style.display = "none";
   divTest.style.display = "flex";
   divStudy.style.display = "none";
 }
 
-function showStudy(key) {
-  setStudy(key);
+function showStudy() {
+  setStudy();
   divTop.style.display = "none";
   divTest.style.display = "none";
   divStudy.style.display = "flex";
@@ -559,12 +553,19 @@ function init() {
   // リサイズのたびにマットとモーダルをセンタリングするようにする
   window.addEventListener('resize', resetLayout);
 
+  for (let i = 0; i < 8; i++) {
+    setButton(`s${i}`, () => {
+      document.getElementById(`ans${cursor}`).innerHTML = document.getElementById(`s${i}`).innerHTML;
+      if (cursor != (trueAns.length - 1)) setCursor(key, cursor + 1);
+    });
+  }
+
   setButton("header-btn-top", showTop);
   setButton("back", showTop);
-  setButton("main-btn-test-yoji", () => {showTest('yoji');});
-  setButton("main-btn-study-yoji", () => {showStudy('yoji');});
-  setButton("main-btn-test-tairui", () => {showTest('tairui');});
-  setButton("main-btn-study-tairui", () => {showStudy('tairui');});
+  setButton("main-btn-test-yoji", () => { key = 'yoji'; showTest(); });
+  setButton("main-btn-study-yoji", () => { key = 'yoji'; showStudy(); });
+  setButton("main-btn-test-tairui", () => { key = 'tairui'; showTest(); });
+  setButton("main-btn-study-tairui", () => { key = 'tairui'; showStudy(); });
 
   setButton("main-btn-reset", () => {
     modal.style.display = "flex";
