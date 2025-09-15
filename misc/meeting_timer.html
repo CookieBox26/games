@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ミーティングタイマー</title>
+<style>
+body, input, button, textarea, select {
+  font-family: 'BIZ UDGothic', 'ヒラギノ丸ゴ ProN', sans-serif;
+  color: #303030;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  font-size: 17px;
+}
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  margin: 0;
+  font-weight: bold;
+  background-color: #f0f0f0;
+}
+div.container {
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  flex-flow: column;
+  gap: 5px;
+  height: 100%;
+}
+div#currentAgenda {
+  font-size: 18px;
+}
+div#currentAgenda::before {
+  content: "現在のアジェンダ：";
+}
+div#progressBarBox {
+  height: 40px;
+  visibility: visible;
+}
+div#progressBar {
+  background-color: #2ca02c;
+}
+div#progress {
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+}
+div#timeLeft {
+  font-size: 90%;
+  color: #d3d3d3;
+}
+div#timeLeft::before {
+  content: "残り時間 ";
+}
+textarea#agendaInput {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px;
+  height: 100%;
+  resize: none;
+}
+</style>
+</head>
+<body onload="init()">
+<div class="container">
+<div id="currentAgenda"></div>
+<div id="progressBarBox">
+<div id="progressBar"><div id="progress"></div></div>
+<div id="timeLeft">00:00</div>
+</div>
+<div style="display: flex; gap: 5px;">
+<button id="startButton" style="flex: 1;">スタート</button>
+<button id="pauseButton">一時停止</button>
+<input type="time" id="reservationTime"/>
+<button id="clearReservationTimeButton">時刻クリア</button>
+</div>
+<textarea id="agendaInput"></textarea>
+
+<div id="descDesp" style="font-size: 11px; font-weight: normal; cursor: pointer;">
+クリックして使い方を表示・非表示
+</div>
+<div id="desc" style="font-size: 11px; font-weight: normal;">
+<ul style="margin: 0; padding-left: 1.5em;">
+<li>時間配分を記述してからスタートを押下してください。時間配分はコロン区切りで「アジェンダ名:10」のように記述ください。この形式でない行は無視します。</li>
+<li>スタート後はメモとして活用ください。ブラウザを閉じてしまった場合も内容は復元されます。</li>
+<li>一時停止することができます (会議開始待ち状態のときは一時停止できません)。</li>
+<li>開始時刻を予約できます。会議開始待ち状態で開始時刻を変更したときは即座に反映されます。会議開始後に開始時刻を変更したときはブラウザ保存の開始時刻のみが更新されます。</li>
+<ul><li>既に開始時刻を過ぎている場合は会議開始待ち状態になりません。スタートを押下して会議を開始してください。</li></ul>
+</div>
+
+</div>
+<script>
+let agendas = [];
+let currentAgendaIndex = 0;
+let timeLeft = 0;
+let currentAgendaTime = 0;
+let timerInterval = 0;
+let paused = false;
+
+const agendaInput = document.getElementById('agendaInput');
+const storageKey = 'savedAgendaInput';
+agendaInput.value = localStorage.getItem(storageKey) || `◆問十(書き取り):15`;
+
+const reservationTime = document.getElementById('reservationTime');
+const storageKeyReservationTime = 'savedReservationTime';
+
+const currentAgendaElement = document.getElementById('currentAgenda');
+const timeLeftElement = document.getElementById('timeLeft');
+const progressBarElement = document.getElementById('progressBar');
+const progressElement = document.getElementById('progress');
+const startButton = document.getElementById('startButton');
+const pauseButton = document.getElementById('pauseButton');
+const clearReservationTimeButton = document.getElementById('clearReservationTimeButton');
+const descDesp = document.getElementById('descDesp');
+const desc = document.getElementById('desc');
+const msgBeforeMtg = '会議開始待ちです。';
+
+function loadReservationTime() {
+  const savedTime = localStorage.getItem(storageKeyReservationTime);
+  // 値が null または "HH:MM" 形式でない場合は無視
+  if (!savedTime || !/^\d{2}:\d{2}$/.test(savedTime)) return null;
+  return savedTime;
+}
+reservationTime.value = loadReservationTime();
+
+function strictParseInt(x) {
+  return /^[+-]?\d+$/.test(x) ? parseInt(x, 10) : NaN;
+}
+
+function saveAgendaToLocalStorage() {
+  localStorage.setItem(storageKey, agendaInput.value);
+}
+
+function saveReservationTimeToLocalStorage() {
+  localStorage.setItem(storageKeyReservationTime, reservationTime.value);
+  if (timerInterval == 0) {
+    location.reload();
+  }
+  if ((timerInterval != 0) && (agendas[currentAgendaIndex].name == msgBeforeMtg)) {
+    clearInterval(timerInterval);
+    location.reload();
+  }
+}
+
+function getMinutesUntilReservation() {
+  if (!reservationTime.value) return null; // 空の場合は null を返す
+  const now = new Date();
+  const [hours, minutes] = reservationTime.value.split(':').map(Number);
+  const reservationDateTime = new Date();
+  reservationDateTime.setHours(hours, minutes, 0, 0);
+  const diffMs = reservationDateTime - now;
+  if (diffMs < 0) return null; // 過去の時刻なら null を返す
+  return Math.floor(diffMs / 1000);
+}
+
+function parseAgendaInput() {
+  const inputText = agendaInput.value.trim();
+  const lines = inputText.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].includes(':')) continue;
+    const [name, time] = lines[i].split(':');
+    let m = strictParseInt(time.trim(), 10);
+    if (Number.isNaN(m)) continue;
+    agendas.push({name: name.trim(), time: 60 * m});
+  }
+  if (agendas.length == 0) return;
+
+  // 予約時刻があれば取得する
+  let mm = getMinutesUntilReservation();
+  if(mm != null) agendas.unshift({name: msgBeforeMtg, time: mm});
+  currentAgendaIndex = 0;
+  if (agendas.length > 0) {
+    currentAgendaTime = agendas[currentAgendaIndex].time;
+    timeLeft = currentAgendaTime;
+  }
+}
+
+function updateDisplay() {
+  if (currentAgendaIndex < agendas.length) {
+    currentAgendaElement.textContent = `${agendas[currentAgendaIndex].name}`;
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timeLeftElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    const progressPercentage = ((currentAgendaTime - timeLeft) / currentAgendaTime) * 100;
+    if (timeLeft <= 60) {
+      progressBarElement.style.backgroundColor = '#d62728';
+      timeLeftElement.style.color = '#d62728';
+    }
+    progressElement.style.width = `${progressPercentage}%`;
+  }
+}
+
+function switchToNextAgenda() {
+  currentAgendaIndex++;
+  progressBarElement.style.backgroundColor = '#2ca02c';
+  timeLeftElement.style.color = '#d3d3d3';
+  if (currentAgendaIndex < agendas.length) {
+    currentAgendaTime = agendas[currentAgendaIndex].time;
+    timeLeft = currentAgendaTime;
+  } else {
+    clearInterval(timerInterval);
+    currentAgendaElement.textContent = 'すべてのアジェンダが終了しました。';
+    timeLeftElement.textContent = '00:00';
+    progressElement.style.width = '100%';
+  }
+}
+
+function timerTick() {
+  if (timeLeft > 0) {
+    timeLeft--;
+    updateDisplay();
+  } else {
+    switchToNextAgenda();
+  }
+}
+
+
+
+function startTimer() {
+  parseAgendaInput();
+  if (agendas.length > 0) {
+    console.log(agendas);
+    updateDisplay();
+    timerInterval = setInterval(timerTick, 1000);
+    startButton.disabled = true; // スタートボタンを無効化して再度押せないようにする
+  } else {
+    alert("有効なアジェンダを入力してください。");
+  }
+}
+
+function init() {
+  agendaInput.addEventListener('input', saveAgendaToLocalStorage);
+  agendaInput.addEventListener('change', saveAgendaToLocalStorage);
+  reservationTime.addEventListener('input', saveReservationTimeToLocalStorage);
+  reservationTime.addEventListener('change', saveReservationTimeToLocalStorage);
+
+  startButton.addEventListener('click', startTimer);
+  pauseButton.addEventListener('click', () => {
+    if (agendas.length == 0) return;
+    if (agendas[currentAgendaIndex].name == msgBeforeMtg) return;
+    if (timerInterval == 0) return;
+    if (paused) {
+      timerInterval = setInterval(timerTick, 1000);
+      paused = false;
+      pauseButton.innerHTML = '一時停止';
+    } else {
+      clearInterval(timerInterval);
+      paused = true;
+      pauseButton.innerHTML = '再開する';
+    }
+  });
+  clearReservationTimeButton.addEventListener('click', () => {
+    reservationTime.value = null;
+    saveReservationTimeToLocalStorage();
+    if (agendas[currentAgendaIndex].name == msgBeforeMtg) {
+      clearInterval(timerInterval);
+      location.reload();
+    }
+  });
+
+  desc.style.display = 'none';
+  descDesp.addEventListener('click', () => {
+    desc.style.display = (desc.style.display == 'none') ? 'block' : 'none';
+  });
+
+  if (reservationTime.value && getMinutesUntilReservation()) startTimer();
+}
+</script>
+</body>
+</html>
