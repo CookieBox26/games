@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>作業時間計算</title>
+  <style>
+    body { font-family: sans-serif; margin: 1em; line-height: 1.2; }
+    h1 { font-weight: normal; }
+  </style>
+</head>
+<body>
+  <h1>作業時間計算</h1>
+  <div id="result"></div>
+
+  <script>
+    function formatTime(ts) {
+      const d = new Date(ts * 1000);
+      return d.toLocaleString(undefined, { timeZoneName: 'short' });
+    }
+
+    const params = new URLSearchParams(location.search);
+    let bt = params.get("bt");
+    let et = params.get("et");
+
+    if (bt && et) {
+      bt = Number(bt);
+      et = Number(et);
+
+      const diffMs = et - bt;
+      const diffMin = Math.floor(diffMs / 60);
+      const hours = Math.floor(diffMin / 60);
+      const minutes = diffMin % 60;
+
+      const html = `
+        <p>作業開始: <span class="time">${formatTime(bt)}</span></p>
+        <p>作業終了: <span class="time">${formatTime(et)}</span></p>
+        <p>作業時間は ${hours} 時間 ${minutes} 分でした。</p>
+      `;
+      document.getElementById("result").innerHTML = html;
+    } else {
+      document.getElementById("result").textContent =
+        "URL パラメータ bt, et が必要です。";
+    }
+  </script>
+</body>
+</html>
