@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>作業時間計算</title>
   <style>
-    body { font-family: sans-serif; margin: 1em; line-height: 1.2; }
+    body { font-family: sans-serif; margin: 1em; line-height: 1.3; }
     h1 { font-weight: normal; }
   </style>
 </head>
@@ -19,28 +19,31 @@
     }
 
     const params = new URLSearchParams(location.search);
-    let bt = params.get("bt");
-    let et = params.get("et");
-
-    if (bt && et) {
+    let html = "";
+    for (let i = 1; i <= 5; i++) {
+      let bt = params.get(`bt${i}`);
+      let et = params.get(`et${i}`);
+      if (!(bt && et)) {
+        if (i == 1) {
+          html = "URL パラメータ bt1, et1 が必要です。";
+          break;
+        }
+        continue;
+      }
       bt = Number(bt);
       et = Number(et);
-
       const diffMs = et - bt;
       const diffMin = Math.floor(diffMs / 60);
       const hours = Math.floor(diffMin / 60);
       const minutes = diffMin % 60;
 
-      const html = `
-        <p>作業開始: <span class="time">${formatTime(bt)}</span></p>
-        <p>作業終了: <span class="time">${formatTime(et)}</span></p>
-        <p>作業時間は ${hours} 時間 ${minutes} 分でした。</p>
+      html += `
+        <p>作業開始${i}: &nbsp; <span class="time">${formatTime(bt)}</span>
+        <br/>作業終了${i}: &nbsp; <span class="time">${formatTime(et)}</span>
+        <br/>作業時間${i}: &nbsp; ${hours} 時間 ${minutes} 分</p>
       `;
-      document.getElementById("result").innerHTML = html;
-    } else {
-      document.getElementById("result").textContent =
-        "URL パラメータ bt, et が必要です。";
     }
+    document.getElementById("result").innerHTML = html;
   </script>
 </body>
 </html>
