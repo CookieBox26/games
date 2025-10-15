@@ -23,6 +23,7 @@
     for (let i = 1; i <= 10; i++) {
       let bt = params.get(`bt${i}`);
       let et = params.get(`et${i}`);
+      let rem = params.get(`rem${i}`);
       if (!(bt && et)) {
         if (i == 1) {
           html = "URL パラメータ bt1, et1 が必要です。";
@@ -38,10 +39,14 @@
       const minutes = diffMin % 60;
 
       html += `
-        <p>作業開始${i}: &nbsp; <span class="time">${formatTime(bt)}</span>
-        <br/>作業終了${i}: &nbsp; <span class="time">${formatTime(et)}</span>
-        <br/>作業時間${i}: &nbsp; ${hours} 時間 ${minutes} 分</p>
+        <p>作業開始${i}: &nbsp; ${formatTime(bt)}
+        <br/>作業終了${i}: &nbsp; ${formatTime(et)}
+        <br/>作業時間${i}: &nbsp; ${hours} 時間 ${minutes} 分
       `;
+      if (rem) {
+        html += `<br/>備考${i}: &nbsp; ${rem}`
+      }
+      html += '</p>'
     }
     document.getElementById("result").innerHTML = html;
   </script>
