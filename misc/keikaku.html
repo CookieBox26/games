@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>計画</title>
+<style type="text/css">
+body {
+  background: dimgray;
+}
+.tab-container {
+  display: flex;
+  gap: 5px;
+}
+.tab-item {
+  background-color: lightgray;
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+.tab-item.active {
+  background-color: white;
+}
+.tab-content {
+  background-color: white;
+}
+.tab-panel {
+  padding: 1em;
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+}
+.text {
+  width: 10em;
+}
+.num {
+  width: 3em;
+}
+label {
+  display: inline-block;
+  width: 4em;
+}
+.input-container {
+  margin: 0.5em 0;
+}
+table {
+  border-collapse: collapse;
+}
+td {
+  border: 1px solid black;
+  padding: 0.25em 0.5em;
+}
+</style>
+<body>
+
+<div class="tab-container">
+<div class="tab-item active">タブ1</div>
+<div class="tab-item">タブ2</div>
+<div class="tab-item">タブ3</div>
+</div>
+<div class="tab-content">
+
+<div class="tab-panel active">
+
+<div class="input-container">
+<label for="date-start">開始日</label>
+<input type="date" id="date-start"/>
+</div>
+
+<div class="input-container">
+<label for="date-end">終了日</label>
+<input type="date" id="date-end"/>
+</div>
+
+<div class="input-container">
+<label for="hw-1-name">宿題1</label>
+<input type="text" class="text" id="hw-1-name"/><br/>
+<label></label>
+<input type="number" min="0" max="200" class="num" id="hw-1-start"/> ～
+<input type="number" min="0" max="200" class="num" id="hw-1-end"/> ページ
+</div>
+
+<div class="input-container">
+<label for="hw-2-name">宿題2</label>
+<input type="text" class="text" id="hw-2-name"/><br/>
+<label></label>
+<input type="number" min="0" max="200" class="num" id="hw-2-start"/> ～
+<input type="number" min="0" max="200" class="num" id="hw-2-end"/> ページ
+</div>
+
+<div class="input-container">
+<label for="hw-3-name">宿題3</label>
+<input type="text" class="text" id="hw-3-name"/><br/>
+<label></label>
+<input type="number" min="0" max="200" class="num" id="hw-3-start"/> ～
+<input type="number" min="0" max="200" class="num" id="hw-3-end"/> ページ
+</div>
+
+<div class="input-container">
+<label for="hw-4-name">宿題4</label>
+<input type="text" class="text" id="hw-4-name"/><br/>
+<label></label>
+<input type="number" min="0" max="200" class="num" id="hw-4-start"/> ～
+<input type="number" min="0" max="200" class="num" id="hw-4-end"/> ページ
+</div>
+
+</div>
+
+<div class="tab-panel">
+<table id="table-keikaku"></table>
+</div>
+
+<div class="tab-panel">
+<table id="table-yotei"></table>
+</div>
+
+</div>
+
+
+<script type="text/javascript"><!--
+const localStoragyKey = "keikaku";
+const data = {
+  "date-start": "2025-10-25", "date-end": "2025-10-26",
+  "hw-1-name": "けいド", "hw-1-start": 1, "hw-1-end": 2,
+  "hw-2-name": "かんド", "hw-2-start": 0, "hw-2-end": 0,
+  "hw-3-name": "かんノ", "hw-3-start": 0, "hw-3-end": 0,
+  "hw-4-name": "", "hw-4-start": 0, "hw-4-end": 0,
+};
+const dataKeikaku = {};
+const tblKeikaku = document.getElementById("table-keikaku");
+const tblYotei = document.getElementById("table-yotei");
+const tabItems = document.querySelectorAll(".tab-item");
+const dows = ["日", "月", "火", "水", "木", "金", "土",];
+
+tabItems.forEach((tabItem) => {
+  tabItem.addEventListener("click", () => {
+    tabItems.forEach((t) => { t.classList.remove("active"); });
+    const tabPanels = document.querySelectorAll(".tab-panel");
+    tabPanels.forEach((tabPanel) => { tabPanel.classList.remove("active"); });
+    tabItem.classList.add("active");
+    const tabIndex = Array.from(tabItems).indexOf(tabItem);
+    tabPanels[tabIndex].classList.add("active");
+  });
+});
+
+function getValidPages() {
+  const pages = [];
+  for (let i = 1; i <= 4; i++) {
+    const start = parseInt(data[`hw-${i}-start`]);
+    const end = parseInt(data[`hw-${i}-end`]);
+    if (data[`hw-${i}-name`] == "" || start == 0 || start > end) {
+      continue;
+    }
+    let page = start;
+    while (page <= end) {
+      pages.push([i, data[`hw-${i}-name`], page]);
+      page += 1;
+    }
+  }
+  return pages;
+}
+
+function loadLocalStorage() {
+  dataLocal = JSON.parse(localStorage.getItem(localStoragyKey)) || {};
+  Object.keys(data).forEach(key => {
+    if (key in dataLocal) data[key] = dataLocal[key];
+    document.getElementById(key).value = data[key];
+  });
+  const pages = getValidPages();
+  pages.forEach(([i, _, page]) => {
+    const selectId = `date-${i}-${page}`;
+    if (selectId in dataLocal) dataKeikaku[selectId] = dataLocal[selectId];
+  });
+}
+
+function dumpLocalStorage() {
+  const dataKeikakuStore = {};
+  const pages = getValidPages();
+  pages.forEach(([i, _, page]) => {
+    const selectId = `date-${i}-${page}`;
+    dataKeikakuStore[selectId] = dataKeikaku[selectId];
+    page += 1;
+  });
+  localStorage.setItem(localStoragyKey, JSON.stringify({ ...data, ...dataKeikakuStore }));
+}
+
+function createSelectDate(dateStart, dateEnd, selectId) {
+  const sl = document.createElement("select");
+  sl.setAttribute("id", selectId);
+  let date = new Date(dateStart);
+  while (date <= dateEnd) {
+    let dateFormatted = `${date.toISOString().slice(0, 10)} (${dows[date.getDay()]})`;
+    let op = document.createElement("option");
+    op.value = dateFormatted;
+    op.innerText = dateFormatted;
+    sl.appendChild(op);
+    date.setDate(date.getDate() + 1);
+  }
+  if (selectId in dataKeikaku) {
+    sl.value = dataKeikaku[selectId];
+  } else {
+    dataKeikaku[selectId] = `${dateStart.toISOString().slice(0, 10)} (${dows[dateStart.getDay()]})`;
+  }
+  sl.addEventListener('input', inputChangeKeikaku);
+  return sl;
+}
+
+function createTableKeikaku() {
+  tblKeikaku.innerHTML = "";
+  if (data["date-start"] > data["date-end"]) {
+    tblKeikaku.innerHTML = "終了日を開始日以降にしてください。";
+    return;
+  }
+  const dateStart = new Date(data["date-start"]);
+  const dateEnd = new Date(data["date-end"]);
+  const pages = getValidPages();
+  pages.forEach(([i, name, page]) => {
+      const tr = document.createElement("tr");
+      const td0 = document.createElement("td");
+      const td1 = document.createElement("td");
+      const td2 = document.createElement("td");
+      const selectId = `date-${i}-${page}`;
+      td0.innerText = name;
+      td1.innerText = page;
+      sl = createSelectDate(dateStart, dateEnd, selectId);
+      td2.appendChild(sl);
+      tr.appendChild(td0);
+      tr.appendChild(td1);
+      tr.appendChild(td2);
+      tblKeikaku.appendChild(tr);
+  });
+}
+
+function createTableYotei() {
+  tblYotei.innerHTML = "";
+  if (data["date-start"] > data["date-end"]) {
+    tblKeikaku.innerHTML = "終了日を開始日以降にしてください。";
+    return;
+  }
+  const pages = getValidPages();
+  const dateStart = new Date(data["date-start"]);
+  const dateEnd = new Date(data["date-end"]);
+  let date = new Date(dateStart);
+  while (date <= dateEnd) {
+    let dateFormatted = `${date.toISOString().slice(0, 10)} (${dows[date.getDay()]})`;
+    const todayPages = pages.filter(([i, _, page]) => {
+      return dataKeikaku[`date-${i}-${page}`] == dateFormatted;
+    });
+    const todayPageNames = todayPages.map(([i, name, page]) => `${name}${page}`);
+    console.log(todayPages);
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td");
+    const td1 = document.createElement("td");
+    td0.style.width = "8em";
+    td0.innerText = dateFormatted;
+    td1.innerText = todayPageNames;
+    tr.appendChild(td0);
+    tr.appendChild(td1);
+    tblYotei.appendChild(tr);
+    date.setDate(date.getDate() + 1);
+  }
+}
+
+function inputChangeKeikaku(event){
+  dataKeikaku[event.target.id] = event.target.value;
+  dumpLocalStorage();
+  createTableYotei();
+}
+
+function inputChange(event){
+  data[event.target.id] = event.target.value;
+  dumpLocalStorage();
+  createTableKeikaku();
+  createTableYotei();
+}
+
+Object.keys(data).forEach(key => {
+  document.getElementById(key).addEventListener('input', inputChange);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadLocalStorage();
+  createTableKeikaku();
+  createTableYotei();
+});
+// --></script>
+</body>
+</html>
