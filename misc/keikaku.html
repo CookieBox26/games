@@ -170,20 +170,20 @@ td {
 
 <script type="text/javascript"><!--
 const localStoragyKey = "keikaku";
-const data = {
+const data = {  // 宿題データ
   "date-start": "2025-10-28", "date-end": "2025-10-31",
   "hw-1-name": "けいド", "hw-1-start": 0, "hw-1-end": 0,
   "hw-2-name": "かんド", "hw-2-start": 11, "hw-2-end": 13,
   "hw-3-name": "かんノ", "hw-3-start": 14, "hw-3-end": 16,
   "hw-4-name": "", "hw-4-start": 0, "hw-4-end": 0,
 };
-const dataKeikaku = {};
+const dataKeikaku = {};  // 計画日データ
 const tblKeikaku = document.getElementById("table-keikaku");
 const tblYotei = document.getElementById("table-yotei");
 const tabItems = document.querySelectorAll(".tab-item");
 const dows = ["日", "月", "火", "水", "木", "金", "土",];
 
-tabItems.forEach((tabItem) => {
+tabItems.forEach((tabItem) => {  // タブ切り替えイベントの設定
   tabItem.addEventListener("click", () => {
     tabItems.forEach((t) => { t.classList.remove("active"); });
     const tabPanels = document.querySelectorAll(".tab-panel");
@@ -194,7 +194,7 @@ tabItems.forEach((tabItem) => {
   });
 });
 
-function getValidPages() {
+function getTargetPages() {  // 宿題データから対象ページを取得
   const pages = [];
   for (let i = 1; i <= 4; i++) {
     const start = parseInt(data[`hw-${i}-start`]);
@@ -211,26 +211,27 @@ function getValidPages() {
   return pages;
 }
 
-function loadLocalStorage() {
+function loadLocalStorage() {  // ローカルストレージをロード
   dataLocal = JSON.parse(localStorage.getItem(localStoragyKey)) || {};
-  Object.keys(data).forEach(key => {
+  Object.keys(data).forEach(key => {  // 宿題データがあればロード
     if (key in dataLocal) data[key] = dataLocal[key];
     document.getElementById(key).value = data[key];
   });
-  const pages = getValidPages();
-  pages.forEach(([i, _, page]) => {
+  const pages = getTargetPages();  // 宿題データから対象ページを取得
+  pages.forEach(([i, _, page]) => {  // 対象ページの計画があればロード
     const selectId = `date-${i}-${page}`;
-    if (selectId in dataLocal) dataKeikaku[selectId] = dataLocal[selectId];
+    if (selectId in dataLocal) {
+      dataKeikaku[selectId] = dataLocal[selectId];
+    }
   });
 }
 
-function dumpLocalStorage() {
-  const dataKeikakuStore = {};
-  const pages = getValidPages();
+function dumpLocalStorage() {  // ローカルストレージにダンプ
+  const dataKeikakuStore = {};  // 最新の対象ページの計画のみダンプ
+  const pages = getTargetPages();
   pages.forEach(([i, _, page]) => {
     const selectId = `date-${i}-${page}`;
     dataKeikakuStore[selectId] = dataKeikaku[selectId];
-    page += 1;
   });
   localStorage.setItem(localStoragyKey, JSON.stringify({ ...data, ...dataKeikakuStore }));
 }
@@ -239,11 +240,11 @@ function formatDate(date) {
   return `${date.toISOString().slice(0, 10)} (${dows[date.getDay()]})`;
 }
 
-function createSelectDate(dateStart, dateEnd, selectId) {
+function createSelectDate(dateStart, dateEnd, selectId) {  // 日付セレクト要素の作成
   const sl = document.createElement("select");
   sl.setAttribute("id", selectId);
   let date = new Date(dateStart);
-  while (date < dateEnd) {
+  while (date < dateEnd) {  // 提出日の手前まで
     let dateFormatted = formatDate(date);
     let op = document.createElement("option");
     op.value = dateFormatted;
@@ -252,33 +253,33 @@ function createSelectDate(dateStart, dateEnd, selectId) {
     date.setDate(date.getDate() + 1);
   }
   let assigned = false;
-  if (selectId in dataKeikaku) {
+  if (selectId in dataKeikaku) {  // このページの日付が計画済みであったとき
     const dateStored = new Date(dataKeikaku[selectId].replace(/\s*\(.+\)/, ""));
-    if (dateStored < dateStart) {
+    if (dateStored < dateStart) {  // 開始日より手前であったら開始日に上書き
       dataKeikaku[selectId] = formatDate(dateStart);
-    } else if (dateStored >= dateEnd) {
+    } else if (dateStored >= dateEnd) {  // 提出日以降であったら提出日前日に上書き
       dateStored.setDate(dateEnd.getDate() - 1);
       dataKeikaku[selectId] = formatDate(dateStored);
     }
-    sl.value = dataKeikaku[selectId];
     assigned = true;
   }
-  if (!assigned) {
+  if (!assigned) {  // 計画済みでなかったら開始日にしておく
     dataKeikaku[selectId] = formatDate(dateStart);
   }
+  sl.value = dataKeikaku[selectId];  // 計画日を選択しておく
   sl.addEventListener('input', inputChangeKeikaku);
   return sl;
 }
 
-function createTableKeikaku() {
+function createTableKeikaku() {  // 計画テーブルを作成
   tblKeikaku.innerHTML = "";
-  if (data["date-start"] > data["date-end"]) {
-    tblKeikaku.innerHTML = "終了日を開始日以降にしてください。";
+  if (data["date-start"] >= data["date-end"]) {
+    tblKeikaku.innerHTML = "開始日は提出日より前の日付にしてください。";
     return;
   }
   const dateStart = new Date(data["date-start"]);
   const dateEnd = new Date(data["date-end"]);
-  const pages = getValidPages();
+  const pages = getTargetPages();
   pages.forEach(([i, name, page]) => {
       const tr = document.createElement("tr");
       const td0 = document.createElement("td");
@@ -297,13 +298,13 @@ function createTableKeikaku() {
   });
 }
 
-function createTableYotei() {
+function createTableYotei() {  // 予定テーブルを作成
   tblYotei.innerHTML = "";
-  if (data["date-start"] > data["date-end"]) {
-    tblYotei.innerHTML = "終了日を開始日以降にしてください。";
+  if (data["date-start"] >= data["date-end"]) {
+    tblYotei.innerHTML = "開始日は提出日より前の日付にしてください。";
     return;
   }
-  const pages = getValidPages();
+  const pages = getTargetPages();
   const dateStart = new Date(data["date-start"]);
   const dateEnd = new Date(data["date-end"]);
   let date = new Date(dateStart);
@@ -333,17 +334,17 @@ function createTableYotei() {
   }
 }
 
-function inputChangeKeikaku(event){
-  dataKeikaku[event.target.id] = event.target.value;
-  dumpLocalStorage();
-  createTableYotei();
+function inputChangeKeikaku(event) {  // 計画日データが変更されたときのイベントの設定
+  dataKeikaku[event.target.id] = event.target.value;  // 計画日データを更新
+  createTableYotei();  // 予定テーブルを作成
+  dumpLocalStorage();  // ダンプ
 }
 
-function inputChange(event){
-  data[event.target.id] = event.target.value;
-  dumpLocalStorage();
-  createTableKeikaku();
-  createTableYotei();
+function inputChange(event) {  // 宿題データが変更されたときのイベントの設定
+  data[event.target.id] = event.target.value;  // 宿題データを変更
+  createTableKeikaku();  // 計画テーブルを作成
+  createTableYotei();  // 予定テーブルを作成
+  dumpLocalStorage();  // ダンプ
 }
 
 Object.keys(data).forEach(key => {
@@ -351,9 +352,9 @@ Object.keys(data).forEach(key => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadLocalStorage();
-  createTableKeikaku();
-  createTableYotei();
+  loadLocalStorage();  // ローカルストレージをロード
+  createTableKeikaku();  // 計画テーブルを作成
+  createTableYotei();  // 予定テーブルを作成
 });
 // --></script>
 </body>
