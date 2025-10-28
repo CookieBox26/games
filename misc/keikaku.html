@@ -155,9 +155,13 @@ td {
 
 <div class="tab-panel">
 <ul>
-<li>「宿題」タブで開始/提出日と宿題とページを入力して、「計画」タブで計画してください。提出日には計画を入れられません。</li>
-<li>計画は端末のブラウザ (localStorage) に保存されます。予め、ページを更新しても変更が保たれるか確認してからご利用ください。</li>
-<li class="warn">ブラウザが Safari の場合、7 日間ページへの操作がないと localStorage が削除されます。計画が失われると困る場合は、立てた計画を別の場所にコピーして保存してください。</li>
+<li>「宿題」タブで開始日・提出日・宿題・ページを入力して、「計画」タブでいつやるか計画してください。</li>
+<ul>
+<li>提出日には計画を入れられません。</li>
+<li>宿題の名前を空欄にするか、開始ページを 0 にすると無視します。</li>
+</ul>
+<li>計画は端末のブラウザ内 (localStorage) に保存されます。ページを更新しても入力内容が保持されるか確認してからご利用ください。</li>
+<li class="warn">ブラウザが Safari の場合、7 日間ページへの操作がないと計画が削除されます。7 日以内にページを再読み込みするようにしてください。計画が消えると困る場合は、画面キャプチャやコピーを取ってください。</li>
 </ul>
 </div>
 
@@ -168,10 +172,10 @@ td {
 const localStoragyKey = "keikaku";
 const data = {
   "date-start": "2025-10-28", "date-end": "2025-10-31",
-  "hw-1-name": "けいド", "hw-1-start": 10, "hw-1-end": 12,
+  "hw-1-name": "けいド", "hw-1-start": 0, "hw-1-end": 0,
   "hw-2-name": "かんド", "hw-2-start": 11, "hw-2-end": 13,
-  "hw-3-name": "かんノ", "hw-3-start": 14, "hw-3-end": 14,
-  "hw-4-name": "日記", "hw-4-start": 1, "hw-4-end": 1,
+  "hw-3-name": "かんノ", "hw-3-start": 14, "hw-3-end": 16,
+  "hw-4-name": "", "hw-4-start": 0, "hw-4-end": 0,
 };
 const dataKeikaku = {};
 const tblKeikaku = document.getElementById("table-keikaku");
@@ -231,12 +235,16 @@ function dumpLocalStorage() {
   localStorage.setItem(localStoragyKey, JSON.stringify({ ...data, ...dataKeikakuStore }));
 }
 
+function formatDate(date) {
+  return `${date.toISOString().slice(0, 10)} (${dows[date.getDay()]})`;
+}
+
 function createSelectDate(dateStart, dateEnd, selectId) {
   const sl = document.createElement("select");
   sl.setAttribute("id", selectId);
   let date = new Date(dateStart);
   while (date < dateEnd) {
-    let dateFormatted = `${date.toISOString().slice(0, 10)} (${dows[date.getDay()]})`;
+    let dateFormatted = formatDate(date);
     let op = document.createElement("option");
     op.value = dateFormatted;
     op.innerText = dateFormatted;
@@ -247,16 +255,16 @@ function createSelectDate(dateStart, dateEnd, selectId) {
   if (selectId in dataKeikaku) {
     const dateStored = new Date(dataKeikaku[selectId].replace(/\s*\(.+\)/, ""));
     if (dateStored < dateStart) {
-      dataKeikaku[selectId] = `${dateStart.toISOString().slice(0, 10)} (${dows[dateStart.getDay()]})`;
+      dataKeikaku[selectId] = formatDate(dateStart);
     } else if (dateStored >= dateEnd) {
-      const dateLast = new Date(dateEnd.getDate() - 1);
-      dataKeikaku[selectId] = `${dateLast.toISOString().slice(0, 10)} (${dows[dateLast.getDay()]})`;
+      dateStored.setDate(dateEnd.getDate() - 1);
+      dataKeikaku[selectId] = formatDate(dateStored);
     }
     sl.value = dataKeikaku[selectId];
     assigned = true;
   }
   if (!assigned) {
-    dataKeikaku[selectId] = `${dateStart.toISOString().slice(0, 10)} (${dows[dateStart.getDay()]})`;
+    dataKeikaku[selectId] = formatDate(dateStart);
   }
   sl.addEventListener('input', inputChangeKeikaku);
   return sl;
@@ -300,7 +308,7 @@ function createTableYotei() {
   const dateEnd = new Date(data["date-end"]);
   let date = new Date(dateStart);
   while (date <= dateEnd) {
-    let dateFormatted = `${date.toISOString().slice(0, 10)} (${dows[date.getDay()]})`;
+    let dateFormatted = formatDate(date);
     const todayPages = pages.filter(([i, _, page]) => {
       return dataKeikaku[`date-${i}-${page}`] == dateFormatted;
     });
