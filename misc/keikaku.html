@@ -6,16 +6,25 @@
 <title>計画</title>
 <style type="text/css">
 body {
-  background: dimgray;
+  background: #555555;
+  font-size: 18px;
+  font-family: sans-serif;
+  width: 400px;
+  line-height: 1.6;
+}
+input, select {
+  border: 1px solid;
+  font-size: 18px;
 }
 .tab-container {
   display: flex;
-  gap: 5px;
+  gap: 7px;
 }
 .tab-item {
-  background-color: lightgray;
+  background-color: #bbbbbb;
   padding: 0.5em 1em;
   cursor: pointer;
+  user-select: none;
 }
 .tab-item.active {
   background-color: white;
@@ -42,37 +51,54 @@ label {
 }
 .input-container {
   margin: 0.5em 0;
+  padding: 0.5em;
 }
 table {
   border-collapse: collapse;
 }
 td {
-  border: 1px solid black;
-  padding: 0.25em 0.5em;
+  border: 2px solid black;
+  padding: 0.2em 0.5em;
+}
+.hw {
+  display: inline-block;
+  margin: 0.1em;
+  padding: 0.1em 0.4em;
+  font-size: 17px;
+}
+.hw-1 {
+  background: #96dafc;
+}
+.hw-2 {
+  background: #ffb0a8;
+}
+.hw-3 {
+  background: #fdee73;
+}
+.hw-4 {
+  background: #a0e38a;
+}
+.date {
+  width: 8em;
 }
 </style>
 <body>
 
 <div class="tab-container">
-<div class="tab-item active">タブ1</div>
-<div class="tab-item">タブ2</div>
-<div class="tab-item">タブ3</div>
+<div class="tab-item active">宿題</div>
+<div class="tab-item">計画</div>
+<div class="tab-item">予定表</div>
 </div>
 <div class="tab-content">
 
 <div class="tab-panel active">
 
-<div class="input-container">
 <label for="date-start">開始日</label>
-<input type="date" id="date-start"/>
-</div>
-
-<div class="input-container">
+<input type="date" id="date-start"/><br/>
 <label for="date-end">終了日</label>
-<input type="date" id="date-end"/>
-</div>
+<input type="date" id="date-end"/><br/>
 
-<div class="input-container">
+<div class="input-container hw-1">
 <label for="hw-1-name">宿題1</label>
 <input type="text" class="text" id="hw-1-name"/><br/>
 <label></label>
@@ -80,7 +106,7 @@ td {
 <input type="number" min="0" max="200" class="num" id="hw-1-end"/> ページ
 </div>
 
-<div class="input-container">
+<div class="input-container hw-2">
 <label for="hw-2-name">宿題2</label>
 <input type="text" class="text" id="hw-2-name"/><br/>
 <label></label>
@@ -88,7 +114,7 @@ td {
 <input type="number" min="0" max="200" class="num" id="hw-2-end"/> ページ
 </div>
 
-<div class="input-container">
+<div class="input-container hw-3">
 <label for="hw-3-name">宿題3</label>
 <input type="text" class="text" id="hw-3-name"/><br/>
 <label></label>
@@ -96,7 +122,7 @@ td {
 <input type="number" min="0" max="200" class="num" id="hw-3-end"/> ページ
 </div>
 
-<div class="input-container">
+<div class="input-container hw-4">
 <label for="hw-4-name">宿題4</label>
 <input type="text" class="text" id="hw-4-name"/><br/>
 <label></label>
@@ -120,11 +146,11 @@ td {
 <script type="text/javascript"><!--
 const localStoragyKey = "keikaku";
 const data = {
-  "date-start": "2025-10-25", "date-end": "2025-10-26",
+  "date-start": "2025-10-28", "date-end": "2025-11-03",
   "hw-1-name": "けいド", "hw-1-start": 1, "hw-1-end": 2,
-  "hw-2-name": "かんド", "hw-2-start": 0, "hw-2-end": 0,
-  "hw-3-name": "かんノ", "hw-3-start": 0, "hw-3-end": 0,
-  "hw-4-name": "", "hw-4-start": 0, "hw-4-end": 0,
+  "hw-2-name": "かんド", "hw-2-start": 1, "hw-2-end": 3,
+  "hw-3-name": "かんノ", "hw-3-start": 1, "hw-3-end": 4,
+  "hw-4-name": "日記", "hw-4-start": 1, "hw-4-end": 1,
 };
 const dataKeikaku = {};
 const tblKeikaku = document.getElementById("table-keikaku");
@@ -221,6 +247,7 @@ function createTableKeikaku() {
       const td2 = document.createElement("td");
       const selectId = `date-${i}-${page}`;
       td0.innerText = name;
+      td0.classList.add(`hw-${i}`);
       td1.innerText = page;
       sl = createSelectDate(dateStart, dateEnd, selectId);
       td2.appendChild(sl);
@@ -234,7 +261,7 @@ function createTableKeikaku() {
 function createTableYotei() {
   tblYotei.innerHTML = "";
   if (data["date-start"] > data["date-end"]) {
-    tblKeikaku.innerHTML = "終了日を開始日以降にしてください。";
+    tblYotei.innerHTML = "終了日を開始日以降にしてください。";
     return;
   }
   const pages = getValidPages();
@@ -246,14 +273,15 @@ function createTableYotei() {
     const todayPages = pages.filter(([i, _, page]) => {
       return dataKeikaku[`date-${i}-${page}`] == dateFormatted;
     });
-    const todayPageNames = todayPages.map(([i, name, page]) => `${name}${page}`);
-    console.log(todayPages);
+    const todayPageNames = todayPages.map(
+      ([i, name, page]) => `<span class="hw hw-${i}">${name} ${page}</span>`
+    );
     const tr = document.createElement("tr");
     const td0 = document.createElement("td");
     const td1 = document.createElement("td");
-    td0.style.width = "8em";
     td0.innerText = dateFormatted;
-    td1.innerText = todayPageNames;
+    td0.classList.add("date");
+    td1.innerHTML = todayPageNames.join(" ");
     tr.appendChild(td0);
     tr.appendChild(td1);
     tblYotei.appendChild(tr);
