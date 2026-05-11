@@ -18,6 +18,10 @@
   --ok-color: #37904d;
   --ng-bg: #f6c9c5;
   --ng-color: #e35649;
+  --width: 360px;
+  --height: 600px;
+  --height-header: 40px;
+  --height-area: calc(600px - 40px);
 }
 html, body {
   overscroll-behavior: none;
@@ -33,8 +37,8 @@ p {
   margin: 0 0 0.5em;
 }
 div#mat {
-  width: 350px;
-  height: 600px;
+  width: var(--width);
+  height: var(--height);
   background: var(--white);
   color: var(--black);
 }
@@ -44,20 +48,22 @@ div.flex {
   align-items: start;
 }
 div.container {
-  width: 350px;
-  height: 600px;
+  width: var(--width);
+  height: var(--height);
   flex-flow: column wrap;
   align-items: stretch;
 }
 div.header {
   box-sizing: border-box;
-  padding: 10px 15px;
+  height: var(--height-header);
   width: 100%;
   background: var(--header);
+  align-items: center;
 }
 div.header > div {
   font-size: 20px;
   line-height: 20px;
+  margin: 0 18px;
   color: var(--white);
   cursor: pointer;
   user-select: none;
@@ -68,10 +74,10 @@ div#main {
 }
 div#modal, div#info-modal {
   position: absolute;
-  top: 40px;
+  top: var(--height-header);
   left: 0;
-  width: 350px;
-  height: calc(600px - 40px);
+  width: var(--width);
+  height: var(--height-area);
   justify-content: center;
   align-items: center;
   background: var(--overlay);
@@ -89,9 +95,9 @@ div.modal-content {
 }
 div.area {
   box-sizing: border-box;
-  width: 350px;
-  height: calc(600px - 40px);
-  padding: 20px;
+  width: var(--width);
+  height: var(--height-area);
+  padding: 15px 18px;
   line-height: 1.2;
   display: none;
   flex-flow: column;
@@ -117,11 +123,17 @@ div.main-btn.disabled {
   background: var(--grey);
   pointer-events: none;
 }
+div#question-number {
+  font-size: 20px;
+  font-weight: bold;
+}
 div#question {
-  font-size: 19px;
-  line-height: 1.5;
+  line-height: 25px;
+  max-height: 100px;
+  overflow-y: auto;
 }
 div#choices-container {
+  margin: 4px 0;
   display: flex;
   flex-flow: column;
   gap: 8px;
@@ -129,7 +141,7 @@ div#choices-container {
 div.choice-btn {
   box-sizing: border-box;
   width: 100%;
-  padding: 10px 14px;
+  padding: 8px 12px;
   background: var(--choice-bg);
   font-size: 17px;
   line-height: 1.4;
@@ -146,8 +158,12 @@ div.choice-btn.wrong {
   border-left-color: var(--ng-color);
 }
 div#message {
-  font-size: 18px;
-  min-height: 1.4em;
+  font-weight: bold;
+}
+div#desc {
+  flex: 1;
+  font-size: 16px;
+  overflow-y: auto;
 }
 div.quiz-card {
   box-sizing: border-box;
@@ -155,8 +171,12 @@ div.quiz-card {
   background: var(--card-bg);
   flex-shrink: 0;
 }
-div.quiz-card.ok { background: var(--ok-bg); }
-div.quiz-card.ng { background: var(--ng-bg); }
+div.quiz-card.ok {
+  background: var(--ok-bg);
+}
+div.quiz-card.ng {
+  background: var(--ng-bg);
+}
 div.quiz-title {
   font-size: 17px;
   font-weight: bold;
@@ -190,12 +210,13 @@ div.quiz-desc {
 </div>
 
 <div id="test" class="area">
-<div id="test-header" style="font-weight:bold;"></div>
+<div id="question-number"></div>
 <div id="question"></div>
 <div id="choices-container"></div>
 <div id="message"></div>
+<div id="desc"></div>
 <div id="next-btn" class="main-btn" style="display:none;">次の問題へ</div>
-<div id="back" class="main-btn" style="display:none;">トップに戻る</div>
+<!--<div id="back" class="main-btn" style="display:none;">トップに戻る</div>-->
 </div>
 
 <div id="study" class="area">
@@ -362,11 +383,13 @@ const modal = document.getElementById("modal");
 const divTop = document.getElementById("top");
 const divTest = document.getElementById("test");
 const divStudy = document.getElementById("study");
+const divQN = document.getElementById("question-number");
 const divQ = document.getElementById("question");
 const divChoices = document.getElementById("choices-container");
 const divMsg = document.getElementById("message");
+const divDesc = document.getElementById("desc");
 const nextBtn = document.getElementById("next-btn");
-const backBtn = document.getElementById("back");
+// const backBtn = document.getElementById("back");
 
 var currentIdx = -1;
 var quizQueue = [];
@@ -442,10 +465,8 @@ function setQ() {
   }
   currentIdx = quizQueue.pop();
   const item = questionMaster[currentIdx];
-
-  document.getElementById("test-header").innerHTML = `問題 ${quizTotal - quizQueue.length} / ${quizTotal}`;
+  divQN.innerHTML = `問題 ${quizTotal - quizQueue.length} / ${quizTotal}`;
   divQ.innerHTML = item.q;
-
   const order = item.shuffleChoices
     ? shuffle(item.choices.map((_, i) => i))
     : item.choices.map((_, i) => i);
@@ -458,34 +479,32 @@ function setQ() {
     div.addEventListener('click', () => onChoiceClick(i));
     divChoices.appendChild(div);
   });
-
   divMsg.innerHTML = '';
   divMsg.style.color = '';
+  divDesc.innerHTML = '';
+  divDesc.style.color = '';
   nextBtn.style.display = 'none';
-  backBtn.style.display = 'none';
+  // backBtn.style.display = 'none';
 }
 
 function onChoiceClick(chosenIdx) {
   const item = questionMaster[currentIdx];
   const btns = divChoices.querySelectorAll('.choice-btn');
   btns.forEach(b => b.style.pointerEvents = 'none');
-
   btns[shuffledAnswer].classList.add('correct');
-
   const correct = chosenIdx === shuffledAnswer;
   if (!correct) btns[chosenIdx].classList.add('wrong');
   mark(currentIdx, correct);
-
-  const descs = item.knowledgeIds
+  divMsg.style.color = correct ? 'var(--ok-color)' : 'var(--ng-color)';
+  divMsg.innerHTML = correct ? '正解です。' : '不正解です。';
+  divDesc.style.color = correct ? 'var(--ok-color)' : 'var(--ng-color)';
+  divDesc.innerHTML = item.knowledgeIds
     .map(id => knowledgeMap[id])
     .filter(Boolean)
-    .map(k => `<p><small>${k.desc}</small></p>`)
+    .map(k => `<p>${k.desc}</p>`)
     .join('<br/>');
-  divMsg.style.color = correct ? 'var(--ok-color)' : 'var(--ng-color)';
-  divMsg.innerHTML = `<p>${correct ? '正解です。' : '不正解です。'}</p>${descs}`;
-
   nextBtn.style.display = 'block';
-  backBtn.style.display = 'block';
+  // backBtn.style.display = 'block';
 }
 
 function setStudy() {
@@ -545,7 +564,7 @@ function init() {
   setButton("main-btn-test-untried", () => showTest('untried'));
   setButton("main-btn-test-wrong", () => showTest('wrong'));
   setButton("next-btn", setQ);
-  setButton("back", showTop);
+  // setButton("back", showTop);
   setButton("info-modal-ok", () => { document.getElementById('info-modal').style.display = 'none'; });
 
   setButton("main-btn-reset", () => {
